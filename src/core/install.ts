@@ -28,7 +28,7 @@ export async function installResources(resources: Resource[], directory: string,
     }
     else {
       onProgress?.(`extracting ${label}`)
-      await extractArchive(data, directory)
+      await extractArchive(data, directory, resource.paths)
     }
 
     downloads.push({ resource, sha256: sha256(data) })

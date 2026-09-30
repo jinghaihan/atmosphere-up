@@ -4,7 +4,7 @@ import { EXTENSION_REPO_CONFIG } from '../constants'
 import { getRelease } from '../download'
 import { selectAsset } from '../utils'
 
-export type SaveManager = keyof typeof EXTENSION_REPO_CONFIG
+export type SaveManager = 'jksv' | 'checkpoint'
 
 export async function resolveSaveManagement(module: SaveManager, { signal, onProgress }: TaskOptions = {}): Promise<Resource> {
   signal?.throwIfAborted()

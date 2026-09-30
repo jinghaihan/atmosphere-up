@@ -21,8 +21,11 @@ export const CORE_REPO_CONFIG = {
 
 /// keep-sorted
 export const EXTENSION_REPO_CONFIG = {
-  checkpoint: 'BernardoGiordano/Checkpoint',
-  jksv: 'J-D-K/JKSV',
+  'breeze': 'tomvita/Breeze-Beta',
+  'breezehand': 'tomvita/Breezehand-Overlay',
+  'checkpoint': 'BernardoGiordano/Checkpoint',
+  'edizon-overlay': 'proferabg/EdiZon-Overlay',
+  'jksv': 'J-D-K/JKSV',
 } as const
 
 export const PACK_DEFAULTS = new URL('./defaults/', import.meta.url)

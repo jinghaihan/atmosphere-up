@@ -8,11 +8,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { runBuildCommand } from '../../src/commands'
 import { resolveConfig } from '../../src/config'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../../src/core'
-import { resolveSaveManagement } from '../../src/extensions'
+import { resolveCheats, resolveSaveManagement } from '../../src/extensions'
 
 vi.mock('@clack/prompts', () => ({
   intro: vi.fn(),
   select: vi.fn(),
+  multiselect: vi.fn(),
   confirm: vi.fn(),
   cancel: vi.fn(),
   outro: vi.fn(),
@@ -20,7 +21,7 @@ vi.mock('@clack/prompts', () => ({
   spinner: vi.fn(() => ({ start: vi.fn(), message: vi.fn(), stop: vi.fn(), error: vi.fn() })),
 }))
 vi.mock('../../src/config', () => ({ resolveConfig: vi.fn() }))
-vi.mock('../../src/extensions', () => ({ resolveSaveManagement: vi.fn() }))
+vi.mock('../../src/extensions', () => ({ resolveCheats: vi.fn(), resolveSaveManagement: vi.fn() }))
 vi.mock('../../src/core', async original => ({
   ...await original<typeof import('../../src/core')>(),
   inspectOutput: vi.fn(),
@@ -34,17 +35,66 @@ beforeEach(() => {
   vi.clearAllMocks()
   vi.mocked(p.select).mockReset()
   vi.mocked(p.confirm).mockReset()
+  vi.mocked(p.multiselect).mockReset()
   vi.mocked(buildPack).mockReset()
   process.exitCode = 0
   vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', pack: false })
   vi.mocked(p.select).mockResolvedValue(bundle)
+  vi.mocked(p.confirm).mockResolvedValue(false)
+  vi.mocked(p.multiselect).mockResolvedValue([])
   vi.mocked(inspectOutput).mockReturnValue(false)
   vi.mocked(resolveResources).mockResolvedValue([])
   vi.mocked(resolveSaveManagement).mockResolvedValue({ module: 'jksv' } as Awaited<ReturnType<typeof resolveSaveManagement>>)
+  vi.mocked(resolveCheats).mockResolvedValue([])
   vi.mocked(buildPack).mockResolvedValue()
 })
 
 describe('runBuildCommand', () => {
+  it('collects all extension choices before resolving releases and defaults only EdiZon Overlay', async () => {
+    vi.mocked(p.confirm).mockResolvedValue(true)
+    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv')
+    vi.mocked(p.multiselect).mockImplementationOnce(async () => {
+      expect(resolveSaveManagement).not.toHaveBeenCalled()
+      expect(resolveCheats).not.toHaveBeenCalled()
+      return ['edizon-overlay', 'breezehand']
+    })
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      expect(p.confirm).not.toHaveBeenCalled()
+      await task!.onCoreReady!()
+    })
+
+    await runBuildCommand({})
+
+    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?'])
+    expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
+      initialValues: ['edizon-overlay'],
+      options: [
+        { value: 'edizon-overlay', label: 'EdiZon Overlay', hint: 'https://github.com/proferabg/EdiZon-Overlay' },
+        { value: 'breeze', label: 'Breeze', hint: 'https://github.com/tomvita/Breeze-Beta' },
+        { value: 'breezehand', label: 'Breezehand Overlay', hint: 'https://github.com/tomvita/Breezehand-Overlay' },
+      ],
+    }))
+    expect(resolveSaveManagement).toHaveBeenCalledWith('jksv', expect.any(Object))
+    expect(resolveCheats).toHaveBeenCalledWith(['edizon-overlay', 'breezehand'], expect.any(Object))
+  })
+
+  it.each(['confirm', 'multiselect'] as const)('cancels from the cheats %s prompt before resolving any selected extension', async (prompt) => {
+    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
+    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv')
+    vi.mocked(p.multiselect).mockResolvedValueOnce(Symbol('cancel'))
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      await task!.onCoreReady!()
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveSaveManagement).not.toHaveBeenCalled()
+    expect(resolveCheats).not.toHaveBeenCalled()
+    expect(p.outro).not.toHaveBeenCalled()
+    expect(process.exitCode).toBe(130)
+    process.exitCode = 0
+  })
+
   it('skips optional downloads when save management is declined', async () => {
     vi.mocked(p.confirm).mockResolvedValue(false)
     vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
@@ -56,6 +106,8 @@ describe('runBuildCommand', () => {
 
     expect(resolveSaveManagement).not.toHaveBeenCalled()
     expect(p.select).toHaveBeenCalledTimes(1)
+    expect(p.multiselect).not.toHaveBeenCalled()
+    expect(resolveCheats).toHaveBeenCalledWith([], expect.any(Object))
     expect(p.outro).toHaveBeenCalled()
   })
 

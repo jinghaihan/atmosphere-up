@@ -11,6 +11,7 @@ export interface Resource {
   page: string
   asset: ReleaseAsset
   target?: string
+  paths?: string[]
 }
 
 export async function resolveResources(bundle: Bundle, { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {

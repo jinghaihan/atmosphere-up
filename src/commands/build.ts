@@ -6,8 +6,9 @@ import tildify from 'tildify'
 import { resolveConfig } from '../config'
 import { NAME, VERSION } from '../constants'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../core'
-import { resolveSaveManagement } from '../extensions'
+import { resolveCheats, resolveSaveManagement } from '../extensions'
 import { getOutputPath } from '../utils'
+import { promptCheats } from './cheats'
 import { promptSaveManagement } from './save-management'
 
 export async function runBuildCommand(options: CommandOptions): Promise<void> {
@@ -73,12 +74,16 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
         spinner.stop(c.green('core pack assembled'))
 
         const saveManager = await promptSaveManagement(controller)
+        const cheats = await promptCheats(controller)
 
-        spinner.start(c.cyan(saveManager ? 'resolving extensions' : 'finalizing pack'))
+        spinner.start(c.cyan(saveManager || cheats.length ? 'resolving extensions' : 'finalizing pack'))
         if (process.stdin.isTTY)
           process.stdin.setRawMode(false)
 
-        return saveManager ? [await resolveSaveManagement(saveManager, task)] : []
+        const extensions = saveManager ? [await resolveSaveManagement(saveManager, task)] : []
+        extensions.push(...await resolveCheats(cheats, task))
+
+        return extensions
       },
     })
 

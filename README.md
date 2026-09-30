@@ -36,6 +36,12 @@ Ultrahand opens with **L + D-pad Down**.
 After assembling the core components, choose whether to include save management:
 [JKSV](https://github.com/J-D-K/JKSV) (default selection) or
 [Checkpoint](https://github.com/BernardoGiordano/Checkpoint).
+
+Cheat tools support multiple selections: [EdiZon Overlay](https://github.com/proferabg/EdiZon-Overlay),
+[Breeze](https://github.com/tomvita/Breeze-Beta),
+and [Breezehand Overlay](https://github.com/tomvita/Breezehand-Overlay).
+Only EdiZon Overlay is selected by default.
+
 ZIP output includes the selected extensions.
 
 ### Pack defaults
