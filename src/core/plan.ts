@@ -1,7 +1,8 @@
-import type { ReleaseAsset } from '../download'
+import type { ReleaseAsset } from '../types'
 import type { Bundle } from './catalog'
 import { MODULE_REPO_CONFIG } from '../constants'
-import { getRelease, selectAsset } from '../download'
+import { getRelease } from '../download'
+import { selectAsset } from '../utils'
 
 export interface Resource {
   module: keyof typeof MODULE_REPO_CONFIG

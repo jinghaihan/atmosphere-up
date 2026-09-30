@@ -1,14 +1,15 @@
-import type { Release } from '../../src/download'
+import type { Release, ReleaseAsset } from '../../src/types'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { downloadAsset, getRelease, selectAsset, sha256 } from '../../src/download'
+import { downloadAsset, getRelease } from '../../src/download'
+import { selectAsset, sha256 } from '../../src/utils'
 
 afterEach(() => vi.unstubAllGlobals())
 
 describe('selectAsset', () => {
   it('rejects missing or ambiguous release assets', () => {
-    const release = { tag_name: 'v1', html_url: 'https://github.com/example/core/releases/v1', assets: [] } as Release
+    const release = { tag_name: 'v1', html_url: 'https://github.com/example/core/releases/v1', assets: [] } as unknown as Release
     expect(() => selectAsset(release, /zip$/)).toThrow('found 0')
-    release.assets = ['a.zip', 'b.zip'].map(name => ({ name, browser_download_url: '', size: 1 }))
+    release.assets = ['a.zip', 'b.zip'].map(name => ({ name, browser_download_url: '', size: 1 })) as ReleaseAsset[]
     expect(() => selectAsset(release, /zip$/)).toThrow('found 2')
   })
 })
@@ -22,18 +23,18 @@ describe('getRelease', () => {
   })
 
   it('reports an API failure', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('', { status: 403 })))
-    await expect(getRelease('example/core')).rejects.toThrow('HTTP 403')
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(Response.json({ message: 'API rate limit exceeded' }, { status: 403 })))
+    await expect(getRelease('example/core')).rejects.toThrow('API rate limit exceeded')
   })
 })
 
 describe('downloadAsset', () => {
   it('rejects an asset whose size or digest changed', async () => {
     vi.stubGlobal('fetch', vi.fn().mockImplementation(() => Promise.resolve(new Response('test'))))
-    const asset = { name: 'core.zip', size: 5, browser_download_url: 'https://github.com/example/core/releases/download/v1/core.zip' }
-    await expect(downloadAsset(asset)).rejects.toThrow('Size mismatch')
-    await expect(downloadAsset({ ...asset, size: 4, digest: 'sha256:invalid' })).rejects.toThrow('SHA-256 mismatch')
+    const asset = { id: 1, name: 'core.zip', size: 5, browser_download_url: 'https://github.com/example/core/releases/download/v1/core.zip' } as ReleaseAsset
+    await expect(downloadAsset('example/core', asset)).rejects.toThrow('Size mismatch')
+    await expect(downloadAsset('example/core', { ...asset, size: 4, digest: 'sha256:invalid' })).rejects.toThrow('SHA-256 mismatch')
     const data = new TextEncoder().encode('test')
-    expect(await downloadAsset({ ...asset, size: 4, digest: `sha256:${sha256(data)}` })).toEqual(data)
+    expect(await downloadAsset('example/core', { ...asset, size: 4, digest: `sha256:${sha256(data)}` })).toEqual(data)
   })
 })

@@ -2,8 +2,9 @@ import type { Bundle } from './catalog'
 import type { Resource } from './plan'
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'pathe'
-import { HEKATE_BOOT_CONFIG } from '../constants'
-import { downloadAsset, sha256 } from '../download'
+import { HEKATE_BOOT_CONFIG, MODULE_REPO_CONFIG } from '../constants'
+import { downloadAsset } from '../download'
+import { sha256 } from '../utils'
 import { extractArchive } from './archive'
 import { getBundlePath } from './catalog'
 import { writeOutput } from './output'
@@ -13,7 +14,7 @@ export async function buildPack(bundle: Bundle, resources: Resource[], directory
     const sigpatches = await readFile(getBundlePath(bundle))
     if (sha256(sigpatches) !== bundle.sha256)
       throw new Error(`SHA-256 mismatch for bundled sigpatches: ${bundle.id}.`)
-    const downloads = await Promise.all(resources.map(async resource => ({ resource, data: await downloadAsset(resource.asset) })))
+    const downloads = await Promise.all(resources.map(async resource => ({ resource, data: await downloadAsset(MODULE_REPO_CONFIG[resource.module], resource.asset) })))
     for (const { resource, data } of downloads) {
       if (resource.target) {
         const target = join(staging, resource.target)

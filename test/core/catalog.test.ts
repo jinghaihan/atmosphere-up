@@ -1,8 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
 import { getBundlePath, getBundles } from '../../src/core'
-import { sha256 } from '../../src/download'
-import { getOutputName } from '../../src/utils'
+import { getOutputName, sha256 } from '../../src/utils'
 
 describe('getBundles', () => {
   it('sorts all supported HOS versions numerically, newest first', () => {

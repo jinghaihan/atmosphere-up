@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@clack/prompts": "catalog:prod",
+    "@octokit/rest": "catalog:prod",
     "adm-zip": "catalog:prod",
     "ansis": "catalog:prod",
     "cac": "catalog:prod",

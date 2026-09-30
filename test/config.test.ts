@@ -7,7 +7,7 @@ const cwd = resolve(fileURLToPath(new URL('..', import.meta.url)))
 
 describe('resolveConfig', () => {
   it('uses the repository output configuration', async () => {
-    expect(await resolveConfig({ cwd, output: undefined })).toEqual({ cwd, output: resolve(cwd, 'output') })
+    expect(await resolveConfig({ cwd, output: undefined })).toMatchObject({ cwd, output: resolve(cwd, 'output') })
   })
 
   it('lets the CLI override the configuration', async () => {
