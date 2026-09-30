@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { runBuildCommand } from '../../src/commands'
 import { resolveConfig } from '../../src/config'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../../src/core'
-import { resolveCheats, resolveFileManagement, resolvePerformanceMonitoring, resolvePerformanceTuning, resolveSaveManagement, resolveStreaming } from '../../src/extensions'
+import { resolveAmiibo, resolveCheats, resolveFileManagement, resolvePerformanceMonitoring, resolvePerformanceTuning, resolveSaveManagement, resolveStreaming } from '../../src/extensions'
 import { resolveSaltyNx } from '../../src/extensions/dependencies'
 
 vi.mock('@clack/prompts', () => ({
@@ -22,6 +22,10 @@ vi.mock('@clack/prompts', () => ({
   spinner: vi.fn(() => ({ start: vi.fn(), message: vi.fn(), stop: vi.fn(), error: vi.fn() })),
 }))
 vi.mock('../../src/config', () => ({ resolveConfig: vi.fn() }))
+vi.mock('../../src/extensions/amiibo', async original => ({
+  ...await original<typeof import('../../src/extensions/amiibo')>(),
+  resolveAmiibo: vi.fn(),
+}))
 vi.mock('../../src/extensions/save-management', async original => ({
   ...await original<typeof import('../../src/extensions/save-management')>(),
   resolveSaveManagement: vi.fn(),
@@ -76,6 +80,7 @@ beforeEach(() => {
   vi.mocked(resolveSaltyNx).mockResolvedValue({ module: 'salty-nx' } as Awaited<ReturnType<typeof resolveSaltyNx>>)
   vi.mocked(resolvePerformanceMonitoring).mockResolvedValue({ module: 'status-monitor' } as Awaited<ReturnType<typeof resolvePerformanceMonitoring>>)
   vi.mocked(resolveFileManagement).mockResolvedValue({ module: 'nx-shell' } as Awaited<ReturnType<typeof resolveFileManagement>>)
+  vi.mocked(resolveAmiibo).mockResolvedValue({ module: 'emuiibo' } as Awaited<ReturnType<typeof resolveAmiibo>>)
   vi.mocked(buildPack).mockResolvedValue()
 })
 
@@ -100,6 +105,7 @@ describe('runBuildCommand', () => {
     expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
     expect(resolveSaltyNx).not.toHaveBeenCalled()
     expect(resolveStreaming).not.toHaveBeenCalled()
+    expect(resolveAmiibo).not.toHaveBeenCalled()
     expect(p.outro).toHaveBeenCalled()
   })
 
@@ -118,6 +124,15 @@ describe('runBuildCommand', () => {
       expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
       expect(resolveSaltyNx).not.toHaveBeenCalled()
       return 'status-monitor'
+    }).mockImplementationOnce(async () => {
+      expect(resolveSaveManagement).not.toHaveBeenCalled()
+      expect(resolveCheats).not.toHaveBeenCalled()
+      expect(resolveFileManagement).not.toHaveBeenCalled()
+      expect(resolvePerformanceTuning).not.toHaveBeenCalled()
+      expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
+      expect(resolveStreaming).not.toHaveBeenCalled()
+      expect(resolveAmiibo).not.toHaveBeenCalled()
+      return 'emuiibo'
     })
     vi.mocked(p.multiselect).mockImplementationOnce(async () => {
       expect(resolveSaveManagement).not.toHaveBeenCalled()
@@ -146,7 +161,7 @@ describe('runBuildCommand', () => {
 
     await runBuildCommand({})
 
-    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?', 'include file management?', 'include performance tuning?', 'include performance monitoring?', 'include streaming?'])
+    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?', 'include file management?', 'include performance tuning?', 'include performance monitoring?', 'include streaming?', 'include amiibo emulation?'])
     expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       initialValues: ['edizon-overlay'],
       options: [
@@ -173,7 +188,7 @@ describe('runBuildCommand', () => {
         { value: 'fizeau', label: 'Fizeau', hint: 'https://github.com/averne/Fizeau' },
       ],
     }))
-    expect(p.select).toHaveBeenLastCalledWith(expect.objectContaining({
+    expect(p.select).toHaveBeenCalledWith(expect.objectContaining({
       message: 'select performance monitor',
       initialValue: 'status-monitor',
       options: [
@@ -196,6 +211,12 @@ describe('runBuildCommand', () => {
       ],
     }))
     expect(resolveStreaming).toHaveBeenCalledWith(['moonlight-switch', 'sys-dvr'], expect.any(Object))
+    expect(p.select).toHaveBeenLastCalledWith(expect.objectContaining({
+      message: 'select amiibo tool',
+      initialValue: 'emuiibo',
+      options: [{ value: 'emuiibo', label: 'Emuiibo', hint: 'https://github.com/XorTroll/emuiibo' }],
+    }))
+    expect(resolveAmiibo).toHaveBeenCalledWith('emuiibo', expect.any(Object))
   })
 
   it.each(['confirm', 'multiselect'] as const)('cancels from the cheats %s prompt before resolving any selected extension', async (prompt) => {
@@ -229,6 +250,7 @@ describe('runBuildCommand', () => {
     expect(p.multiselect).not.toHaveBeenCalled()
     expect(resolveCheats).toHaveBeenCalledWith([], expect.any(Object))
     expect(resolveFileManagement).not.toHaveBeenCalled()
+    expect(resolveAmiibo).not.toHaveBeenCalled()
     expect(p.outro).toHaveBeenCalled()
   })
 
@@ -365,6 +387,26 @@ describe('runBuildCommand', () => {
     expect(resolvePerformanceTuning).not.toHaveBeenCalled()
     expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
     expect(resolveStreaming).not.toHaveBeenCalled()
+    expect(p.outro).not.toHaveBeenCalled()
+    expect(process.exitCode).toBe(130)
+    process.exitCode = 0
+  })
+
+  it.each(['confirm', 'select'] as const)('cancels from the amiibo %s prompt before resolving extensions', async (prompt) => {
+    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
+    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv').mockResolvedValueOnce(Symbol('cancel'))
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      await task!.onCoreReady!()
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveSaveManagement).not.toHaveBeenCalled()
+    expect(resolveCheats).not.toHaveBeenCalled()
+    expect(resolvePerformanceTuning).not.toHaveBeenCalled()
+    expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
+    expect(resolveStreaming).not.toHaveBeenCalled()
+    expect(resolveAmiibo).not.toHaveBeenCalled()
     expect(p.outro).not.toHaveBeenCalled()
     expect(process.exitCode).toBe(130)
     process.exitCode = 0

@@ -28,6 +28,7 @@ export const EXTENSION_REPO_CONFIG = {
   'checkpoint': 'BernardoGiordano/Checkpoint',
   'edizon-overlay': 'proferabg/EdiZon-Overlay',
   'edizon-se': 'tomvita/EdiZon-SE',
+  'emuiibo': 'XorTroll/emuiibo',
   'fizeau': 'averne/Fizeau',
   'fps-locker': 'masagrator/FPSLocker',
   'horizon-oc': 'Horizon-OC/Horizon-OC',
