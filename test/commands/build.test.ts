@@ -12,14 +12,14 @@ import { resolveAmiibo, resolveCheats, resolveControllerSupport, resolveFileMana
 import { resolveSaltyNx } from '../../src/extensions/dependencies'
 import { resolveFirmware } from '../../src/firmware'
 
-vi.mock('@clack/prompts', () => ({
+vi.mock('@clack/prompts', async original => ({
+  ...await original<typeof import('@clack/prompts')>(),
   intro: vi.fn(),
   select: vi.fn(),
   multiselect: vi.fn(),
   confirm: vi.fn(),
   cancel: vi.fn(),
   outro: vi.fn(),
-  isCancel: (value: unknown) => typeof value === 'symbol',
   spinner: vi.fn(() => ({ start: vi.fn(), message: vi.fn(), stop: vi.fn(), error: vi.fn() })),
 }))
 vi.mock('../../src/config', () => ({ resolveConfig: vi.fn() }))
@@ -148,7 +148,7 @@ describe('runBuildCommand', () => {
 
   it('cancels the build when the firmware prompt is cancelled', async () => {
     vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', ext: false, firmware: true })
-    vi.mocked(p.confirm).mockResolvedValueOnce(Symbol('cancel'))
+    vi.mocked(p.confirm).mockResolvedValueOnce(p.CANCEL_SYMBOL)
     vi.mocked(buildPack).mockImplementationOnce(async (options) => {
       await options.onExtensionsReady!()
     })
@@ -323,8 +323,8 @@ describe('runBuildCommand', () => {
   })
 
   it.each(['categories', ...categories])('cancels from %s before resolving optional releases', async (category) => {
-    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValue(Symbol('cancel'))
-    vi.mocked(p.multiselect).mockResolvedValueOnce(category === 'categories' ? Symbol('cancel') : [category]).mockResolvedValue(Symbol('cancel'))
+    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValue(p.CANCEL_SYMBOL)
+    vi.mocked(p.multiselect).mockResolvedValueOnce(category === 'categories' ? p.CANCEL_SYMBOL : [category]).mockResolvedValue(p.CANCEL_SYMBOL)
     vi.mocked(buildPack).mockImplementationOnce(async (task) => {
       await task.onCoreReady!()
     })
@@ -345,7 +345,7 @@ describe('runBuildCommand', () => {
   })
 
   it('does not resolve earlier choices when a later category is cancelled', async () => {
-    vi.mocked(p.multiselect).mockResolvedValueOnce(['save-management', 'file-management', 'cheats']).mockResolvedValueOnce(Symbol('cancel'))
+    vi.mocked(p.multiselect).mockResolvedValueOnce(['save-management', 'file-management', 'cheats']).mockResolvedValueOnce(p.CANCEL_SYMBOL)
     vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv').mockResolvedValueOnce('nx-shell')
     vi.mocked(buildPack).mockImplementationOnce(async (task) => {
       await task.onCoreReady!()
