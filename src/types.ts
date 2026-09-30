@@ -5,6 +5,7 @@ export interface CommandOptions {
   version?: string
   output?: string
   ext?: boolean
+  firmware?: boolean
   pack?: boolean
 }
 

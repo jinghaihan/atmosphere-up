@@ -6,6 +6,12 @@ import { resolveConfig } from '../src/config'
 const cwd = resolve(fileURLToPath(new URL('..', import.meta.url)))
 
 describe('resolveConfig', () => {
+  it('enables firmware prompts by default and allows the CLI to disable them', async () => {
+    const directory = resolve(cwd, 'test/fixtures/empty')
+    expect((await resolveConfig({ cwd: directory, firmware: undefined })).firmware).toBe(true)
+    expect((await resolveConfig({ cwd: directory, firmware: false })).firmware).toBe(false)
+  })
+
   it('uses the repository output configuration', async () => {
     expect(await resolveConfig({ cwd, output: undefined })).toMatchObject({ cwd, output: resolve(cwd, 'output') })
   })

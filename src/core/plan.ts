@@ -6,11 +6,12 @@ import { getRelease } from '../download'
 import { selectAsset } from '../utils'
 
 export interface Resource {
-  module: keyof typeof CORE_REPO_CONFIG | keyof typeof EXTENSION_REPO_CONFIG
+  module: keyof typeof CORE_REPO_CONFIG | keyof typeof EXTENSION_REPO_CONFIG | 'firmware'
   release: string
   page: string
   asset: ReleaseAsset
   target?: string
+  directory?: string
   paths?: string[]
   configure?: (directory: string) => Promise<void>
 }

@@ -17,6 +17,7 @@ export interface BuildOptions extends TaskOptions {
   replace?: boolean
   pack?: boolean
   onCoreReady?: () => Promise<Resource[]>
+  onExtensionsReady?: () => Promise<Resource[]>
 }
 
 export async function buildPack({ bundle, resources, directory, replace = false, pack = false, ...task }: BuildOptions): Promise<void> {
@@ -53,6 +54,12 @@ export async function buildPack({ bundle, resources, directory, replace = false,
 
       signal?.throwIfAborted()
       downloads.push(...await installResources(extensions, staging, task))
+
+      signal?.throwIfAborted()
+      const firmware = await task.onExtensionsReady?.() ?? []
+
+      signal?.throwIfAborted()
+      downloads.push(...await installResources(firmware, staging, task))
 
       signal?.throwIfAborted()
       onProgress?.('writing pack manifest')

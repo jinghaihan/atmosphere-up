@@ -10,6 +10,7 @@ import { resolveConfig } from '../../src/config'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../../src/core'
 import { resolveAmiibo, resolveCheats, resolveControllerSupport, resolveFileManagement, resolvePerformanceMonitoring, resolvePerformanceTuning, resolveSaveManagement, resolveStreaming } from '../../src/extensions'
 import { resolveSaltyNx } from '../../src/extensions/dependencies'
+import { resolveFirmware } from '../../src/firmware'
 
 vi.mock('@clack/prompts', () => ({
   intro: vi.fn(),
@@ -22,6 +23,10 @@ vi.mock('@clack/prompts', () => ({
   spinner: vi.fn(() => ({ start: vi.fn(), message: vi.fn(), stop: vi.fn(), error: vi.fn() })),
 }))
 vi.mock('../../src/config', () => ({ resolveConfig: vi.fn() }))
+vi.mock('../../src/firmware', async original => ({
+  ...await original<typeof import('../../src/firmware')>(),
+  resolveFirmware: vi.fn(),
+}))
 vi.mock('../../src/extensions/amiibo', async original => ({
   ...await original<typeof import('../../src/extensions/amiibo')>(),
   resolveAmiibo: vi.fn(),
@@ -71,7 +76,7 @@ beforeEach(() => {
   vi.mocked(p.multiselect).mockReset()
   vi.mocked(buildPack).mockReset()
   process.exitCode = 0
-  vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', ext: true, pack: false })
+  vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', ext: true, firmware: true, pack: false })
   vi.mocked(p.select).mockResolvedValue(bundle)
   vi.mocked(p.confirm).mockResolvedValue(false)
   vi.mocked(p.multiselect).mockResolvedValue([])
@@ -87,9 +92,74 @@ beforeEach(() => {
   vi.mocked(resolveFileManagement).mockResolvedValue([{ module: 'nx-shell' }] as Awaited<ReturnType<typeof resolveFileManagement>>)
   vi.mocked(resolveAmiibo).mockResolvedValue([{ module: 'emuiibo' }] as Awaited<ReturnType<typeof resolveAmiibo>>)
   vi.mocked(buildPack).mockResolvedValue()
+  vi.mocked(resolveFirmware).mockResolvedValue({ module: 'firmware' } as Awaited<ReturnType<typeof resolveFirmware>>)
 })
 
 describe('runBuildCommand', () => {
+  it.each([false, true])('offers the selected firmware after components are installed with ext=%s', async (ext) => {
+    const selected = ext ? bundle : getBundles().find(bundle => bundle.labels.hos === '22.0.0')!
+    let componentsInstalled = false
+    vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', ext, firmware: true, version: ext ? undefined : selected.labels.hos })
+    vi.mocked(p.confirm).mockImplementation(async (options) => {
+      if (options.message.startsWith('download firmware')) {
+        expect(componentsInstalled).toBe(true)
+        return true
+      }
+
+      return false
+    })
+    vi.mocked(buildPack).mockImplementationOnce(async (options) => {
+      await options.onCoreReady?.()
+      componentsInstalled = true
+      expect(await options.onExtensionsReady!()).toEqual([{ module: 'firmware' }])
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveFirmware).toHaveBeenCalledWith(selected.labels.hos, expect.any(Object))
+    expect(p.confirm).toHaveBeenLastCalledWith(expect.objectContaining({ message: `download firmware for HOS ${selected.labels.hos}?` }))
+    expect(p.select).toHaveBeenCalledTimes(ext ? 1 : 0)
+  })
+
+  it('skips firmware prompts and releases when firmware is disabled', async () => {
+    vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', ext: false, firmware: false })
+    vi.mocked(buildPack).mockImplementationOnce(async (options) => {
+      expect(options.onExtensionsReady).toBeUndefined()
+    })
+
+    await runBuildCommand({ firmware: false })
+
+    expect(p.confirm).not.toHaveBeenCalled()
+    expect(resolveFirmware).not.toHaveBeenCalled()
+  })
+
+  it('finishes without firmware when the download is declined', async () => {
+    vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', ext: false, firmware: true })
+    vi.mocked(buildPack).mockImplementationOnce(async (options) => {
+      expect(await options.onExtensionsReady!()).toEqual([])
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveFirmware).not.toHaveBeenCalled()
+    expect(p.outro).toHaveBeenCalled()
+  })
+
+  it('cancels the build when the firmware prompt is cancelled', async () => {
+    vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', ext: false, firmware: true })
+    vi.mocked(p.confirm).mockResolvedValueOnce(Symbol('cancel'))
+    vi.mocked(buildPack).mockImplementationOnce(async (options) => {
+      await options.onExtensionsReady!()
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveFirmware).not.toHaveBeenCalled()
+    expect(p.outro).not.toHaveBeenCalled()
+    expect(process.exitCode).toBe(130)
+    process.exitCode = 0
+  })
+
   it.each([false, true])('skips all extension prompts and releases with ext disabled and pack=%s', async (pack) => {
     vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', ext: false, pack })
     vi.mocked(buildPack).mockImplementationOnce(async (task) => {

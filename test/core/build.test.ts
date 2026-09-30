@@ -28,7 +28,7 @@ afterEach(async () => {
 })
 
 describe('buildPack', () => {
-  it('finishes the core settings before selecting extensions and compresses only after installing them', async () => {
+  it('selects firmware after installing extensions and compresses only after installing firmware', async () => {
     const extension = {
       ...resource,
       module: 'jksv',
@@ -43,10 +43,19 @@ describe('buildPack', () => {
     } as Resource
     const data = new TextEncoder().encode('save manager')
     const fileManagerData = new TextEncoder().encode('file manager')
+    const firmwareArchive = new AdmZip()
+    firmwareArchive.addFile('system.cnmt.nca', Buffer.from('firmware'))
+    const firmware = {
+      ...resource,
+      module: 'firmware',
+      asset: { ...resource.asset, name: `Firmware.${bundle.labels.hos}.zip` },
+      directory: `firmware/${bundle.labels.hos}`,
+    } as Resource
     vi.mocked(downloadAsset)
       .mockResolvedValueOnce(await readFile(join(cwd, 'test/fixtures/core.zip')))
       .mockResolvedValueOnce(data)
       .mockResolvedValueOnce(fileManagerData)
+      .mockResolvedValueOnce(firmwareArchive.toBuffer())
     const onProgress = vi.fn()
 
     await buildPack({ bundle, resources: [resource], directory: `${directory}.zip`, pack: true, onProgress, onCoreReady: async () => {
@@ -55,14 +64,38 @@ describe('buildPack', () => {
       const [settings] = await glob('.atmosphere-up-*/pack/config/ultrahand/config.ini', { cwd: resolve(directory, '..'), dot: true, absolute: true })
       expect(await readFile(settings, 'utf8')).toContain('L+DDOWN')
       return [extension, fileManager]
+    }, onExtensionsReady: async () => {
+      expect(downloadAsset).toHaveBeenCalledTimes(3)
+      expect(onProgress.mock.lastCall).toEqual(['installing nx-shell [2/2]'])
+      return [firmware]
     } })
 
     const archive = new AdmZip(`${directory}.zip`)
     expect(archive.readFile(extension.target!)).toEqual(Buffer.from(data))
     expect(archive.readFile(fileManager.target!)).toEqual(Buffer.from(fileManagerData))
-    expect(JSON.parse(archive.readAsText('pack-manifest.json')).resources.map((item: Resource) => item.module)).toEqual(['ultrahand', 'jksv', 'nx-shell'])
+    expect(archive.readAsText(`firmware/${bundle.labels.hos}/system.cnmt.nca`)).toBe('firmware')
+    expect(archive.getEntry('system.cnmt.nca')).toBeNull()
+    expect(JSON.parse(archive.readAsText('pack-manifest.json')).resources.map((item: Resource) => item.module)).toEqual(['ultrahand', 'jksv', 'nx-shell', 'firmware'])
     const messages = onProgress.mock.calls.map(([message]) => message)
-    expect(messages.indexOf('compressing pack into ZIP')).toBeGreaterThan(messages.indexOf('installing nx-shell [2/2]'))
+    expect(messages.indexOf('compressing pack into ZIP')).toBeGreaterThan(messages.indexOf('extracting firmware [1/1]'))
+  })
+
+  it('cleans up the assembled components when firmware selection is cancelled', async () => {
+    vi.mocked(downloadAsset).mockResolvedValueOnce(await readFile(join(cwd, 'test/fixtures/core.zip')))
+    const controller = new AbortController()
+
+    await expect(buildPack({
+      bundle,
+      resources: [resource],
+      directory,
+      signal: controller.signal,
+      onExtensionsReady: async () => {
+        controller.abort()
+        throw controller.signal.reason
+      },
+    })).rejects.toThrow('aborted')
+
+    expect(await glob(['.atmosphere-up-*', 'build'], { cwd: resolve(directory, '..'), dot: true, onlyFiles: false })).toEqual([])
   })
 
   it('cleans up the assembled core when the extension prompts are cancelled', async () => {

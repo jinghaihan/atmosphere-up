@@ -27,3 +27,18 @@ describe('cli extension options', () => {
     expect(vi.mocked(runBuildCommand).mock.calls[0][0].ext).toBe(ext)
   })
 })
+
+describe('cli firmware options', () => {
+  it.each([
+    [[], undefined],
+    [['--firmware'], true],
+    [['--no-firmware'], false],
+  ])('parses %j as firmware=%s', async (flags, firmware) => {
+    vi.resetModules()
+    process.argv.splice(0, process.argv.length, 'node', 'atmosphere-up', ...flags)
+
+    await import('../src/cli')
+
+    expect(vi.mocked(runBuildCommand).mock.calls[0][0].firmware).toBe(firmware)
+  })
+})

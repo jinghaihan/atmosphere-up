@@ -8,7 +8,10 @@ export const VERSION = pkg.version
 export const DEFAULT_OPTIONS: Partial<Options> = {
   ext: true,
   pack: false,
+  firmware: true,
 }
+
+export const FIRMWARE_REPO = 'THZoria/NX_Firmware'
 
 /// keep-sorted
 export const CORE_REPO_CONFIG = {

@@ -28,7 +28,7 @@ export async function installResources(resources: Resource[], directory: string,
     }
     else {
       onProgress?.(`extracting ${label}`)
-      await extractArchive(data, directory, resource.paths)
+      await extractArchive(data, join(directory, resource.directory || ''), resource.paths)
     }
 
     signal?.throwIfAborted()

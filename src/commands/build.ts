@@ -7,6 +7,7 @@ import { resolveConfig } from '../config'
 import { NAME, VERSION } from '../constants'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../core'
 import { promptExtensions, resolveExtensions } from '../extensions'
+import { promptFirmware, resolveFirmware } from '../firmware'
 import { getOutputPath } from '../utils'
 
 export async function runBuildCommand(options: CommandOptions): Promise<void> {
@@ -88,6 +89,19 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
             atmosphere: bundle.labels.atmosphere,
             hos: bundle.labels.hos,
           })
+        }
+        : undefined,
+      onExtensionsReady: config.firmware
+        ? async () => {
+          spinner.stop(c.green('components assembled'))
+
+          const enabled = await promptFirmware(controller, bundle.labels.hos)
+
+          spinner.start(c.cyan(enabled ? 'resolving firmware' : 'finalizing pack'))
+          if (process.stdin.isTTY)
+            process.stdin.setRawMode(false)
+
+          return enabled ? [await resolveFirmware(bundle.labels.hos, task)] : []
         }
         : undefined,
     })
