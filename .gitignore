@@ -15,6 +15,7 @@ dev-dist
 /output/
 /atmosphere-*-hos-*/
 .atmosphere-up-*/
+/test/fixtures/.generated/
 *.local
 
 # Editor directories and files

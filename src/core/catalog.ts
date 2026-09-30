@@ -17,7 +17,3 @@ export function getBundlePath(bundle: Bundle): string {
     return path
   throw new Error('Bundled sigpatch resources are missing. Reinstall atmosphere-up.')
 }
-
-export function getOutputName(bundle: Bundle): string {
-  return `atmosphere-${bundle.labels.atmosphere}-hos-${bundle.labels.hos}`
-}
