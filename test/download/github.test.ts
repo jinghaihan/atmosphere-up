@@ -1,7 +1,10 @@
 import type { Release, ReleaseAsset } from '../../src/types'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { downloadAsset, getRelease } from '../../src/download'
+import { resolveGithubToken } from '../../src/download/auth'
 import { selectAsset, sha256 } from '../../src/utils'
+
+vi.mock('../../src/download/auth', () => ({ resolveGithubToken: vi.fn().mockResolvedValue(undefined) }))
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -18,8 +21,8 @@ describe('selectAsset', () => {
 })
 
 describe('getRelease', () => {
-  it('authenticates using GITHUB_TOKEN from the environment', async () => {
-    vi.stubEnv('GITHUB_TOKEN', 'test-token')
+  it('passes the resolved credential to Octokit', async () => {
+    vi.mocked(resolveGithubToken).mockResolvedValueOnce('test-token')
     vi.resetModules()
     const { getRelease } = await import('../../src/download')
     const fetch = vi.fn().mockResolvedValue(Response.json({ tag_name: 'v1', assets: [] }))

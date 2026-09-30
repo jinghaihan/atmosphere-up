@@ -7,6 +7,7 @@ export default defineConfig({
       match: [
         '@octokit/rest',
         'adm-zip',
+        'tinyexec',
         'tinyglobby',
         'verkit',
       ],

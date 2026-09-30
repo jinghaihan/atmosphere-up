@@ -62,6 +62,7 @@
     "typescript": "catalog:dev",
     "@octokit/rest": "catalog:inlined",
     "adm-zip": "catalog:inlined",
+    "tinyexec": "catalog:inlined",
     "tinyglobby": "catalog:inlined",
     "verkit": "catalog:inlined",
     "@octohash/eslint-config": "catalog:lint",
@@ -93,6 +94,7 @@
     "fdir": "6.5.0",
     "json-with-bigint": "3.5.12",
     "picomatch": "4.0.4",
+    "tinyexec": "1.3.1",
     "tinyglobby": "0.2.17",
     "universal-user-agent": "7.0.3",
     "verkit": "0.5.0"

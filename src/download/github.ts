@@ -1,10 +1,9 @@
 import type { ReleaseAsset } from '../types'
-import process from 'node:process'
 import { Octokit } from '@octokit/rest'
 import { sha256 } from '../utils'
+import { resolveGithubToken } from './auth'
 
-const github = new Octokit({ auth: process.env.GITHUB_TOKEN })
-github.log.error = () => {}
+let github: Promise<Octokit> | undefined
 
 interface DownloadOptions {
   signal?: AbortSignal
@@ -12,6 +11,8 @@ interface DownloadOptions {
 }
 
 export async function getRelease(repository: string, tag?: string, signal?: AbortSignal) {
+  signal?.throwIfAborted()
+  const github = await getGithub()
   signal?.throwIfAborted()
   const [owner, repo] = repository.split('/')
   const response = tag
@@ -21,6 +22,8 @@ export async function getRelease(repository: string, tag?: string, signal?: Abor
 }
 
 export async function downloadAsset(asset: ReleaseAsset, { signal, onProgress }: DownloadOptions = {}): Promise<Uint8Array> {
+  signal?.throwIfAborted()
+  const github = await getGithub()
   signal?.throwIfAborted()
   const response = await github.request({
     method: 'GET',
@@ -44,4 +47,13 @@ export async function downloadAsset(asset: ReleaseAsset, { signal, onProgress }:
   if (asset.digest?.startsWith('sha256:') && asset.digest.slice(7) !== sha256(data))
     throw new Error(`SHA-256 mismatch for ${asset.name}.`)
   return data
+}
+
+function getGithub(): Promise<Octokit> {
+  github ??= resolveGithubToken().then((auth) => {
+    const client = new Octokit({ auth })
+    client.log.error = () => {}
+    return client
+  })
+  return github
 }

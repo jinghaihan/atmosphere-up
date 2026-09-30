@@ -76,7 +76,10 @@ Relative output paths resolve from that working directory.
 
 Release files download from their public GitHub URLs, while version queries use
 the GitHub API. Authentication automatically reads `GITHUB_TOKEN` from the
-environment. Set this variable to increase the API rate limit.
+environment, or reuses an existing GitHub CLI login through
+`gh auth token --hostname github.com`. No environment variable is needed when
+`gh` is already logged in. Without either credential source, requests are
+anonymous and use GitHub's lower API rate limit.
 
 ## License
 
