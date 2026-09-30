@@ -56,6 +56,9 @@ export async function resolveResources(bundle: Bundle, { signal, onProgress }: T
       case 'lockpick-rcm':
         resources.push(resource(/^Lockpick_RCM-[\d.]+_Hekate\.zip$/))
         break
+      case 'ovl-sysmodules':
+        resources.push(resource(/^ovlSysmodules\.ovl$/, 'switch/.overlays/ovlSysmodules.ovl'))
+        break
       case 'sys-patch':
         resources.push(resource(/^sys-patch.*\.zip$/))
         break

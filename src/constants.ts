@@ -16,6 +16,7 @@ export const CORE_REPO_CONFIG = {
   'dbi': 'rashevskyv/dbi',
   'hekate': 'CTCaer/hekate',
   'lockpick-rcm': 'impeeza/Lockpick_RCMDecScots',
+  'ovl-sysmodules': 'ppkantorski/ovl-sysmodules',
   'sys-patch': 'impeeza/sys-patch',
   'ultrahand': 'ppkantorski/Ultrahand-Overlay',
 } as const

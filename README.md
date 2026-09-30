@@ -12,7 +12,8 @@ npx atmosphere-up
 ```
 
 Atmosphere and sigpatches match the selected HOS version. Hekate, DBI, Lockpick
-RCM, sys-patch, and Ultrahand use their latest releases. Firmware files are not included.
+RCM, Ovl Sysmodules, sys-patch, and Ultrahand use their latest releases. Firmware
+files are not included.
 
 ### Core components
 
@@ -24,6 +25,7 @@ RCM, sys-patch, and Ultrahand use their latest releases. Firmware files are not 
 | Lockpick RCM | [impeeza/Lockpick_RCMDecScots](https://github.com/impeeza/Lockpick_RCMDecScots) | Console key export from Hekate's Payloads menu |
 | Sys Patch | [impeeza/sys-patch](https://github.com/impeeza/sys-patch) | System patching service and overlay |
 | Ultrahand | [ppkantorski/Ultrahand-Overlay](https://github.com/ppkantorski/Ultrahand-Overlay) | Overlay menu and nx-ovlloader |
+| Ovl Sysmodules | [ppkantorski/ovl-sysmodules](https://github.com/ppkantorski/ovl-sysmodules) | Background module status, memory usage, startup settings, and controls for supported modules |
 | Sigpatches | [Supported versions](./assets/sigpatches/README.md) | Patches for the selected HOS and Atmosphere versions |
 
 Reboot to Payload returns to Hekate. Each pack includes a manifest listing its
