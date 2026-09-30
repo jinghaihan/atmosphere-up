@@ -3,7 +3,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { downloadAsset, getRelease } from '../../src/download'
 import { selectAsset, sha256 } from '../../src/utils'
 
-afterEach(() => vi.unstubAllGlobals())
+afterEach(() => {
+  vi.unstubAllGlobals()
+  vi.unstubAllEnvs()
+})
 
 describe('selectAsset', () => {
   it('rejects missing or ambiguous release assets', () => {
@@ -15,6 +18,16 @@ describe('selectAsset', () => {
 })
 
 describe('getRelease', () => {
+  it('authenticates using GITHUB_TOKEN from the environment', async () => {
+    vi.stubEnv('GITHUB_TOKEN', 'test-token')
+    vi.resetModules()
+    const { getRelease } = await import('../../src/download')
+    const fetch = vi.fn().mockResolvedValue(Response.json({ tag_name: 'v1', assets: [] }))
+    vi.stubGlobal('fetch', fetch)
+    await getRelease('example/core')
+    expect(fetch.mock.calls[0][1].headers.authorization).toBe('token test-token')
+  })
+
   it('resolves the exact prerelease tag instead of latest', async () => {
     const fetch = vi.fn().mockResolvedValue(Response.json({ tag_name: '1.6.1-prerelease', assets: [] }))
     vi.stubGlobal('fetch', fetch)
@@ -37,18 +50,19 @@ describe('downloadAsset', () => {
     const fetch = vi.fn().mockResolvedValue(new Response(stream))
     vi.stubGlobal('fetch', fetch)
     const onProgress = vi.fn(() => controller.abort())
-    const asset = { id: 1, name: 'core.zip', size: 8 } as ReleaseAsset
-    await expect(downloadAsset('example/core', asset, { signal: controller.signal, onProgress })).rejects.toThrow('aborted')
+    const asset = { id: 1, name: 'core.zip', size: 8, browser_download_url: 'https://github.com/example/core/releases/download/v1/core.zip' } as ReleaseAsset
+    await expect(downloadAsset(asset, { signal: controller.signal, onProgress })).rejects.toThrow('aborted')
     expect(onProgress).toHaveBeenCalledWith(4)
+    expect(fetch.mock.calls[0][0]).toBe(asset.browser_download_url)
     expect(fetch.mock.calls[0][1].signal).toBe(controller.signal)
   })
 
   it('rejects an asset whose size or digest changed', async () => {
     vi.stubGlobal('fetch', vi.fn().mockImplementation(() => Promise.resolve(new Response('test'))))
     const asset = { id: 1, name: 'core.zip', size: 5, browser_download_url: 'https://github.com/example/core/releases/download/v1/core.zip' } as ReleaseAsset
-    await expect(downloadAsset('example/core', asset)).rejects.toThrow('Size mismatch')
-    await expect(downloadAsset('example/core', { ...asset, size: 4, digest: 'sha256:invalid' })).rejects.toThrow('SHA-256 mismatch')
+    await expect(downloadAsset(asset)).rejects.toThrow('Size mismatch')
+    await expect(downloadAsset({ ...asset, size: 4, digest: 'sha256:invalid' })).rejects.toThrow('SHA-256 mismatch')
     const data = new TextEncoder().encode('test')
-    expect(await downloadAsset('example/core', { ...asset, size: 4, digest: `sha256:${sha256(data)}` })).toEqual(data)
+    expect(await downloadAsset({ ...asset, size: 4, digest: `sha256:${sha256(data)}` })).toEqual(data)
   })
 })

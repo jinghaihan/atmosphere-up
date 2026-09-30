@@ -3,7 +3,7 @@ import type { Bundle } from './catalog'
 import type { Resource } from './plan'
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'pathe'
-import { HEKATE_BOOT_CONFIG, MODULE_REPO_CONFIG, ULTRAHAND_KEY_COMBO } from '../constants'
+import { HEKATE_BOOT_CONFIG, ULTRAHAND_KEY_COMBO } from '../constants'
 import { downloadAsset } from '../download'
 import { formatDownloadProgress, sha256 } from '../utils'
 import { extractArchive } from './archive'
@@ -22,7 +22,7 @@ export async function buildPack(bundle: Bundle, resources: Resource[], directory
       signal?.throwIfAborted()
       const label = `${resource.module} [${index + 1}/${resources.length}]`
       onProgress?.(`downloading ${label} · ${formatDownloadProgress(0, resource.asset.size)}`)
-      const data = await downloadAsset(MODULE_REPO_CONFIG[resource.module], resource.asset, {
+      const data = await downloadAsset(resource.asset, {
         signal,
         onProgress: received => onProgress?.(`downloading ${label} · ${formatDownloadProgress(received, resource.asset.size)}`),
       })

@@ -27,6 +27,6 @@ catch (error) {
 }
 
 function handleError(error: unknown): void {
-  p.cancel(`build failed: ${error instanceof Error ? error.message : String(error)}`)
+  p.note(error instanceof Error ? error.message : String(error), 'build failed')
   process.exitCode = 1
 }

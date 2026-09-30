@@ -74,7 +74,9 @@ configuration: `--pack` enables ZIP output and `--no-pack` enables directory
 output. Use `--cwd <directory>` to select a different working directory and config.
 Relative output paths resolve from that working directory.
 
-Set `GITHUB_TOKEN` when authenticated GitHub requests are needed.
+Release files download from their public GitHub URLs, while version queries use
+the GitHub API. Authentication automatically reads `GITHUB_TOKEN` from the
+environment. Set this variable to increase the API rate limit.
 
 ## License
 

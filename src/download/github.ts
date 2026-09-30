@@ -4,6 +4,7 @@ import { Octokit } from '@octokit/rest'
 import { sha256 } from '../utils'
 
 const github = new Octokit({ auth: process.env.GITHUB_TOKEN })
+github.log.error = () => {}
 
 interface DownloadOptions {
   signal?: AbortSignal
@@ -19,13 +20,11 @@ export async function getRelease(repository: string, tag?: string, signal?: Abor
   return response.data
 }
 
-export async function downloadAsset(repository: string, asset: ReleaseAsset, { signal, onProgress }: DownloadOptions = {}): Promise<Uint8Array> {
+export async function downloadAsset(asset: ReleaseAsset, { signal, onProgress }: DownloadOptions = {}): Promise<Uint8Array> {
   signal?.throwIfAborted()
-  const [owner, repo] = repository.split('/')
-  const response = await github.rest.repos.getReleaseAsset({
-    owner,
-    repo,
-    asset_id: asset.id,
+  const response = await github.request({
+    method: 'GET',
+    url: asset.browser_download_url,
     headers: { accept: 'application/octet-stream' },
     request: { parseSuccessResponseBody: false, signal },
   })
