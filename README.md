@@ -7,25 +7,9 @@
 
 ## Usage
 
-Requires Node.js 20.18.1 or newer. Select a supported HOS version from the prompt:
-
 ```sh
 npx atmosphere-up
 ```
-
-`output` is a parent directory. For HOS 21.2.0, the CLI creates
-`output/atmosphere-1.10.2-hos-21.2.0/` or
-`output/atmosphere-1.10.2-hos-21.2.0.zip`. Without an output setting, the named
-pack is created in the current working directory. ZIP contents start at the SD
-card root, with no enclosing package directory.
-
-If the destination already exists, the CLI asks before replacing it. Refusing
-or cancelling stops the build. The existing pack remains in place until the new
-pack has been assembled.
-
-Progress shows the current component, downloaded byte count,
-extraction, configuration, and ZIP compression. Press Ctrl+C to cancel an active
-build. Downloads stop and the temporary build directory is removed before exit.
 
 Atmosphere and sigpatches match the selected HOS version. Hekate, DBI, Lockpick
 RCM, sys-patch, and Ultrahand use their latest releases. Firmware files are not included.
