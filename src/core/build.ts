@@ -2,7 +2,7 @@ import type { Bundle } from './catalog'
 import type { Resource } from './plan'
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'pathe'
-import { HEKATE_BOOT_CONFIG, MODULE_REPO_CONFIG } from '../constants'
+import { HEKATE_BOOT_CONFIG, MODULE_REPO_CONFIG, ULTRAHAND_KEY_COMBO } from '../constants'
 import { downloadAsset } from '../download'
 import { sha256 } from '../utils'
 import { extractArchive } from './archive'
@@ -29,6 +29,11 @@ export async function buildPack(bundle: Bundle, resources: Resource[], directory
     // Return to Hekate after a reboot so package3 boot keeps using patches.ini.
     await copyFile(join(staging, 'payload.bin'), join(staging, 'atmosphere/reboot_payload.bin'))
     await writeFile(join(staging, 'bootloader/hekate_ipl.ini'), HEKATE_BOOT_CONFIG)
+    for (const name of ['ultrahand', 'tesla']) {
+      const directory = join(staging, 'config', name)
+      await mkdir(directory, { recursive: true })
+      await writeFile(join(directory, 'config.ini'), `[${name}]\nkey_combo=${ULTRAHAND_KEY_COMBO}\n`)
+    }
     await writeFile(join(staging, 'pack-manifest.json'), `${JSON.stringify({
       hos: bundle.labels.hos,
       atmosphere: bundle.labels.atmosphere,

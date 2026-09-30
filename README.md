@@ -45,6 +45,10 @@ Reboot to Payload returns to Hekate. CFW boot entries use `pkg3` and
 `kip1patch=nosigchk`. A `pack-manifest.json` records the selected versions,
 sources, and downloaded file hashes.
 
+Ultrahand opens with **L + D-pad Down** (`L+DDOWN`). The pack writes this default
+to both `config/ultrahand/config.ini` and the Tesla-compatible
+`config/tesla/config.ini`.
+
 Pack assembly has been verified locally; boot compatibility has not been tested
 on Switch hardware.
 
