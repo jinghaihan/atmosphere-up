@@ -26,6 +26,10 @@ If the destination already exists, the CLI asks before replacing it. Refusing
 or cancelling stops the build. The existing pack remains in place until the new
 pack has been assembled.
 
+Progress shows the current component, downloaded byte count,
+extraction, configuration, and ZIP compression. Press Ctrl+C to cancel an active
+build. Downloads stop and the temporary build directory is removed before exit.
+
 The bundled sigpatch catalog determines the selectable HOS versions and exact
 Atmosphere release tags. Hekate, DBI, sys-patch, and Ultrahand use their latest
 GitHub releases. Firmware files are not downloaded or included.

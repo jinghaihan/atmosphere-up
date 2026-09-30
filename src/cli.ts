@@ -10,10 +10,10 @@ try {
   const cli: CAC = cac(NAME)
 
   cli
-    .command('[output]', 'Build a core SD card pack for the selected HOS version')
-    .option('-o, --output <directory>', 'Parent directory for generated packs')
-    .option('--cwd <directory>', 'Working directory for configuration and relative paths')
-    .option('--pack', 'Output a ZIP instead of a directory (use --no-pack to override configuration)')
+    .command('[output]', 'build a core SD card pack for the selected HOS version')
+    .option('-o, --output <directory>', 'parent directory for generated packs')
+    .option('--cwd <directory>', 'working directory for configuration and relative paths')
+    .option('--pack', 'output a ZIP instead of a directory (use --no-pack to override configuration)')
     .action((output: string | undefined, options: CommandOptions) => {
       runBuildCommand({ ...options, output: output ?? options.output }).catch(handleError)
     })
@@ -27,6 +27,6 @@ catch (error) {
 }
 
 function handleError(error: unknown): void {
-  p.cancel(error instanceof Error ? error.message : String(error))
+  p.cancel(`build failed: ${error instanceof Error ? error.message : String(error)}`)
   process.exitCode = 1
 }

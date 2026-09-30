@@ -16,6 +16,10 @@ export function getOutputPath(bundle: Bundle, directory: string, pack = false): 
   return resolve(directory, `${getOutputName(bundle)}${pack ? '.zip' : ''}`)
 }
 
+export function formatDownloadProgress(received: number, total: number): string {
+  return `${(received / 1024 ** 2).toFixed(1)} / ${(total / 1024 ** 2).toFixed(1)} MiB (${Math.floor(received / total * 100)}%)`
+}
+
 export function selectAsset(release: Release, pattern: RegExp): ReleaseAsset {
   const matches = release.assets.filter(asset => pattern.test(asset.name))
   if (matches.length !== 1)

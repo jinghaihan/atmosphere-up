@@ -35,16 +35,25 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
     }
   }
 
-  const spinner = p.spinner()
+  const controller = new AbortController()
+  const spinner = p.spinner({ onCancel: () => controller.abort(), cancelMessage: 'cancelling build' })
+  const task = { signal: controller.signal, onProgress: (message: string) => spinner.message(message) }
   spinner.start('resolving core releases')
+  // Let Ctrl+C emit SIGINT instead of Clack's keypress blocker exiting immediately.
+  if (process.stdin.isTTY)
+    process.stdin.setRawMode(false)
   try {
-    const resources = await resolveResources(bundle)
-    spinner.message('downloading and assembling core components')
-    await buildPack(bundle, resources, destination, replace, config.pack)
+    const resources = await resolveResources(bundle, task)
+    await buildPack(bundle, resources, destination, replace, config.pack, task)
     spinner.stop('core pack assembled')
   }
   catch (error) {
-    spinner.stop('build failed')
+    if (controller.signal.aborted) {
+      p.cancel('build cancelled; temporary files removed')
+      process.exitCode = 130
+      return
+    }
+    spinner.error('build failed')
     throw error
   }
   p.outro(`pack ready: ${destination}`)

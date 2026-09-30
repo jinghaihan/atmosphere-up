@@ -1,4 +1,4 @@
-import type { ReleaseAsset } from '../types'
+import type { ReleaseAsset, TaskOptions } from '../types'
 import type { Bundle } from './catalog'
 import { MODULE_REPO_CONFIG } from '../constants'
 import { getRelease } from '../download'
@@ -12,9 +12,14 @@ export interface Resource {
   target?: string
 }
 
-export async function resolveResources(bundle: Bundle): Promise<Resource[]> {
-  const entries = await Promise.all(Object.entries(MODULE_REPO_CONFIG).map(async ([module, repo]) => {
-    const release = await getRelease(repo, module === 'atmosphere' ? bundle.atmosphereTag : undefined)
+export async function resolveResources(bundle: Bundle, { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
+  const resources: Resource[] = []
+  const entries = Object.entries(MODULE_REPO_CONFIG)
+  for (const [index, [module, repo]] of entries.entries()) {
+    signal?.throwIfAborted()
+    const tag = module === 'atmosphere' ? bundle.atmosphereTag : undefined
+    onProgress?.(`[${index + 1}/${entries.length}] resolving ${module} (${tag || 'latest'})`)
+    const release = await getRelease(repo, tag, signal)
     const resource = (pattern: RegExp, target?: string): Resource => ({
       module: module as Resource['module'],
       release: release.tag_name,
@@ -24,18 +29,23 @@ export async function resolveResources(bundle: Bundle): Promise<Resource[]> {
     })
     switch (module) {
       case 'atmosphere':
-        return [resource(/^atmosphere-.*\.zip$/), resource(/^fusee\.bin$/, 'bootloader/payloads/fusee.bin')]
+        resources.push(resource(/^atmosphere-.*\.zip$/), resource(/^fusee\.bin$/, 'bootloader/payloads/fusee.bin'))
+        break
       case 'dbi':
-        return [resource(/^DBI\.nro$/, 'switch/DBI/DBI.nro'), resource(/^dbi\.config$/, 'switch/DBI/dbi.config')]
+        resources.push(resource(/^DBI\.nro$/, 'switch/DBI/DBI.nro'), resource(/^dbi\.config$/, 'switch/DBI/dbi.config'))
+        break
       case 'hekate':
-        return [resource(/^hekate_ctcaer_[\d.]+_Nyx_[\d.]+\.zip$/), resource(/^hekate_ctcaer_[\d.]+\.bin$/, 'payload.bin')]
+        resources.push(resource(/^hekate_ctcaer_[\d.]+_Nyx_[\d.]+\.zip$/), resource(/^hekate_ctcaer_[\d.]+\.bin$/, 'payload.bin'))
+        break
       case 'sys-patch':
-        return [resource(/^sys-patch.*\.zip$/)]
+        resources.push(resource(/^sys-patch.*\.zip$/))
+        break
       case 'ultrahand':
-        return [resource(/^sdout\.zip$/)]
+        resources.push(resource(/^sdout\.zip$/))
+        break
       default:
         throw new Error(`Unknown core module: ${module}.`)
     }
-  }))
-  return entries.flat()
+  }
+  return resources
 }

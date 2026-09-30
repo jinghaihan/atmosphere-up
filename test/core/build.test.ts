@@ -26,9 +26,13 @@ afterEach(async () => {
 describe('buildPack', () => {
   it('sets matching Ultrahand and Tesla wake keys and returns to Hekate on reboot', async () => {
     vi.mocked(downloadAsset).mockResolvedValue(await readFile(join(cwd, 'test/fixtures/core.zip')))
-    await buildPack(bundle, [resource], directory)
+    const onProgress = vi.fn()
+    await buildPack(bundle, [resource], directory, false, false, { onProgress })
     expect(await readFile(join(directory, 'config/ultrahand/config.ini'), 'utf8')).toBe('[ultrahand]\nkey_combo=L+DDOWN\n')
     expect(await readFile(join(directory, 'config/tesla/config.ini'), 'utf8')).toBe('[tesla]\nkey_combo=L+DDOWN\n')
     expect(await readFile(join(directory, 'atmosphere/reboot_payload.bin'))).toEqual(await readFile(join(directory, 'payload.bin')))
+    const messages = onProgress.mock.calls.map(([message]) => message)
+    expect(messages).toContain('extracting ultrahand [1/1]')
+    expect(messages).toContain('writing Hekate boot entries and Ultrahand wake keys')
   })
 })

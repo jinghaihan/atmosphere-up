@@ -1,3 +1,4 @@
+import type { TaskOptions } from '../types'
 import { existsSync } from 'node:fs'
 import { mkdir, mkdtemp, rename, rm } from 'node:fs/promises'
 import { dirname, join, resolve } from 'pathe'
@@ -10,16 +11,22 @@ export function inspectOutput(directory: string, cwd: string): boolean {
   return existsSync(directory)
 }
 
-export async function writeOutput(directory: string, replace: boolean, populate: (staging: string) => Promise<void>, pack = false): Promise<void> {
+export async function writeOutput(directory: string, replace: boolean, populate: (staging: string) => Promise<void>, pack = false, { signal, onProgress }: TaskOptions = {}): Promise<void> {
+  signal?.throwIfAborted()
   await mkdir(dirname(directory), { recursive: true })
   const temporary = await mkdtemp(join(dirname(directory), '.atmosphere-up-'))
   const staging = join(temporary, 'pack')
   try {
     await mkdir(staging)
     await populate(staging)
+    signal?.throwIfAborted()
     const result = pack ? join(temporary, 'pack.zip') : staging
-    if (pack)
+    if (pack) {
+      onProgress?.('compressing pack into ZIP')
       await compressArchive(staging, result)
+    }
+    signal?.throwIfAborted()
+    onProgress?.(`saving pack to ${directory}`)
     if (replace)
       await rm(directory, { recursive: true, force: true })
     await rename(result, directory)

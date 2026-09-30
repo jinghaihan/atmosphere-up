@@ -29,6 +29,20 @@ describe('getRelease', () => {
 })
 
 describe('downloadAsset', () => {
+  it('reports received bytes and passes cancellation to the SDK request and response stream', async () => {
+    const controller = new AbortController()
+    const stream = new ReadableStream<Uint8Array>({
+      start(stream) { stream.enqueue(new TextEncoder().encode('part')) },
+    })
+    const fetch = vi.fn().mockResolvedValue(new Response(stream))
+    vi.stubGlobal('fetch', fetch)
+    const onProgress = vi.fn(() => controller.abort())
+    const asset = { id: 1, name: 'core.zip', size: 8 } as ReleaseAsset
+    await expect(downloadAsset('example/core', asset, { signal: controller.signal, onProgress })).rejects.toThrow('aborted')
+    expect(onProgress).toHaveBeenCalledWith(4)
+    expect(fetch.mock.calls[0][1].signal).toBe(controller.signal)
+  })
+
   it('rejects an asset whose size or digest changed', async () => {
     vi.stubGlobal('fetch', vi.fn().mockImplementation(() => Promise.resolve(new Response('test'))))
     const asset = { id: 1, name: 'core.zip', size: 5, browser_download_url: 'https://github.com/example/core/releases/download/v1/core.zip' } as ReleaseAsset

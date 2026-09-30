@@ -46,4 +46,16 @@ describe('writeOutput', () => {
     expect(archive.readAsText('payload.bin')).toBe('payload')
     expect(await glob('.atmosphere-up-*', { cwd: fixture, onlyDirectories: true, dot: true })).toEqual([])
   })
+
+  it('removes partial files after cancellation without replacing the existing pack', async () => {
+    const controller = new AbortController()
+    await mkdir(directory, { recursive: true })
+    await writeFile(join(directory, 'original'), 'keep')
+    await expect(writeOutput(directory, true, async (staging) => {
+      await writeFile(join(staging, 'partial'), 'incomplete')
+      controller.abort()
+    }, true, { signal: controller.signal })).rejects.toThrow('aborted')
+    expect(await readFile(join(directory, 'original'), 'utf8')).toBe('keep')
+    expect(await glob('.atmosphere-up-*', { cwd: fixture, onlyDirectories: true, dot: true })).toEqual([])
+  })
 })
