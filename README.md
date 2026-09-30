@@ -10,16 +10,10 @@
 Requires Node.js 20.18.1 or newer. Select a supported HOS version from the prompt:
 
 ```sh
-pnpm start
-pnpm start ./output
-pnpm start ./output --pack
-pnpm start --version 21.2.0 --output ./output --pack
+npx atmosphere-up
 ```
 
-Use `--version <hos>` to skip the HOS selection prompt. Unsupported versions
-are rejected before downloading any components.
-
-`output` is a parent directory. For HOS 21.2.0, these commands create
+`output` is a parent directory. For HOS 21.2.0, the CLI creates
 `output/atmosphere-1.10.2-hos-21.2.0/` or
 `output/atmosphere-1.10.2-hos-21.2.0.zip`. Without an output setting, the named
 pack is created in the current working directory. ZIP contents start at the SD
