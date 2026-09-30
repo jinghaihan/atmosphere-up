@@ -7,10 +7,11 @@ export const VERSION = pkg.version
 
 export const DEFAULT_OPTIONS: Partial<Options> = {}
 
-export const CORE_MODULES = [
-  'atmosphere',
-  'hekate',
-  'sys-patch',
-  'dbi',
-  'ultrahand',
-] as const
+/// keep-sorted
+export const MODULE_REPO_CONFIG = {
+  'atmosphere': 'Atmosphere-NX/Atmosphere',
+  'dbi': 'rashevskyv/dbi',
+  'hekate': 'CTCaer/hekate',
+  'sys-patch': 'impeeza/sys-patch',
+  'ultrahand': 'ppkantorski/Ultrahand-Overlay',
+} as const

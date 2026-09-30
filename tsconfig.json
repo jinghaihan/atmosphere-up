@@ -7,7 +7,7 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "paths": {
-      "cli-name": ["./src/index.ts"]
+      "atmosphere-up": ["./src/index.ts"]
     },
     "resolveJsonModule": true,
     "types": ["node"],

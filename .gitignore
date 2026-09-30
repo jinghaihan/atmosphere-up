@@ -12,6 +12,9 @@ es
 dist
 dist-ssr
 dev-dist
+/output/
+/atmosphere-*-hos-*/
+.atmosphere-up-*/
 *.local
 
 # Editor directories and files
