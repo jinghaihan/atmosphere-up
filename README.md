@@ -34,8 +34,9 @@ Ultrahand opens with **L + D-pad Down**.
 ### Optional extensions
 
 Choose optional extensions after assembling the core components. Save management
-and file management use single selections; cheat and performance tools allow multiple
-selections.
+and file management use single selections; cheat and performance tuning tools allow
+multiple selections. Performance monitoring is a separate single selection, with
+Status Monitor selected by default.
 
 | Component | Source | Includes |
 | --- | --- | --- |
@@ -51,10 +52,12 @@ selections.
 | Horizon OC | [Horizon-OC/Horizon-OC](https://github.com/Horizon-OC/Horizon-OC) | Advanced CPU, GPU, RAM, and voltage tuning; not selected by default |
 | FPS Locker | [masagrator/FPSLocker](https://github.com/masagrator/FPSLocker) | Per-game frame rate controls |
 | ReverseNx RT | [masagrator/ReverseNX-RT](https://github.com/masagrator/ReverseNX-RT) | Switch game rendering between handheld and docked modes |
+| Status Monitor | [ppkantorski/Status-Monitor-Overlay](https://github.com/ppkantorski/Status-Monitor-Overlay) | FPS, frequencies, load, temperatures, and power monitoring; default monitor selection |
+| Status Monitor Deux | [masagrator/Status-Monitor-Deux](https://github.com/masagrator/Status-Monitor-Deux) | Performance monitoring with customizable layouts |
 
-All performance tools except Horizon OC are selected by default. Selecting the
-Ultrahand clock overlay also includes a clock service. FPS Locker and ReverseNx RT
-include their shared [SaltyNX](https://github.com/masagrator/SaltyNX) dependency.
+All performance tuning tools except Horizon OC are selected by default. Selecting the
+Ultrahand clock overlay also includes a clock service. FPS Locker, ReverseNx RT,
+and performance monitors include their shared [SaltyNX](https://github.com/masagrator/SaltyNX) dependency.
 Selecting Sys Clk Ultrahand Overlay excludes the original Sys Clk overlay while
 retaining its clock service and homebrew manager.
 

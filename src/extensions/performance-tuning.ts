@@ -6,6 +6,7 @@ import { join } from 'pathe'
 import { EXTENSION_REPO_CONFIG } from '../constants'
 import { getRelease, getRepositoryFile } from '../download'
 import { configureHorizonOcBootEntries, selectAsset } from '../utils'
+import { resolveSaltyNx } from './dependencies'
 
 export type PerformanceTool = 'sys-clk' | 'sys-clk-ultrahand-overlay' | 'horizon-oc' | 'fps-locker' | 'reverse-nx-rt'
 
@@ -70,6 +71,11 @@ export async function resolvePerformanceTuning(modules: PerformanceTool[], { sig
 
     signal?.throwIfAborted()
 
+    if (module === 'salty-nx') {
+      resources.push(await resolveSaltyNx({ signal, onProgress }))
+      continue
+    }
+
     onProgress?.(`resolving ${module} (latest)`)
     const repository = EXTENSION_REPO_CONFIG[module]
     const release = await getRelease(repository, undefined, signal)
@@ -106,9 +112,6 @@ export async function resolvePerformanceTuning(modules: PerformanceTool[], { sig
         }))
         break
       }
-      case 'salty-nx':
-        resources.push(resource(/^SaltyNX\.zip$/))
-        break
       case 'fps-locker':
         resources.push(resource(/^FPSLocker\.ovl$/, { target: 'switch/.overlays/FPSLocker.ovl' }))
         break

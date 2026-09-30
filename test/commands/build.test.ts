@@ -8,7 +8,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { runBuildCommand } from '../../src/commands'
 import { resolveConfig } from '../../src/config'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../../src/core'
-import { resolveCheats, resolveFileManagement, resolvePerformanceTuning, resolveSaveManagement } from '../../src/extensions'
+import { resolveCheats, resolveFileManagement, resolvePerformanceMonitoring, resolvePerformanceTuning, resolveSaveManagement } from '../../src/extensions'
+import { resolveSaltyNx } from '../../src/extensions/dependencies'
 
 vi.mock('@clack/prompts', () => ({
   intro: vi.fn(),
@@ -37,6 +38,11 @@ vi.mock('../../src/extensions/performance-tuning', async original => ({
   ...await original<typeof import('../../src/extensions/performance-tuning')>(),
   resolvePerformanceTuning: vi.fn(),
 }))
+vi.mock('../../src/extensions/performance-monitoring', async original => ({
+  ...await original<typeof import('../../src/extensions/performance-monitoring')>(),
+  resolvePerformanceMonitoring: vi.fn(),
+}))
+vi.mock('../../src/extensions/dependencies', () => ({ resolveSaltyNx: vi.fn() }))
 vi.mock('../../src/core', async original => ({
   ...await original<typeof import('../../src/core')>(),
   inspectOutput: vi.fn(),
@@ -62,6 +68,8 @@ beforeEach(() => {
   vi.mocked(resolveSaveManagement).mockResolvedValue({ module: 'jksv' } as Awaited<ReturnType<typeof resolveSaveManagement>>)
   vi.mocked(resolveCheats).mockResolvedValue([])
   vi.mocked(resolvePerformanceTuning).mockResolvedValue([])
+  vi.mocked(resolveSaltyNx).mockResolvedValue({ module: 'salty-nx' } as Awaited<ReturnType<typeof resolveSaltyNx>>)
+  vi.mocked(resolvePerformanceMonitoring).mockResolvedValue({ module: 'status-monitor' } as Awaited<ReturnType<typeof resolvePerformanceMonitoring>>)
   vi.mocked(resolveFileManagement).mockResolvedValue({ module: 'nx-shell' } as Awaited<ReturnType<typeof resolveFileManagement>>)
   vi.mocked(buildPack).mockResolvedValue()
 })
@@ -74,6 +82,14 @@ describe('runBuildCommand', () => {
       expect(resolveCheats).not.toHaveBeenCalled()
       expect(resolveFileManagement).not.toHaveBeenCalled()
       return 'nx-shell'
+    }).mockImplementationOnce(async () => {
+      expect(resolveSaveManagement).not.toHaveBeenCalled()
+      expect(resolveCheats).not.toHaveBeenCalled()
+      expect(resolveFileManagement).not.toHaveBeenCalled()
+      expect(resolvePerformanceTuning).not.toHaveBeenCalled()
+      expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
+      expect(resolveSaltyNx).not.toHaveBeenCalled()
+      return 'status-monitor'
     })
     vi.mocked(p.multiselect).mockImplementationOnce(async () => {
       expect(resolveSaveManagement).not.toHaveBeenCalled()
@@ -93,7 +109,7 @@ describe('runBuildCommand', () => {
 
     await runBuildCommand({})
 
-    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?', 'include file management?', 'include performance tuning?'])
+    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?', 'include file management?', 'include performance tuning?', 'include performance monitoring?'])
     expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       initialValues: ['edizon-overlay'],
       options: [
@@ -103,7 +119,7 @@ describe('runBuildCommand', () => {
         { value: 'breezehand', label: 'Breezehand Overlay', hint: 'https://github.com/tomvita/Breezehand-Overlay' },
       ],
     }))
-    expect(p.select).toHaveBeenLastCalledWith(expect.objectContaining({
+    expect(p.select).toHaveBeenCalledWith(expect.objectContaining({
       message: 'select file manager',
       initialValue: 'nx-shell',
       options: [{ value: 'nx-shell', label: 'NX Shell', hint: 'https://github.com/DefenderOfHyrule/NX-Shell' }],
@@ -119,6 +135,15 @@ describe('runBuildCommand', () => {
         { value: 'reverse-nx-rt', label: 'ReverseNx RT', hint: 'https://github.com/masagrator/ReverseNX-RT' },
       ],
     }))
+    expect(p.select).toHaveBeenLastCalledWith(expect.objectContaining({
+      message: 'select performance monitor',
+      initialValue: 'status-monitor',
+      options: [
+        { value: 'status-monitor', label: 'Status Monitor', hint: 'https://github.com/ppkantorski/Status-Monitor-Overlay' },
+        { value: 'status-monitor-deux', label: 'Status Monitor Deux', hint: 'https://github.com/masagrator/Status-Monitor-Deux' },
+      ],
+    }))
+    expect(resolvePerformanceMonitoring).toHaveBeenCalledWith('status-monitor', expect.any(Object))
     expect(resolvePerformanceTuning).toHaveBeenCalledWith(['sys-clk', 'sys-clk-ultrahand-overlay', 'fps-locker', 'reverse-nx-rt'], expect.any(Object), '1.10.2')
     expect(resolveFileManagement).toHaveBeenCalledWith('nx-shell', expect.any(Object))
     expect(vi.mocked(resolveFileManagement).mock.invocationCallOrder[0]).toBeGreaterThan(vi.mocked(resolveCheats).mock.invocationCallOrder[0])
@@ -224,6 +249,55 @@ describe('runBuildCommand', () => {
 
     expect(resolveCheats).not.toHaveBeenCalled()
     expect(resolvePerformanceTuning).not.toHaveBeenCalled()
+    expect(p.outro).not.toHaveBeenCalled()
+    expect(process.exitCode).toBe(130)
+    process.exitCode = 0
+  })
+
+  it.each(['status-monitor', 'status-monitor-deux'] as const)('includes %s independently of performance tuning', async (module) => {
+    vi.mocked(p.confirm).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(true)
+    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce(module)
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      await task!.onCoreReady!()
+    })
+
+    await runBuildCommand({})
+
+    expect(resolvePerformanceTuning).toHaveBeenCalledWith([], expect.any(Object), '1.10.2')
+    expect(resolvePerformanceMonitoring).toHaveBeenCalledWith(module, expect.any(Object))
+    expect(resolveSaltyNx).toHaveBeenCalledTimes(1)
+    expect(p.multiselect).not.toHaveBeenCalled()
+  })
+
+  it('reuses SaltyNX from performance tuning for the selected monitor', async () => {
+    vi.mocked(p.confirm).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(true).mockResolvedValueOnce(true)
+    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('status-monitor')
+    vi.mocked(p.multiselect).mockResolvedValueOnce(['fps-locker'])
+    vi.mocked(resolvePerformanceTuning).mockResolvedValue([{ module: 'salty-nx' }] as Awaited<ReturnType<typeof resolvePerformanceTuning>>)
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      const resources = await task!.onCoreReady!()
+      expect(resources.filter(resource => resource.module === 'salty-nx')).toHaveLength(1)
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveSaltyNx).not.toHaveBeenCalled()
+    expect(resolvePerformanceMonitoring).toHaveBeenCalledWith('status-monitor', expect.any(Object))
+  })
+
+  it.each(['confirm', 'select'] as const)('cancels from the monitoring %s prompt before resolving extensions', async (prompt) => {
+    vi.mocked(p.confirm).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
+    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce(Symbol('cancel'))
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      await task!.onCoreReady!()
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveCheats).not.toHaveBeenCalled()
+    expect(resolvePerformanceTuning).not.toHaveBeenCalled()
+    expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
+    expect(resolveSaltyNx).not.toHaveBeenCalled()
     expect(p.outro).not.toHaveBeenCalled()
     expect(process.exitCode).toBe(130)
     process.exitCode = 0

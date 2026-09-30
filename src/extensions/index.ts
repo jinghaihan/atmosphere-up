@@ -2,15 +2,19 @@ import type { Resource } from '../core/plan'
 import type { TaskOptions } from '../types'
 import type { CheatTool } from './cheats'
 import type { FileManager } from './file-management'
+import type { PerformanceMonitor } from './performance-monitoring'
 import type { PerformanceTool } from './performance-tuning'
 import type { SaveManager } from './save-management'
 import { promptCheats, resolveCheats } from './cheats'
+import { resolveSaltyNx } from './dependencies'
 import { promptFileManagement, resolveFileManagement } from './file-management'
+import { promptPerformanceMonitoring, resolvePerformanceMonitoring } from './performance-monitoring'
 import { promptPerformanceTuning, resolvePerformanceTuning } from './performance-tuning'
 import { promptSaveManagement, resolveSaveManagement } from './save-management'
 
 export * from './cheats'
 export * from './file-management'
+export * from './performance-monitoring'
 export * from './performance-tuning'
 export * from './save-management'
 
@@ -19,6 +23,7 @@ export interface ExtensionSelection {
   cheats: CheatTool[]
   fileManager?: FileManager
   performance: PerformanceTool[]
+  performanceMonitor?: PerformanceMonitor
 }
 
 export async function promptExtensions(controller: AbortController): Promise<ExtensionSelection> {
@@ -30,10 +35,12 @@ export async function promptExtensions(controller: AbortController): Promise<Ext
 
   const performance = await promptPerformanceTuning(controller)
 
-  return { saveManager, cheats, fileManager, performance }
+  const performanceMonitor = await promptPerformanceMonitoring(controller)
+
+  return { saveManager, cheats, fileManager, performance, performanceMonitor }
 }
 
-export async function resolveExtensions({ saveManager, cheats, fileManager, performance }: ExtensionSelection, task: TaskOptions = {}, atmosphere?: string): Promise<Resource[]> {
+export async function resolveExtensions({ saveManager, cheats, fileManager, performance, performanceMonitor }: ExtensionSelection, task: TaskOptions = {}, atmosphere?: string): Promise<Resource[]> {
   const resources: Resource[] = []
 
   if (saveManager)
@@ -45,6 +52,13 @@ export async function resolveExtensions({ saveManager, cheats, fileManager, perf
     resources.push(await resolveFileManagement(fileManager, task))
 
   resources.push(...await resolvePerformanceTuning(performance, task, atmosphere))
+
+  if (performanceMonitor) {
+    if (!resources.some(resource => resource.module === 'salty-nx'))
+      resources.push(await resolveSaltyNx(task))
+
+    resources.push(await resolvePerformanceMonitoring(performanceMonitor, task))
+  }
 
   return resources
 }
