@@ -8,7 +8,7 @@ import { getRelease, getRepositoryFile } from '../download'
 import { configureHorizonOcBootEntries, getRepositoryUrl, selectAsset } from '../utils'
 import { resolveSaltyNx } from './dependencies'
 
-export type PerformanceTool = 'sys-clk' | 'sys-clk-ultrahand-overlay' | 'horizon-oc' | 'fps-locker' | 'reverse-nx-rt' | 'fizeau'
+export type PerformanceTool = 'sys-clk' | 'sys-clk-overlay-ultrahand' | 'horizon-oc' | 'fps-locker' | 'reverse-nx-rt' | 'fizeau'
 
 export async function promptPerformanceTuning(controller: AbortController): Promise<PerformanceTool[]> {
   const enabled = await p.confirm({
@@ -26,11 +26,11 @@ export async function promptPerformanceTuning(controller: AbortController): Prom
 
   const modules = await p.multiselect<PerformanceTool>({
     message: 'select performance tools',
-    initialValues: ['sys-clk', 'sys-clk-ultrahand-overlay', 'fps-locker', 'reverse-nx-rt'],
+    initialValues: ['sys-clk', 'sys-clk-overlay-ultrahand', 'fps-locker', 'reverse-nx-rt'],
     signal: controller.signal,
     options: [
       { value: 'sys-clk', label: 'Sys Clk', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-clk']) },
-      { value: 'sys-clk-ultrahand-overlay', label: 'Sys Clk Ultrahand Overlay', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-clk-ultrahand-overlay']) },
+      { value: 'sys-clk-overlay-ultrahand', label: 'Sys Clk Overlay Ultrahand', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-clk-overlay-ultrahand']) },
       { value: 'horizon-oc', label: 'Horizon OC', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['horizon-oc']) },
       { value: 'fps-locker', label: 'FPS Locker', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['fps-locker']) },
       { value: 'reverse-nx-rt', label: 'ReverseNx RT', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['reverse-nx-rt']) },
@@ -45,7 +45,7 @@ export async function promptPerformanceTuning(controller: AbortController): Prom
 
   if (modules.includes('horizon-oc') && modules.includes('sys-clk')) {
     p.note(
-      'when both are selected, Horizon OC supplies the clock service. The original Sys Clk manager and overlay cannot connect to it; use Horizon OC or Sys Clk Ultrahand Overlay for clock controls.',
+      'when both are selected, Horizon OC supplies the clock service. The original Sys Clk manager and overlay cannot connect to it; use Horizon OC or Sys Clk Overlay Ultrahand for clock controls.',
       'horizon oc',
     )
   }
@@ -56,14 +56,14 @@ export async function promptPerformanceTuning(controller: AbortController): Prom
 export async function resolvePerformanceTuning(modules: PerformanceTool[], { signal, onProgress }: TaskOptions = {}, atmosphere?: string): Promise<Resource[]> {
   const selected = new Set<PerformanceTool | 'salty-nx'>(modules)
 
-  if (selected.has('sys-clk-ultrahand-overlay') && !selected.has('horizon-oc'))
+  if (selected.has('sys-clk-overlay-ultrahand') && !selected.has('horizon-oc'))
     selected.add('sys-clk')
 
   if (selected.has('fps-locker') || selected.has('reverse-nx-rt'))
     selected.add('salty-nx')
 
   // Install the selected clock service before replacing its overlay frontend.
-  const order = ['sys-clk', 'horizon-oc', 'sys-clk-ultrahand-overlay', 'salty-nx', 'fps-locker', 'reverse-nx-rt', 'fizeau'] as const
+  const order = ['sys-clk', 'horizon-oc', 'sys-clk-overlay-ultrahand', 'salty-nx', 'fps-locker', 'reverse-nx-rt', 'fizeau'] as const
   const resources: Resource[] = []
 
   for (const module of order) {
@@ -91,10 +91,10 @@ export async function resolvePerformanceTuning(modules: PerformanceTool[], { sig
     switch (module) {
       case 'sys-clk':
         resources.push(resource(/^sys-clk-.*\.zip$/, {
-          paths: ['atmosphere/', 'config/', selected.has('sys-clk-ultrahand-overlay') ? 'switch/sys-clk-manager.nro' : 'switch/'],
+          paths: ['atmosphere/', 'config/', selected.has('sys-clk-overlay-ultrahand') ? 'switch/sys-clk-manager.nro' : 'switch/'],
         }))
         break
-      case 'sys-clk-ultrahand-overlay':
+      case 'sys-clk-overlay-ultrahand':
         resources.push(resource(/^sys-clk-overlay\.ovl$/, { target: 'switch/.overlays/sys-clk-overlay.ovl' }))
         break
       case 'horizon-oc': {

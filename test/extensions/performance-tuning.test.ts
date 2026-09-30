@@ -40,18 +40,18 @@ describe('resolvePerformanceTuning', () => {
   })
 
   it('installs the enhanced overlay after the clock service and adds SaltyNX only once', async () => {
-    const resources = await resolvePerformanceTuning(['reverse-nx-rt', 'sys-clk-ultrahand-overlay', 'fps-locker', 'sys-clk'])
+    const resources = await resolvePerformanceTuning(['reverse-nx-rt', 'sys-clk-overlay-ultrahand', 'fps-locker', 'sys-clk'])
 
-    expect(resources.map(resource => resource.module)).toEqual(['sys-clk', 'sys-clk-ultrahand-overlay', 'salty-nx', 'fps-locker', 'reverse-nx-rt'])
+    expect(resources.map(resource => resource.module)).toEqual(['sys-clk', 'sys-clk-overlay-ultrahand', 'salty-nx', 'fps-locker', 'reverse-nx-rt'])
     expect(resources.map(resource => resource.asset.name)).toEqual(['sys-clk-2.0.1-21fix.zip', 'sys-clk-overlay.ovl', 'SaltyNX.zip', 'FPSLocker.ovl', 'ReverseNX-RT-ovl.ovl'])
     expect(resources[0].paths).toEqual(['atmosphere/', 'config/', 'switch/sys-clk-manager.nro'])
     expect(resources[1].target).toBe('switch/.overlays/sys-clk-overlay.ovl')
   })
 
   it('includes a clock service when only the Ultrahand frontend is selected', async () => {
-    const resources = await resolvePerformanceTuning(['sys-clk-ultrahand-overlay'])
+    const resources = await resolvePerformanceTuning(['sys-clk-overlay-ultrahand'])
 
-    expect(resources.map(resource => resource.module)).toEqual(['sys-clk', 'sys-clk-ultrahand-overlay'])
+    expect(resources.map(resource => resource.module)).toEqual(['sys-clk', 'sys-clk-overlay-ultrahand'])
   })
 
   it('retains the original overlay when the enhanced overlay is not selected', async () => {
@@ -61,9 +61,9 @@ describe('resolvePerformanceTuning', () => {
   })
 
   it('allows HOC and Sys Clk together and excludes bundled monitoring tools', async () => {
-    const resources = await resolvePerformanceTuning(['horizon-oc', 'sys-clk', 'sys-clk-ultrahand-overlay'], {}, '1.11.2')
+    const resources = await resolvePerformanceTuning(['horizon-oc', 'sys-clk', 'sys-clk-overlay-ultrahand'], {}, '1.11.2')
 
-    expect(resources.map(resource => resource.module)).toEqual(['sys-clk', 'horizon-oc', 'sys-clk-ultrahand-overlay'])
+    expect(resources.map(resource => resource.module)).toEqual(['sys-clk', 'horizon-oc', 'sys-clk-overlay-ultrahand'])
     expect(resources[1]).toMatchObject({
       asset: { name: 'dist.zip' },
       paths: ['atmosphere/', 'config/', 'switch/.overlays/horizon-oc-overlay.ovl'],
@@ -76,9 +76,9 @@ describe('resolvePerformanceTuning', () => {
   })
 
   it('uses HOC as the dependency for its compatible overlay without adding the original service', async () => {
-    const resources = await resolvePerformanceTuning(['sys-clk-ultrahand-overlay', 'horizon-oc'], {}, '1.11.2')
+    const resources = await resolvePerformanceTuning(['sys-clk-overlay-ultrahand', 'horizon-oc'], {}, '1.11.2')
 
-    expect(resources.map(resource => resource.module)).toEqual(['horizon-oc', 'sys-clk-ultrahand-overlay'])
+    expect(resources.map(resource => resource.module)).toEqual(['horizon-oc', 'sys-clk-overlay-ultrahand'])
   })
 
   it('installs HOC and updates CFW boot entries while preserving stock and excluding Status Monitor', async () => {

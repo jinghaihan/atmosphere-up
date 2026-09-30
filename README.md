@@ -53,7 +53,7 @@ a separate single selection, with Status Monitor selected by default.
 | Breezehand Overlay | [tomvita/Breezehand-Overlay](https://github.com/tomvita/Breezehand-Overlay) | Cheat controls in an overlay |
 | NX Shell | [DefenderOfHyrule/NX-Shell](https://github.com/DefenderOfHyrule/NX-Shell) | File copying, moving, renaming, and deletion |
 | Sys Clk | [retronx-team/sys-clk](https://github.com/retronx-team/sys-clk) | Clock service, homebrew manager, and overlay |
-| Sys Clk Ultrahand Overlay | [ppkantorski/sys-clk](https://github.com/ppkantorski/sys-clk) | Enhanced clock controls for Ultrahand, including Horizon OC support |
+| Sys Clk Overlay Ultrahand | [ppkantorski/sys-clk](https://github.com/ppkantorski/sys-clk) | Enhanced clock controls for Ultrahand, including Horizon OC support |
 | Horizon OC | [Horizon-OC/Horizon-OC](https://github.com/Horizon-OC/Horizon-OC) | Advanced CPU, GPU, RAM, and voltage tuning; not selected by default |
 | FPS Locker | [masagrator/FPSLocker](https://github.com/masagrator/FPSLocker) | Per-game frame rate controls |
 | ReverseNx RT | [masagrator/ReverseNX-RT](https://github.com/masagrator/ReverseNX-RT) | Switch game rendering between handheld and docked modes |
@@ -67,13 +67,13 @@ a separate single selection, with Status Monitor selected by default.
 All performance tuning tools except Horizon OC and Fizeau are selected by default. Selecting the
 Ultrahand clock overlay also includes a clock service. FPS Locker, ReverseNx RT,
 and performance monitors include their shared [SaltyNX](https://github.com/masagrator/SaltyNX) dependency.
-Selecting Sys Clk Ultrahand Overlay excludes the original Sys Clk overlay while
+Selecting Sys Clk Overlay Ultrahand excludes the original Sys Clk overlay while
 retaining its clock service and homebrew manager.
 
 Horizon OC requires its matching Atmosphere version and configures the CFW boot
 entries automatically. When selected with Sys Clk, Horizon OC supplies the clock
 service; the original Sys Clk manager and overlay cannot connect to it. Use
-Horizon OC or Sys Clk Ultrahand Overlay for clock controls in that configuration.
+Horizon OC or Sys Clk Overlay Ultrahand for clock controls in that configuration.
 
 Selected extensions are included in both directory and ZIP output.
 

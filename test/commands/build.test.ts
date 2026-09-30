@@ -143,7 +143,7 @@ describe('runBuildCommand', () => {
       expect(resolveCheats).not.toHaveBeenCalled()
       expect(resolveFileManagement).not.toHaveBeenCalled()
       expect(resolvePerformanceTuning).not.toHaveBeenCalled()
-      return ['sys-clk', 'sys-clk-ultrahand-overlay', 'fps-locker', 'reverse-nx-rt']
+      return ['sys-clk', 'sys-clk-overlay-ultrahand', 'fps-locker', 'reverse-nx-rt']
     }).mockImplementationOnce(async () => {
       expect(resolveSaveManagement).not.toHaveBeenCalled()
       expect(resolveCheats).not.toHaveBeenCalled()
@@ -178,10 +178,10 @@ describe('runBuildCommand', () => {
     }))
     expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       message: 'select performance tools',
-      initialValues: ['sys-clk', 'sys-clk-ultrahand-overlay', 'fps-locker', 'reverse-nx-rt'],
+      initialValues: ['sys-clk', 'sys-clk-overlay-ultrahand', 'fps-locker', 'reverse-nx-rt'],
       options: [
         { value: 'sys-clk', label: 'Sys Clk', hint: 'https://github.com/retronx-team/sys-clk' },
-        { value: 'sys-clk-ultrahand-overlay', label: 'Sys Clk Ultrahand Overlay', hint: 'https://github.com/ppkantorski/sys-clk' },
+        { value: 'sys-clk-overlay-ultrahand', label: 'Sys Clk Overlay Ultrahand', hint: 'https://github.com/ppkantorski/sys-clk' },
         { value: 'horizon-oc', label: 'Horizon OC', hint: 'https://github.com/Horizon-OC/Horizon-OC' },
         { value: 'fps-locker', label: 'FPS Locker', hint: 'https://github.com/masagrator/FPSLocker' },
         { value: 'reverse-nx-rt', label: 'ReverseNx RT', hint: 'https://github.com/masagrator/ReverseNX-RT' },
@@ -197,7 +197,7 @@ describe('runBuildCommand', () => {
       ],
     }))
     expect(resolvePerformanceMonitoring).toHaveBeenCalledWith('status-monitor', expect.any(Object))
-    expect(resolvePerformanceTuning).toHaveBeenCalledWith(['sys-clk', 'sys-clk-ultrahand-overlay', 'fps-locker', 'reverse-nx-rt'], expect.any(Object), '1.10.2')
+    expect(resolvePerformanceTuning).toHaveBeenCalledWith(['sys-clk', 'sys-clk-overlay-ultrahand', 'fps-locker', 'reverse-nx-rt'], expect.any(Object), '1.10.2')
     expect(resolveFileManagement).toHaveBeenCalledWith('nx-shell', expect.any(Object))
     expect(vi.mocked(resolveFileManagement).mock.invocationCallOrder[0]).toBeGreaterThan(vi.mocked(resolveCheats).mock.invocationCallOrder[0])
     expect(resolveSaveManagement).toHaveBeenCalledWith('jksv', expect.any(Object))
