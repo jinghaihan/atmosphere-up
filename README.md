@@ -41,10 +41,14 @@ Ultrahand opens with **L + D-pad Down**.
 Extensions are enabled by default. Use `--no-ext` to skip extension prompts,
 or `--ext` to enable them.
 
-Choose optional extensions after assembling the core components. Save management,
-file management, and Amiibo emulation use single selections; cheat, performance
-tuning, streaming, and controller tools allow multiple selections. Performance monitoring is
-a separate single selection, with Status Monitor selected by default.
+After assembling the core components, choose extension categories. Save management,
+file management, and cheats are selected by default. Only selected categories
+show their tool selection prompts; all categories can be deselected.
+
+Save management, file management, and Amiibo emulation use single selections;
+cheat, performance tuning, streaming, and controller tools allow multiple
+selections. Performance monitoring is a separate single selection, with Status
+Monitor selected by default.
 
 | Component | Source | Includes |
 | --- | --- | --- |

@@ -11,19 +11,6 @@ import { resolveSaltyNx } from './dependencies'
 export type PerformanceTool = 'sys-clk' | 'sys-clk-overlay-ultrahand' | 'horizon-oc' | 'fps-locker' | 'reverse-nx-rt' | 'fizeau'
 
 export async function promptPerformanceTuning(controller: AbortController): Promise<PerformanceTool[]> {
-  const enabled = await p.confirm({
-    message: 'include performance tuning?',
-    signal: controller.signal,
-  })
-
-  if (p.isCancel(enabled)) {
-    controller.abort()
-    throw controller.signal.reason
-  }
-
-  if (!enabled)
-    return []
-
   const modules = await p.multiselect<PerformanceTool>({
     message: 'select performance tools',
     initialValues: ['sys-clk', 'sys-clk-overlay-ultrahand', 'fps-locker', 'reverse-nx-rt'],

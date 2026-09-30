@@ -9,19 +9,6 @@ import { resolveSaltyNx } from './dependencies'
 export type PerformanceMonitor = 'status-monitor' | 'status-monitor-deux'
 
 export async function promptPerformanceMonitoring(controller: AbortController): Promise<PerformanceMonitor[]> {
-  const enabled = await p.confirm({
-    message: 'include performance monitoring?',
-    signal: controller.signal,
-  })
-
-  if (p.isCancel(enabled)) {
-    controller.abort()
-    throw controller.signal.reason
-  }
-
-  if (!enabled)
-    return []
-
   const module = await p.select<PerformanceMonitor>({
     message: 'select performance monitor',
     initialValue: 'status-monitor',

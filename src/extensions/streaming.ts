@@ -29,19 +29,6 @@ export async function resolveStreaming(modules: StreamingTool[], { signal, onPro
 }
 
 export async function promptStreaming(controller: AbortController): Promise<StreamingTool[]> {
-  const enabled = await p.confirm({
-    message: 'include streaming?',
-    signal: controller.signal,
-  })
-
-  if (p.isCancel(enabled)) {
-    controller.abort()
-    throw controller.signal.reason
-  }
-
-  if (!enabled)
-    return []
-
   const modules = await p.multiselect<StreamingTool>({
     message: 'select streaming tools',
     initialValues: ['moonlight-switch', 'sys-dvr'],

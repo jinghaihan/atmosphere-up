@@ -43,19 +43,6 @@ export async function resolveCheats(modules: CheatTool[], { signal, onProgress }
 }
 
 export async function promptCheats(controller: AbortController): Promise<CheatTool[]> {
-  const enabled = await p.confirm({
-    message: 'include cheats?',
-    signal: controller.signal,
-  })
-
-  if (p.isCancel(enabled)) {
-    controller.abort()
-    throw controller.signal.reason
-  }
-
-  if (!enabled)
-    return []
-
   const modules = await p.multiselect<CheatTool>({
     message: 'select cheat tools',
     initialValues: ['edizon-overlay'],

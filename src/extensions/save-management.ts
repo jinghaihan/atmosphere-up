@@ -30,19 +30,6 @@ export async function resolveSaveManagement(modules: SaveManager[], { signal, on
 }
 
 export async function promptSaveManagement(controller: AbortController): Promise<SaveManager[]> {
-  const enabled = await p.confirm({
-    message: 'include save management?',
-    signal: controller.signal,
-  })
-
-  if (p.isCancel(enabled)) {
-    controller.abort()
-    throw controller.signal.reason
-  }
-
-  if (!enabled)
-    return []
-
   const module = await p.select<SaveManager>({
     message: 'select save manager',
     initialValue: 'jksv',

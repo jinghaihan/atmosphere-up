@@ -30,19 +30,6 @@ export async function resolveFileManagement(modules: FileManager[], { signal, on
 }
 
 export async function promptFileManagement(controller: AbortController): Promise<FileManager[]> {
-  const enabled = await p.confirm({
-    message: 'include file management?',
-    signal: controller.signal,
-  })
-
-  if (p.isCancel(enabled)) {
-    controller.abort()
-    throw controller.signal.reason
-  }
-
-  if (!enabled)
-    return []
-
   const module = await p.select<FileManager>({
     message: 'select file manager',
     initialValue: 'nx-shell',

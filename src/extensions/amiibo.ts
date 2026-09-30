@@ -35,19 +35,6 @@ export async function resolveAmiibo(modules: AmiiboTool[], { signal, onProgress 
 }
 
 export async function promptAmiibo(controller: AbortController): Promise<AmiiboTool[]> {
-  const enabled = await p.confirm({
-    message: 'include amiibo emulation?',
-    signal: controller.signal,
-  })
-
-  if (p.isCancel(enabled)) {
-    controller.abort()
-    throw controller.signal.reason
-  }
-
-  if (!enabled)
-    return []
-
   const module = await p.select<AmiiboTool>({
     message: 'select amiibo tool',
     initialValue: 'emuiibo',

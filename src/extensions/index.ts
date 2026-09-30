@@ -1,5 +1,6 @@
 import type { Resource } from '../core/plan'
 import type { Extension, ExtensionContext } from './types'
+import * as p from '@clack/prompts'
 import { promptAmiibo, resolveAmiibo } from './amiibo'
 import { promptCheats, resolveCheats } from './cheats'
 import { promptControllerSupport, resolveControllerSupport } from './controller-support'
@@ -25,30 +26,91 @@ export interface SelectedExtension {
 
 export type ExtensionSelection = SelectedExtension[]
 
-function defineExtension<T extends string>({ prompt, resolve }: Extension<T>) {
-  return async (controller: AbortController): Promise<SelectedExtension> => {
-    const modules = await prompt(controller)
+function defineExtension<T extends string>({ prompt, resolve, ...option }: Extension<T>) {
+  return {
+    ...option,
+    select: async (controller: AbortController): Promise<SelectedExtension> => {
+      const modules = await prompt(controller)
 
-    return { modules, resolve: context => resolve(modules, context) }
+      return { modules, resolve: context => resolve(modules, context) }
+    },
   }
 }
 
 const extensions = [
-  defineExtension({ prompt: promptSaveManagement, resolve: resolveSaveManagement }),
-  defineExtension({ prompt: promptFileManagement, resolve: resolveFileManagement }),
-  defineExtension({ prompt: promptCheats, resolve: resolveCheats }),
-  defineExtension({ prompt: promptPerformanceTuning, resolve: resolvePerformanceTuning }),
-  defineExtension({ prompt: promptPerformanceMonitoring, resolve: resolvePerformanceMonitoring }),
-  defineExtension({ prompt: promptControllerSupport, resolve: resolveControllerSupport }),
-  defineExtension({ prompt: promptStreaming, resolve: resolveStreaming }),
-  defineExtension({ prompt: promptAmiibo, resolve: resolveAmiibo }),
+  defineExtension({
+    value: 'save-management',
+    label: 'Save Management',
+    initialSelected: true,
+    prompt: promptSaveManagement,
+    resolve: resolveSaveManagement,
+  }),
+  defineExtension({
+    value: 'file-management',
+    label: 'File Management',
+    initialSelected: true,
+    prompt: promptFileManagement,
+    resolve: resolveFileManagement,
+  }),
+  defineExtension({
+    value: 'cheats',
+    label: 'Cheats',
+    initialSelected: true,
+    prompt: promptCheats,
+    resolve: resolveCheats,
+  }),
+  defineExtension({
+    value: 'performance-tuning',
+    label: 'Performance Tuning',
+    prompt: promptPerformanceTuning,
+    resolve: resolvePerformanceTuning,
+  }),
+  defineExtension({
+    value: 'performance-monitoring',
+    label: 'Performance Monitoring',
+    prompt: promptPerformanceMonitoring,
+    resolve: resolvePerformanceMonitoring,
+  }),
+  defineExtension({
+    value: 'controller-support',
+    label: 'Controller Support',
+    prompt: promptControllerSupport,
+    resolve: resolveControllerSupport,
+  }),
+  defineExtension({
+    value: 'streaming',
+    label: 'Streaming',
+    prompt: promptStreaming,
+    resolve: resolveStreaming,
+  }),
+  defineExtension({
+    value: 'amiibo',
+    label: 'Amiibo',
+    prompt: promptAmiibo,
+    resolve: resolveAmiibo,
+  }),
 ]
 
 export async function promptExtensions(controller: AbortController): Promise<ExtensionSelection> {
+  const categories = await p.multiselect({
+    message: 'select extension categories',
+    options: extensions.map(({ value, label }) => ({ value, label })),
+    initialValues: extensions.filter(extension => extension.initialSelected).map(extension => extension.value),
+    required: false,
+    signal: controller.signal,
+  })
+
+  if (p.isCancel(categories)) {
+    controller.abort()
+    throw controller.signal.reason
+  }
+
   const selection: ExtensionSelection = []
 
-  for (const extension of extensions)
-    selection.push(await extension(controller))
+  for (const extension of extensions) {
+    if (categories.includes(extension.value))
+      selection.push(await extension.select(controller))
+  }
 
   return selection
 }

@@ -9,19 +9,6 @@ import { getRepositoryUrl, selectAsset } from '../utils'
 export type ControllerTool = 'mission-control' | 'sys-con'
 
 export async function promptControllerSupport(controller: AbortController): Promise<ControllerTool[]> {
-  const enabled = await p.confirm({
-    message: 'include controller support?',
-    signal: controller.signal,
-  })
-
-  if (p.isCancel(enabled)) {
-    controller.abort()
-    throw controller.signal.reason
-  }
-
-  if (!enabled)
-    return []
-
   const modules = await p.multiselect<ControllerTool>({
     message: 'select controller tools',
     initialValues: ['mission-control', 'sys-con'],
