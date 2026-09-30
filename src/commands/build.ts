@@ -13,7 +13,7 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
   const bundles = getBundles()
   const bundle = await p.select({
     message: 'select HOS version',
-    options: bundles.map(bundle => ({ value: bundle, label: bundle.labels.hos, hint: `Atmosphere ${bundle.labels.atmosphere}` })),
+    options: bundles.map(bundle => ({ value: bundle, label: bundle.labels.hos, hint: `atmosphere ${bundle.labels.atmosphere}` })),
     initialValue: bundles[0],
   })
   if (p.isCancel(bundle)) {
