@@ -43,7 +43,7 @@ and Ultrahand use their latest releases. Firmware files are not included.
 | Atmosphere | [Atmosphere-NX/Atmosphere](https://github.com/Atmosphere-NX/Atmosphere) | Atmosphere, fusee, Daybreak, hbmenu, hbloader, and other upstream tools |
 | Hekate | [CTCaer/hekate](https://github.com/CTCaer/hekate) | Bootloader with CFW emuMMC, CFW sysMMC, and stock sysMMC boot entries |
 | DBI | [rashevskyv/dbi](https://github.com/rashevskyv/dbi) | DBI with its default configuration |
-| sys-patch | [impeeza/sys-patch](https://github.com/impeeza/sys-patch) | System patching service and overlay |
+| Sys Patch | [impeeza/sys-patch](https://github.com/impeeza/sys-patch) | System patching service and overlay |
 | Ultrahand | [ppkantorski/Ultrahand-Overlay](https://github.com/ppkantorski/Ultrahand-Overlay) | Overlay menu and nx-ovlloader |
 | Sigpatches | [Supported versions](./assets/sigpatches/README.md) | Patches for the selected HOS and Atmosphere versions |
 
