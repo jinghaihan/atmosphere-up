@@ -34,6 +34,7 @@ describe('resolvePerformanceTuning', () => {
 
     expect(resources.map(resource => resource.module)).toEqual(['sys-clk', 'sys-clk-ultrahand-overlay', 'salty-nx', 'fps-locker', 'reverse-nx-rt'])
     expect(resources.map(resource => resource.asset.name)).toEqual(['sys-clk-2.0.1-21fix.zip', 'sys-clk-overlay.ovl', 'SaltyNX.zip', 'FPSLocker.ovl', 'ReverseNX-RT-ovl.ovl'])
+    expect(resources[0].paths).toEqual(['atmosphere/', 'config/', 'switch/sys-clk-manager.nro'])
     expect(resources[1].target).toBe('switch/.overlays/sys-clk-overlay.ovl')
   })
 
@@ -41,6 +42,12 @@ describe('resolvePerformanceTuning', () => {
     const resources = await resolvePerformanceTuning(['sys-clk-ultrahand-overlay'])
 
     expect(resources.map(resource => resource.module)).toEqual(['sys-clk', 'sys-clk-ultrahand-overlay'])
+  })
+
+  it('retains the original overlay when the enhanced overlay is not selected', async () => {
+    const resources = await resolvePerformanceTuning(['sys-clk'])
+
+    expect(resources[0].paths).toEqual(['atmosphere/', 'config/', 'switch/'])
   })
 
   it('allows HOC and Sys Clk together and excludes bundled monitoring tools', async () => {

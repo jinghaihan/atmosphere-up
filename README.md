@@ -55,6 +55,8 @@ selections.
 All performance tools except Horizon OC are selected by default. Selecting the
 Ultrahand clock overlay also includes a clock service. FPS Locker and ReverseNx RT
 include their shared [SaltyNX](https://github.com/masagrator/SaltyNX) dependency.
+Selecting Sys Clk Ultrahand Overlay excludes the original Sys Clk overlay while
+retaining its clock service and homebrew manager.
 
 Horizon OC requires its matching Atmosphere version and configures the CFW boot
 entries automatically. When selected with Sys Clk, Horizon OC supplies the clock

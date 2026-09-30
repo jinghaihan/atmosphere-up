@@ -83,7 +83,9 @@ export async function resolvePerformanceTuning(modules: PerformanceTool[], { sig
 
     switch (module) {
       case 'sys-clk':
-        resources.push(resource(/^sys-clk-.*\.zip$/, { paths: ['atmosphere/', 'config/', 'switch/'] }))
+        resources.push(resource(/^sys-clk-.*\.zip$/, {
+          paths: ['atmosphere/', 'config/', selected.has('sys-clk-ultrahand-overlay') ? 'switch/sys-clk-manager.nro' : 'switch/'],
+        }))
         break
       case 'sys-clk-ultrahand-overlay':
         resources.push(resource(/^sys-clk-overlay\.ovl$/, { target: 'switch/.overlays/sys-clk-overlay.ovl' }))
