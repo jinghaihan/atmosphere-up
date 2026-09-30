@@ -10,13 +10,19 @@ export const DEFAULT_OPTIONS: Partial<Options> = {
 }
 
 /// keep-sorted
-export const MODULE_REPO_CONFIG = {
+export const CORE_REPO_CONFIG = {
   'atmosphere': 'Atmosphere-NX/Atmosphere',
   'dbi': 'rashevskyv/dbi',
   'hekate': 'CTCaer/hekate',
   'lockpick-rcm': 'impeeza/Lockpick_RCMDecScots',
   'sys-patch': 'impeeza/sys-patch',
   'ultrahand': 'ppkantorski/Ultrahand-Overlay',
+} as const
+
+/// keep-sorted
+export const EXTENSION_REPO_CONFIG = {
+  checkpoint: 'BernardoGiordano/Checkpoint',
+  jksv: 'J-D-K/JKSV',
 } as const
 
 export const PACK_DEFAULTS = new URL('./defaults/', import.meta.url)

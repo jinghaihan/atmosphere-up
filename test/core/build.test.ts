@@ -1,7 +1,10 @@
 import type { Resource } from '../../src/core'
+import { Buffer } from 'node:buffer'
 import { readFile, rm } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
+import AdmZip from 'adm-zip'
 import { join, resolve } from 'pathe'
+import { glob } from 'tinyglobby'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { buildPack, getBundles } from '../../src/core'
 import { downloadAsset } from '../../src/download'
@@ -21,9 +24,56 @@ const resource = {
 afterEach(async () => {
   vi.clearAllMocks()
   await rm(directory, { recursive: true, force: true })
+  await rm(`${directory}.zip`, { force: true })
 })
 
 describe('buildPack', () => {
+  it('finishes the core settings before selecting extensions and compresses only after installing them', async () => {
+    const extension = {
+      ...resource,
+      module: 'jksv',
+      asset: { ...resource.asset, name: 'JKSV.nro' },
+      target: 'switch/JKSV/JKSV.nro',
+    } as Resource
+    const data = new TextEncoder().encode('save manager')
+    vi.mocked(downloadAsset)
+      .mockResolvedValueOnce(await readFile(join(cwd, 'test/fixtures/core.zip')))
+      .mockResolvedValueOnce(data)
+    const onProgress = vi.fn()
+
+    await buildPack(bundle, [resource], `${directory}.zip`, false, true, {
+      onProgress,
+      onCoreReady: async () => {
+        expect(downloadAsset).toHaveBeenCalledTimes(1)
+        expect(onProgress.mock.lastCall).toEqual(['setting Hekate reboot payload'])
+        const [settings] = await glob('.atmosphere-up-*/pack/config/ultrahand/config.ini', { cwd: resolve(directory, '..'), dot: true, absolute: true })
+        expect(await readFile(settings, 'utf8')).toContain('L+DDOWN')
+        return [extension]
+      },
+    })
+
+    const archive = new AdmZip(`${directory}.zip`)
+    expect(archive.readFile(extension.target!)).toEqual(Buffer.from(data))
+    expect(JSON.parse(archive.readAsText('pack-manifest.json')).resources.map((item: Resource) => item.module)).toEqual(['ultrahand', 'jksv'])
+    const messages = onProgress.mock.calls.map(([message]) => message)
+    expect(messages.indexOf('compressing pack into ZIP')).toBeGreaterThan(messages.indexOf('installing jksv [1/1]'))
+  })
+
+  it('cleans up the assembled core when the extension prompts are cancelled', async () => {
+    vi.mocked(downloadAsset).mockResolvedValueOnce(await readFile(join(cwd, 'test/fixtures/core.zip')))
+    const controller = new AbortController()
+
+    await expect(buildPack(bundle, [resource], `${directory}.zip`, false, true, {
+      signal: controller.signal,
+      onCoreReady: async () => {
+        controller.abort()
+        throw controller.signal.reason
+      },
+    })).rejects.toThrow('aborted')
+
+    expect(await glob(['.atmosphere-up-*', 'build.zip'], { cwd: resolve(directory, '..'), dot: true, onlyFiles: false })).toEqual([])
+  })
+
   it('sets overlay wake keys and an 8 MiB allocation and returns to Hekate on reboot', async () => {
     vi.mocked(downloadAsset).mockResolvedValue(await readFile(join(cwd, 'test/fixtures/core.zip')))
     const onProgress = vi.fn()

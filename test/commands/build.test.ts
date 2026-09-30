@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { runBuildCommand } from '../../src/commands'
 import { resolveConfig } from '../../src/config'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../../src/core'
+import { resolveSaveManagement } from '../../src/extensions'
 
 vi.mock('@clack/prompts', () => ({
   intro: vi.fn(),
@@ -19,6 +20,7 @@ vi.mock('@clack/prompts', () => ({
   spinner: vi.fn(() => ({ start: vi.fn(), message: vi.fn(), stop: vi.fn(), error: vi.fn() })),
 }))
 vi.mock('../../src/config', () => ({ resolveConfig: vi.fn() }))
+vi.mock('../../src/extensions', () => ({ resolveSaveManagement: vi.fn() }))
 vi.mock('../../src/core', async original => ({
   ...await original<typeof import('../../src/core')>(),
   inspectOutput: vi.fn(),
@@ -30,15 +32,68 @@ const bundle = getBundles().find(bundle => bundle.labels.hos === '21.2.0')!
 
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.mocked(p.select).mockReset()
+  vi.mocked(p.confirm).mockReset()
+  vi.mocked(buildPack).mockReset()
   process.exitCode = 0
   vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', pack: false })
   vi.mocked(p.select).mockResolvedValue(bundle)
   vi.mocked(inspectOutput).mockReturnValue(false)
   vi.mocked(resolveResources).mockResolvedValue([])
+  vi.mocked(resolveSaveManagement).mockResolvedValue({ module: 'jksv' } as Awaited<ReturnType<typeof resolveSaveManagement>>)
   vi.mocked(buildPack).mockResolvedValue()
 })
 
 describe('runBuildCommand', () => {
+  it('skips optional downloads when save management is declined', async () => {
+    vi.mocked(p.confirm).mockResolvedValue(false)
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      expect(p.confirm).not.toHaveBeenCalled()
+      expect(await task!.onCoreReady!()).toEqual([])
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveSaveManagement).not.toHaveBeenCalled()
+    expect(p.select).toHaveBeenCalledTimes(1)
+    expect(p.outro).toHaveBeenCalled()
+  })
+
+  it.each(['jksv', 'checkpoint'] as const)('selects %s after the core pack is assembled, with JKSV as the default', async (module) => {
+    vi.mocked(p.confirm).mockResolvedValue(true)
+    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce(module)
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      expect(p.confirm).not.toHaveBeenCalled()
+      await task!.onCoreReady!()
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveSaveManagement).toHaveBeenCalledWith(module, expect.any(Object))
+    expect(vi.mocked(p.select).mock.calls[1][0]).toMatchObject({
+      initialValue: 'jksv',
+      options: [
+        { value: 'jksv', hint: 'https://github.com/J-D-K/JKSV' },
+        { value: 'checkpoint', hint: 'https://github.com/BernardoGiordano/Checkpoint' },
+      ],
+    })
+  })
+
+  it.each(['confirm', 'select'] as const)('cancels from the extension %s prompt before resolving optional releases', async (prompt) => {
+    vi.mocked(p.confirm).mockResolvedValue(prompt === 'confirm' ? Symbol('cancel') : true)
+    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce(Symbol('cancel'))
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      await task!.onCoreReady!()
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveSaveManagement).not.toHaveBeenCalled()
+    expect(p.outro).not.toHaveBeenCalled()
+    expect(process.exitCode).toBe(130)
+    process.exitCode = 0
+  })
+
   it('uses the requested HOS version without prompting', async () => {
     vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', pack: false, version: '21.2.0' })
     await runBuildCommand({ version: '21.2.0' })

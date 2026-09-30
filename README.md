@@ -31,6 +31,13 @@ component versions.
 
 Ultrahand opens with **L + D-pad Down**.
 
+### Optional extensions
+
+After assembling the core components, choose whether to include save management:
+[JKSV](https://github.com/J-D-K/JKSV) (default selection) or
+[Checkpoint](https://github.com/BernardoGiordano/Checkpoint).
+ZIP output includes the selected extensions.
+
 ### Pack defaults
 
 - Overlays use an 8 MiB memory allocation.

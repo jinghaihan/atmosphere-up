@@ -1,11 +1,12 @@
+import type { EXTENSION_REPO_CONFIG } from '../constants'
 import type { ReleaseAsset, TaskOptions } from '../types'
 import type { Bundle } from './catalog'
-import { MODULE_REPO_CONFIG } from '../constants'
+import { CORE_REPO_CONFIG } from '../constants'
 import { getRelease } from '../download'
 import { selectAsset } from '../utils'
 
 export interface Resource {
-  module: keyof typeof MODULE_REPO_CONFIG
+  module: keyof typeof CORE_REPO_CONFIG | keyof typeof EXTENSION_REPO_CONFIG
   release: string
   page: string
   asset: ReleaseAsset
@@ -14,12 +15,15 @@ export interface Resource {
 
 export async function resolveResources(bundle: Bundle, { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
   const resources: Resource[] = []
-  const entries = Object.entries(MODULE_REPO_CONFIG)
+  const entries = Object.entries(CORE_REPO_CONFIG)
+
   for (const [index, [module, repo]] of entries.entries()) {
     signal?.throwIfAborted()
+
     const tag = module === 'atmosphere' ? bundle.atmosphereTag : undefined
     onProgress?.(`[${index + 1}/${entries.length}] resolving ${module} (${tag || 'latest'})`)
     const release = await getRelease(repo, tag, signal)
+
     const resource = (pattern: RegExp, target?: string): Resource => ({
       module: module as Resource['module'],
       release: release.tag_name,
@@ -27,6 +31,7 @@ export async function resolveResources(bundle: Bundle, { signal, onProgress }: T
       asset: selectAsset(release, pattern),
       target,
     })
+
     switch (module) {
       case 'atmosphere':
         resources.push(
@@ -59,5 +64,6 @@ export async function resolveResources(bundle: Bundle, { signal, onProgress }: T
         throw new Error(`Unknown core module: ${module}.`)
     }
   }
+
   return resources
 }
