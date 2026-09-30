@@ -44,12 +44,12 @@
   },
   "dependencies": {
     "@clack/prompts": "catalog:prod",
+    "adm-zip": "catalog:prod",
     "ansis": "catalog:prod",
     "cac": "catalog:prod",
     "pathe": "catalog:prod",
     "tinyglobby": "catalog:prod",
     "unconfig": "catalog:prod",
-    "unzipper": "catalog:prod",
     "verkit": "catalog:prod"
   },
   "devDependencies": {
@@ -64,8 +64,7 @@
     "eslint": "catalog:lint",
     "lint-staged": "catalog:lint",
     "vitest": "catalog:test",
-    "@types/node": "catalog:types",
-    "@types/unzipper": "catalog:types"
+    "@types/node": "catalog:types"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"
