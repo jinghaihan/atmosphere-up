@@ -16,9 +16,8 @@ pnpm start ./output --pack
 pnpm start --version 21.2.0 --output ./output --pack
 ```
 
-Use `--version <hos>` to skip the HOS selection prompt. Versions absent from the
-bundled catalog fail before any GitHub queries or downloads. The CLI's own version
-is shown in the opening banner.
+Use `--version <hos>` to skip the HOS selection prompt. Unsupported versions
+are rejected before downloading any components.
 
 `output` is a parent directory. For HOS 21.2.0, these commands create
 `output/atmosphere-1.10.2-hos-21.2.0/` or
@@ -34,41 +33,34 @@ Progress shows the current component, downloaded byte count,
 extraction, configuration, and ZIP compression. Press Ctrl+C to cancel an active
 build. Downloads stop and the temporary build directory is removed before exit.
 
-The bundled sigpatch catalog determines the selectable HOS versions and exact
-Atmosphere release tags. Hekate, DBI, sys-patch, and Ultrahand use their latest
-GitHub releases. Firmware files are not downloaded or included.
+Atmosphere and sigpatches match the selected HOS version. Hekate, DBI, sys-patch,
+and Ultrahand use their latest releases. Firmware files are not included.
 
 ### Core components
 
-| Component | Source | Included files |
+| Component | Source | Includes |
 | --- | --- | --- |
-| Atmosphere | [Atmosphere-NX/Atmosphere](https://github.com/Atmosphere-NX/Atmosphere) | Official ZIP and fusee.bin; bundled Daybreak, hbmenu, hbloader, and other upstream tools |
-| Hekate | [CTCaer/hekate](https://github.com/CTCaer/hekate) | Official ZIP and payload; CFW emuMMC, CFW sysMMC, and stock sysMMC boot entries |
-| DBI | [rashevskyv/dbi](https://github.com/rashevskyv/dbi) | DBI.nro and the upstream dbi.config |
-| sys-patch | [impeeza/sys-patch](https://github.com/impeeza/sys-patch) | Release ZIP |
-| Ultrahand | [ppkantorski/Ultrahand-Overlay](https://github.com/ppkantorski/Ultrahand-Overlay) | sdout.zip, including its bundled nx-ovlloader |
-| Sigpatches | [Bundled catalog](./assets/sigpatches/README.md) | Matching IPS patches and Hekate patches.ini |
+| Atmosphere | [Atmosphere-NX/Atmosphere](https://github.com/Atmosphere-NX/Atmosphere) | Atmosphere, fusee, Daybreak, hbmenu, hbloader, and other upstream tools |
+| Hekate | [CTCaer/hekate](https://github.com/CTCaer/hekate) | Bootloader with CFW emuMMC, CFW sysMMC, and stock sysMMC boot entries |
+| DBI | [rashevskyv/dbi](https://github.com/rashevskyv/dbi) | DBI with its default configuration |
+| sys-patch | [impeeza/sys-patch](https://github.com/impeeza/sys-patch) | System patching service and overlay |
+| Ultrahand | [ppkantorski/Ultrahand-Overlay](https://github.com/ppkantorski/Ultrahand-Overlay) | Overlay menu and nx-ovlloader |
+| Sigpatches | [Supported versions](./assets/sigpatches/README.md) | Patches for the selected HOS and Atmosphere versions |
 
-Reboot to Payload returns to Hekate. CFW boot entries use `pkg3` and
-`kip1patch=nosigchk`. A `pack-manifest.json` records the selected versions,
-sources, and downloaded file hashes.
+Reboot to Payload returns to Hekate. Each pack includes a manifest listing its
+component versions.
 
-Ultrahand opens with **L + D-pad Down** (`L+DDOWN`). The pack writes this default
-to both `config/ultrahand/config.ini` and the Tesla-compatible
-`config/tesla/config.ini`.
+Ultrahand opens with **L + D-pad Down**.
 
 ### Pack defaults
 
-- Cheats start disabled. `dmnt_always_save_cheat_toggles` is `0`: toggle state is
-  saved only when a toggle file already exists, rather than always being saved.
+- Cheats start disabled. Toggle state is saved only when a toggle file already
+  exists.
 - USB 3.0 is enabled for homebrew.
-- PRODINFO is blanked in emuMMC, while sysMMC keeps its original information.
-- Nintendo hosts are blocked in Atmosphere on both sysMMC and emuMMC.
-  Connectivity tests remain available, and Atmosphere's built-in telemetry redirects stay enabled.
-  These hosts do not apply to the stock boot entry.
-
-Pack assembly has been verified locally; boot compatibility has not been tested
-on Switch hardware.
+- Serial number information is hidden in emuMMC, while sysMMC keeps its original
+  information.
+- Nintendo services are blocked while running Atmosphere on sysMMC or emuMMC.
+  Connectivity-test domains are excluded from blocking. Stock sysMMC is unaffected.
 
 ## Configuration
 
@@ -88,15 +80,11 @@ configuration: `--pack` enables ZIP output and `--no-pack` enables directory
 output. Use `--cwd <directory>` to select a different working directory and config.
 Relative output paths resolve from that working directory.
 
-Release files download from their public GitHub URLs, while version queries use
-the GitHub API. Authentication automatically reads `GITHUB_TOKEN` from the
-environment, or reuses an existing GitHub CLI login through
-`gh auth token --hostname github.com`. No environment variable is needed when
-`gh` is already logged in. Without either credential source, requests are
-anonymous and use GitHub's lower API rate limit.
+Authentication uses `GITHUB_TOKEN` when set, otherwise an existing GitHub CLI
+login. Without either, downloads and release queries run anonymously.
 
-GitHub queries and downloads honor `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`
-(including their lowercase forms) through Undici's `EnvHttpProxyAgent`.
+GitHub queries and downloads support `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`,
+including their lowercase forms.
 
 ## License
 
