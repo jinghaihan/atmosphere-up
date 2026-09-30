@@ -12,8 +12,11 @@ npx atmosphere-up
 ```
 
 Atmosphere and sigpatches match the selected HOS version. Hekate, DBI, Lockpick
-RCM, Ovl Sysmodules, sys-patch, and Ultrahand use their latest releases. Firmware
-files are not included.
+RCM, Ovl Sysmodules, sys-patch, and Ultrahand use their latest releases.
+
+<p align='center'>
+<img src='./help.png' alt="help" />
+</p>
 
 ### Core components
 
@@ -35,8 +38,8 @@ Ultrahand opens with **L + D-pad Down**.
 
 ### Optional extensions
 
-Extensions are enabled by default. Use `--no-ext` to build only the core pack
-without extension prompts, or `--ext` to enable them.
+Extensions are enabled by default. Use `--no-ext` to skip extension prompts,
+or `--ext` to enable them.
 
 Choose optional extensions after assembling the core components. Save management,
 file management, and Amiibo emulation use single selections; cheat, performance
@@ -81,6 +84,17 @@ Mission Control matches the selected HOS version. Sys Con uses its latest releas
 
 Selected extensions are included in both directory and ZIP output.
 
+### Firmware updates
+
+After installing the core components and selected extensions, the CLI offers to
+download firmware for the selected HOS version from
+[THZoria/NX_Firmware](https://github.com/THZoria/NX_Firmware).
+
+Firmware is extracted to `firmware/<HOS version>/` in the generated pack for
+installation with Daybreak. It is included in both directory and ZIP output.
+Use `--no-firmware` to skip the prompt and download, or `--firmware` to enable them.
+Firmware downloads remain available when extensions are disabled with `--no-ext`.
+
 ### Pack defaults
 
 - Overlays use an 8 MiB memory allocation.
@@ -103,6 +117,7 @@ import { defineConfig } from 'atmosphere-up'
 export default defineConfig({
   output: './output',
   ext: true,
+  firmware: true,
   pack: false,
 })
 ```
