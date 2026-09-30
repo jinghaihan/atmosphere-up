@@ -44,14 +44,10 @@
   },
   "dependencies": {
     "@clack/prompts": "catalog:prod",
-    "@octokit/rest": "catalog:prod",
-    "adm-zip": "catalog:prod",
     "ansis": "catalog:prod",
     "cac": "catalog:prod",
     "pathe": "catalog:prod",
-    "tinyglobby": "catalog:prod",
-    "unconfig": "catalog:prod",
-    "verkit": "catalog:prod"
+    "unconfig": "catalog:prod"
   },
   "devDependencies": {
     "tsdown": "catalog:build",
@@ -61,6 +57,10 @@
     "taze": "catalog:dev",
     "tsx": "catalog:dev",
     "typescript": "catalog:dev",
+    "@octokit/rest": "catalog:inlined",
+    "adm-zip": "catalog:inlined",
+    "tinyglobby": "catalog:inlined",
+    "verkit": "catalog:inlined",
     "@octohash/eslint-config": "catalog:lint",
     "eslint": "catalog:lint",
     "lint-staged": "catalog:lint",
@@ -72,5 +72,8 @@
   },
   "lint-staged": {
     "*": "eslint --fix"
+  },
+  "inlinedDependencies": {
+    "@octokit/rest": "22.0.1"
   }
 }
