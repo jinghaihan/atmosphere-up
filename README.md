@@ -27,8 +27,8 @@ Progress shows the current component, downloaded byte count,
 extraction, configuration, and ZIP compression. Press Ctrl+C to cancel an active
 build. Downloads stop and the temporary build directory is removed before exit.
 
-Atmosphere and sigpatches match the selected HOS version. Hekate, DBI, sys-patch,
-and Ultrahand use their latest releases. Firmware files are not included.
+Atmosphere and sigpatches match the selected HOS version. Hekate, DBI, Lockpick
+RCM, sys-patch, and Ultrahand use their latest releases. Firmware files are not included.
 
 ### Core components
 
@@ -36,7 +36,8 @@ and Ultrahand use their latest releases. Firmware files are not included.
 | --- | --- | --- |
 | Atmosphere | [Atmosphere-NX/Atmosphere](https://github.com/Atmosphere-NX/Atmosphere) | Atmosphere, fusee, Daybreak, hbmenu, hbloader, and other upstream tools |
 | Hekate | [CTCaer/hekate](https://github.com/CTCaer/hekate) | Bootloader with CFW emuMMC, CFW sysMMC, and stock sysMMC boot entries |
-| DBI | [rashevskyv/dbi](https://github.com/rashevskyv/dbi) | DBI with its default configuration |
+| DBI | [rashevskyv/dbi](https://github.com/rashevskyv/dbi) | Installation, file transfer, save management, and firmware export |
+| Lockpick RCM | [impeeza/Lockpick_RCMDecScots](https://github.com/impeeza/Lockpick_RCMDecScots) | Console key export from Hekate's Payloads menu |
 | Sys Patch | [impeeza/sys-patch](https://github.com/impeeza/sys-patch) | System patching service and overlay |
 | Ultrahand | [ppkantorski/Ultrahand-Overlay](https://github.com/ppkantorski/Ultrahand-Overlay) | Overlay menu and nx-ovlloader |
 | Sigpatches | [Supported versions](./assets/sigpatches/README.md) | Patches for the selected HOS and Atmosphere versions |

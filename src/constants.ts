@@ -14,6 +14,7 @@ export const MODULE_REPO_CONFIG = {
   'atmosphere': 'Atmosphere-NX/Atmosphere',
   'dbi': 'rashevskyv/dbi',
   'hekate': 'CTCaer/hekate',
+  'lockpick-rcm': 'impeeza/Lockpick_RCMDecScots',
   'sys-patch': 'impeeza/sys-patch',
   'ultrahand': 'ppkantorski/Ultrahand-Overlay',
 } as const

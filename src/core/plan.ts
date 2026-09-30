@@ -46,6 +46,9 @@ export async function resolveResources(bundle: Bundle, { signal, onProgress }: T
           resource(/^hekate_ctcaer_[\d.]+\.bin$/, 'payload.bin'),
         )
         break
+      case 'lockpick-rcm':
+        resources.push(resource(/^Lockpick_RCM-[\d.]+_Hekate\.zip$/))
+        break
       case 'sys-patch':
         resources.push(resource(/^sys-patch.*\.zip$/))
         break
