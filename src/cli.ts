@@ -2,6 +2,7 @@ import type { CAC } from 'cac'
 import type { CommandOptions } from './types'
 import process from 'node:process'
 import * as p from '@clack/prompts'
+import c from 'ansis'
 import { cac } from 'cac'
 import { EnvHttpProxyAgent, setGlobalDispatcher } from 'undici'
 import { runBuildCommand } from './commands'
@@ -29,6 +30,6 @@ catch (error) {
 }
 
 function handleError(error: unknown): void {
-  p.note(error instanceof Error ? error.message : String(error), 'build failed')
+  p.note(error instanceof Error ? error.message : String(error), c.red('build failed'))
   process.exitCode = 1
 }

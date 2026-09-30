@@ -2,6 +2,7 @@ import type { CommandOptions } from '../types'
 import process from 'node:process'
 import * as p from '@clack/prompts'
 import c from 'ansis'
+import tildify from 'tildify'
 import { resolveConfig } from '../config'
 import { NAME, VERSION } from '../constants'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../core'
@@ -13,7 +14,7 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
   const bundles = getBundles()
   const bundle = await p.select({
     message: 'select HOS version',
-    options: bundles.map(bundle => ({ value: bundle, label: bundle.labels.hos, hint: `atmosphere ${bundle.labels.atmosphere}` })),
+    options: bundles.map(bundle => ({ value: bundle, label: c.cyan(bundle.labels.hos), hint: `atmosphere ${bundle.labels.atmosphere}` })),
     initialValue: bundles[0],
   })
   if (p.isCancel(bundle)) {
@@ -26,7 +27,7 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
   const replace = inspectOutput(destination, cwd)
   if (replace) {
     const confirmed = await p.confirm({
-      message: `output already exists: ${destination}. replace it?`,
+      message: `output already exists: ${c.cyan(tildify(destination))}. replace it?`,
       initialValue: false,
     })
     if (p.isCancel(confirmed) || !confirmed) {
@@ -37,15 +38,15 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
 
   const controller = new AbortController()
   const spinner = p.spinner({ onCancel: () => controller.abort(), cancelMessage: 'cancelling build' })
-  const task = { signal: controller.signal, onProgress: (message: string) => spinner.message(message) }
-  spinner.start('resolving core releases')
+  const task = { signal: controller.signal, onProgress: (message: string) => spinner.message(c.cyan(message)) }
+  spinner.start(c.cyan('resolving core releases'))
   // Let Ctrl+C emit SIGINT instead of Clack's keypress blocker exiting immediately.
   if (process.stdin.isTTY)
     process.stdin.setRawMode(false)
   try {
     const resources = await resolveResources(bundle, task)
     await buildPack(bundle, resources, destination, replace, config.pack, task)
-    spinner.stop('core pack assembled')
+    spinner.stop(c.green('core pack assembled'))
   }
   catch (error) {
     if (controller.signal.aborted) {
@@ -56,5 +57,5 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
     spinner.error('build failed')
     throw error
   }
-  p.outro(`pack ready: ${destination}`)
+  p.outro(`${c.green('pack ready:')} ${c.cyan(tildify(destination))}`)
 }

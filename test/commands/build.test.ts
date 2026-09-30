@@ -1,4 +1,6 @@
+import { homedir } from 'node:os'
 import process from 'node:process'
+import { stripVTControlCharacters } from 'node:util'
 import * as p from '@clack/prompts'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { runBuildCommand } from '../../src/commands'
@@ -41,7 +43,8 @@ describe('runBuildCommand', () => {
     await runBuildCommand({})
     expect(resolveResources).not.toHaveBeenCalled()
     expect(buildPack).not.toHaveBeenCalled()
-    expect(p.confirm).toHaveBeenCalledWith({
+    const options = vi.mocked(p.confirm).mock.calls[0][0]
+    expect({ ...options, message: stripVTControlCharacters(options.message) }).toEqual({
       message: 'output already exists: /workspace/output/atmosphere-1.10.2-hos-21.2.0. replace it?',
       initialValue: false,
     })
@@ -53,7 +56,18 @@ describe('runBuildCommand', () => {
     expect(buildPack).toHaveBeenCalledWith(bundle, [], '/workspace/output/atmosphere-1.10.2-hos-21.2.0.zip', false, true, expect.objectContaining({ signal: expect.any(AbortSignal) }))
     const task = vi.mocked(resolveResources).mock.calls[0][1]!
     task.onProgress!('extracting atmosphere')
-    expect(vi.mocked(p.spinner).mock.results[0].value.message).toHaveBeenCalledWith('extracting atmosphere')
+    expect(stripVTControlCharacters(vi.mocked(p.spinner).mock.results[0].value.message.mock.lastCall[0])).toBe('extracting atmosphere')
+  })
+
+  it('shortens the final display path without changing the build destination', async () => {
+    const output = `${homedir()}/packs`
+    vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output, pack: false })
+    vi.mocked(inspectOutput).mockReturnValue(true)
+    vi.mocked(p.confirm).mockResolvedValue(true)
+    await runBuildCommand({})
+    expect(vi.mocked(buildPack).mock.calls[0][2]).toBe(`${output}/atmosphere-1.10.2-hos-21.2.0`)
+    expect(stripVTControlCharacters(vi.mocked(p.confirm).mock.calls[0][0].message)).toBe('output already exists: ~/packs/atmosphere-1.10.2-hos-21.2.0. replace it?')
+    expect(stripVTControlCharacters(vi.mocked(p.outro).mock.calls[0][0]!)).toBe('pack ready: ~/packs/atmosphere-1.10.2-hos-21.2.0')
   })
 
   it('waits for cancellation cleanup before reporting the abort', async () => {

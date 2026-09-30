@@ -2,6 +2,7 @@ import type { TaskOptions } from '../types'
 import { existsSync } from 'node:fs'
 import { mkdir, mkdtemp, rename, rm } from 'node:fs/promises'
 import { dirname, join, resolve } from 'pathe'
+import tildify from 'tildify'
 import { isParentDirectory } from '../utils'
 import { compressArchive } from './archive'
 
@@ -26,7 +27,7 @@ export async function writeOutput(directory: string, replace: boolean, populate:
       await compressArchive(staging, result)
     }
     signal?.throwIfAborted()
-    onProgress?.(`saving pack to ${directory}`)
+    onProgress?.(`saving pack to ${tildify(directory)}`)
     if (replace)
       await rm(directory, { recursive: true, force: true })
     await rename(result, directory)
