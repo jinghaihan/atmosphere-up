@@ -57,7 +57,11 @@ export async function buildPack(bundle: Bundle, resources: Resource[], directory
       hos: bundle.labels.hos,
       atmosphere: bundle.labels.atmosphere,
       createdAt: new Date().toISOString(),
-      sigpatches: { id: bundle.id, sha256: bundle.sha256, sources: bundle.sources },
+      sigpatches: {
+        id: bundle.id,
+        sha256: bundle.sha256,
+        sources: bundle.sources,
+      },
       resources: downloads.map(({ resource, sha256 }) => ({
         module: resource.module,
         release: resource.release,

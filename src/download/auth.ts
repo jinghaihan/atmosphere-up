@@ -6,7 +6,11 @@ export async function resolveGithubToken(): Promise<string | undefined> {
     return process.env.GITHUB_TOKEN
 
   try {
-    const result = await exec('gh', ['auth', 'token', '--hostname', 'github.com'], { throwOnError: true })
+    const result = await exec(
+      'gh',
+      ['auth', 'token', '--hostname', 'github.com'],
+      { throwOnError: true },
+    )
     return result.stdout.trim() || undefined
   }
   catch {

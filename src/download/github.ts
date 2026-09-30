@@ -16,8 +16,17 @@ export async function getRelease(repository: string, tag?: string, signal?: Abor
   signal?.throwIfAborted()
   const [owner, repo] = repository.split('/')
   const response = tag
-    ? await github.rest.repos.getReleaseByTag({ owner, repo, tag, request: { signal } })
-    : await github.rest.repos.getLatestRelease({ owner, repo, request: { signal } })
+    ? await github.rest.repos.getReleaseByTag({
+        owner,
+        repo,
+        tag,
+        request: { signal },
+      })
+    : await github.rest.repos.getLatestRelease({
+        owner,
+        repo,
+        request: { signal },
+      })
   return response.data
 }
 
@@ -28,8 +37,13 @@ export async function downloadAsset(asset: ReleaseAsset, { signal, onProgress }:
   const response = await github.request({
     method: 'GET',
     url: asset.browser_download_url,
-    headers: { accept: 'application/octet-stream' },
-    request: { parseSuccessResponseBody: false, signal },
+    headers: {
+      accept: 'application/octet-stream',
+    },
+    request: {
+      parseSuccessResponseBody: false,
+      signal,
+    },
   })
   let received = 0
   const stream = response.data as unknown as ReadableStream<Uint8Array>

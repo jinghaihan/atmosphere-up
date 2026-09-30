@@ -9,10 +9,17 @@ export function getBundles(): Bundle[] {
 }
 
 export function getBundlePath(bundle: Bundle): string {
-  const [path] = globSync([
-    `../assets/sigpatches/${bundle.file}`,
-    `../../assets/sigpatches/${bundle.file}`,
-  ], { cwd: new URL('.', import.meta.url), absolute: true, expandDirectories: false })
+  const [path] = globSync(
+    [
+      `../assets/sigpatches/${bundle.file}`,
+      `../../assets/sigpatches/${bundle.file}`,
+    ],
+    {
+      cwd: new URL('.', import.meta.url),
+      absolute: true,
+      expandDirectories: false,
+    },
+  )
   if (path)
     return path
   throw new Error('Bundled sigpatch resources are missing. Reinstall atmosphere-up.')

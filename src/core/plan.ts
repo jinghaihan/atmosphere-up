@@ -29,13 +29,22 @@ export async function resolveResources(bundle: Bundle, { signal, onProgress }: T
     })
     switch (module) {
       case 'atmosphere':
-        resources.push(resource(/^atmosphere-.*\.zip$/), resource(/^fusee\.bin$/, 'bootloader/payloads/fusee.bin'))
+        resources.push(
+          resource(/^atmosphere-.*\.zip$/),
+          resource(/^fusee\.bin$/, 'bootloader/payloads/fusee.bin'),
+        )
         break
       case 'dbi':
-        resources.push(resource(/^DBI\.nro$/, 'switch/DBI/DBI.nro'), resource(/^dbi\.config$/, 'switch/DBI/dbi.config'))
+        resources.push(
+          resource(/^DBI\.nro$/, 'switch/DBI/DBI.nro'),
+          resource(/^dbi\.config$/, 'switch/DBI/dbi.config'),
+        )
         break
       case 'hekate':
-        resources.push(resource(/^hekate_ctcaer_[\d.]+_Nyx_[\d.]+\.zip$/), resource(/^hekate_ctcaer_[\d.]+\.bin$/, 'payload.bin'))
+        resources.push(
+          resource(/^hekate_ctcaer_[\d.]+_Nyx_[\d.]+\.zip$/),
+          resource(/^hekate_ctcaer_[\d.]+\.bin$/, 'payload.bin'),
+        )
         break
       case 'sys-patch':
         resources.push(resource(/^sys-patch.*\.zip$/))

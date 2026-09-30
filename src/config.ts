@@ -30,7 +30,11 @@ export async function resolveConfig(options: Partial<CommandOptions>): Promise<O
   if (merged.output !== undefined && (typeof merged.output !== 'string' || !merged.output.trim()))
     throw new Error('Output must be a non-empty directory path.')
 
-  return { ...merged, cwd, output: merged.output === undefined ? undefined : resolve(cwd, merged.output) }
+  return {
+    ...merged,
+    cwd,
+    output: merged.output === undefined ? undefined : resolve(cwd, merged.output),
+  }
 }
 
 function normalizeConfig(options: Partial<CommandOptions>) {
