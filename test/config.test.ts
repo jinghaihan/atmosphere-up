@@ -19,6 +19,18 @@ describe('resolveConfig', () => {
     expect((await resolveConfig({ cwd: directory })).output).toBeUndefined()
   })
 
+  it('enables extensions by default and allows the CLI to disable them', async () => {
+    const directory = resolve(cwd, 'test/fixtures/empty')
+    expect((await resolveConfig({ cwd: directory, ext: undefined })).ext).toBe(true)
+    expect((await resolveConfig({ cwd: directory, ext: false })).ext).toBe(false)
+  })
+
+  it('retains disabled extensions from configuration unless the CLI enables them', async () => {
+    const directory = resolve(cwd, 'test/fixtures/core-only')
+    expect((await resolveConfig({ cwd: directory, ext: undefined })).ext).toBe(false)
+    expect((await resolveConfig({ cwd: directory, ext: true })).ext).toBe(true)
+  })
+
   it('rejects an empty output path', async () => {
     await expect(resolveConfig({ cwd, output: '' })).rejects.toThrow('non-empty')
   })

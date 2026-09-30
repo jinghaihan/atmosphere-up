@@ -33,6 +33,9 @@ Ultrahand opens with **L + D-pad Down**.
 
 ### Optional extensions
 
+Extensions are enabled by default. Use `--no-ext` to build only the core pack
+without extension prompts, or `--ext` to enable them.
+
 Choose optional extensions after assembling the core components. Save management
 and file management use single selections; cheat and performance tuning tools allow
 multiple selections. Performance monitoring is a separate single selection, with
@@ -89,6 +92,7 @@ import { defineConfig } from 'atmosphere-up'
 
 export default defineConfig({
   output: './output',
+  ext: true,
   pack: false,
 })
 ```

@@ -59,7 +59,7 @@ beforeEach(() => {
   vi.mocked(p.multiselect).mockReset()
   vi.mocked(buildPack).mockReset()
   process.exitCode = 0
-  vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', pack: false })
+  vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', ext: true, pack: false })
   vi.mocked(p.select).mockResolvedValue(bundle)
   vi.mocked(p.confirm).mockResolvedValue(false)
   vi.mocked(p.multiselect).mockResolvedValue([])
@@ -75,6 +75,28 @@ beforeEach(() => {
 })
 
 describe('runBuildCommand', () => {
+  it.each([false, true])('skips all extension prompts and releases with ext disabled and pack=%s', async (pack) => {
+    vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', ext: false, pack })
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      expect(task!.onCoreReady).toBeUndefined()
+    })
+
+    await runBuildCommand({ ext: false, pack })
+
+    expect(resolveResources).toHaveBeenCalledWith(bundle, expect.any(Object))
+    expect(buildPack).toHaveBeenCalledWith(bundle, [], `/workspace/output/atmosphere-1.10.2-hos-21.2.0${pack ? '.zip' : ''}`, false, pack, expect.any(Object))
+    expect(p.select).toHaveBeenCalledTimes(1)
+    expect(p.confirm).not.toHaveBeenCalled()
+    expect(p.multiselect).not.toHaveBeenCalled()
+    expect(resolveSaveManagement).not.toHaveBeenCalled()
+    expect(resolveCheats).not.toHaveBeenCalled()
+    expect(resolveFileManagement).not.toHaveBeenCalled()
+    expect(resolvePerformanceTuning).not.toHaveBeenCalled()
+    expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
+    expect(resolveSaltyNx).not.toHaveBeenCalled()
+    expect(p.outro).toHaveBeenCalled()
+  })
+
   it('collects all extension choices before resolving releases and defaults only EdiZon Overlay', async () => {
     vi.mocked(p.confirm).mockResolvedValue(true)
     vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv').mockImplementationOnce(async () => {

@@ -4,6 +4,7 @@ export interface CommandOptions {
   cwd?: string
   version?: string
   output?: string
+  ext?: boolean
   pack?: boolean
 }
 

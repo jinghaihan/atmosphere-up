@@ -68,17 +68,19 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
 
     await buildPack(bundle, resources, destination, replace, config.pack, {
       ...task,
-      onCoreReady: async () => {
-        spinner.stop(c.green('core pack assembled'))
+      onCoreReady: config.ext
+        ? async () => {
+          spinner.stop(c.green('core pack assembled'))
 
-        const selection = await promptExtensions(controller)
+          const selection = await promptExtensions(controller)
 
-        spinner.start(c.cyan('finalizing pack'))
-        if (process.stdin.isTTY)
-          process.stdin.setRawMode(false)
+          spinner.start(c.cyan('finalizing pack'))
+          if (process.stdin.isTTY)
+            process.stdin.setRawMode(false)
 
-        return resolveExtensions(selection, task, bundle.labels.atmosphere)
-      },
+          return resolveExtensions(selection, task, bundle.labels.atmosphere)
+        }
+        : undefined,
     })
 
     spinner.stop(c.green('pack assembled'))

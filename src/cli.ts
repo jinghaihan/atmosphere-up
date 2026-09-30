@@ -18,6 +18,7 @@ try {
     .option('--cwd <directory>', 'working directory for configuration and relative paths')
     .option('--version <hos>', 'HOS version to build without prompting')
     .option('--output <directory>', 'parent directory for generated packs')
+    .option('--ext', 'choose optional extensions after building the core pack')
     .option('--pack', 'output a ZIP instead of a directory')
     .action((output: string | undefined, options: CommandOptions) => {
       runBuildCommand({ ...options, output: output ?? options.output }).catch(handleError)
