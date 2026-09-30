@@ -12,8 +12,11 @@ interface DownloadOptions {
 
 export async function getRelease(repository: string, tag?: string, signal?: AbortSignal) {
   signal?.throwIfAborted()
+
   const github = await getGithub()
+
   signal?.throwIfAborted()
+
   const [owner, repo] = repository.split('/')
   const response = tag
     ? await github.rest.repos.getReleaseByTag({
@@ -27,13 +30,17 @@ export async function getRelease(repository: string, tag?: string, signal?: Abor
         repo,
         request: { signal },
       })
+
   return response.data
 }
 
 export async function downloadAsset(asset: ReleaseAsset, { signal, onProgress }: DownloadOptions = {}): Promise<Uint8Array> {
   signal?.throwIfAborted()
+
   const github = await getGithub()
+
   signal?.throwIfAborted()
+
   const response = await github.request({
     method: 'GET',
     url: asset.browser_download_url,
@@ -45,6 +52,7 @@ export async function downloadAsset(asset: ReleaseAsset, { signal, onProgress }:
       signal,
     },
   })
+
   let received = 0
   const stream = response.data as unknown as ReadableStream<Uint8Array>
   const tracked = stream.pipeThrough(new TransformStream<Uint8Array, Uint8Array>({
@@ -54,12 +62,16 @@ export async function downloadAsset(asset: ReleaseAsset, { signal, onProgress }:
       controller.enqueue(chunk)
     },
   }), { signal })
+
   const data = new Uint8Array(await new Response(tracked).arrayBuffer())
   signal?.throwIfAborted()
+
   if (data.byteLength !== asset.size)
     throw new Error(`Size mismatch for ${asset.name}. Expected ${asset.size}, received ${data.byteLength}.`)
+
   if (asset.digest?.startsWith('sha256:') && asset.digest.slice(7) !== sha256(data))
     throw new Error(`SHA-256 mismatch for ${asset.name}.`)
+
   return data
 }
 
@@ -69,5 +81,6 @@ function getGithub(): Promise<Octokit> {
     client.log.error = () => {}
     return client
   })
+
   return github
 }

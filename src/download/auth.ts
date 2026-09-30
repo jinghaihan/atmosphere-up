@@ -11,6 +11,7 @@ export async function resolveGithubToken(): Promise<string | undefined> {
       ['auth', 'token', '--hostname', 'github.com'],
       { throwOnError: true },
     )
+
     return result.stdout.trim() || undefined
   }
   catch {

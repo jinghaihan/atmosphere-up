@@ -5,6 +5,7 @@ import { isAbsolute, relative, resolve } from 'pathe'
 
 export function isParentDirectory(parent: string, child: string): boolean {
   const path = relative(parent, child)
+
   return !path || (!isAbsolute(path) && path !== '..' && !path.startsWith('../'))
 }
 
@@ -22,8 +23,10 @@ export function formatDownloadProgress(received: number, total: number): string 
 
 export function selectAsset(release: Release, pattern: RegExp): ReleaseAsset {
   const matches = release.assets.filter(asset => pattern.test(asset.name))
+
   if (matches.length !== 1)
     throw new Error(`Expected one asset matching ${pattern} in ${release.html_url}; found ${matches.length}.`)
+
   return matches[0]
 }
 

@@ -10,6 +10,7 @@ import { NAME } from './constants'
 
 try {
   setGlobalDispatcher(new EnvHttpProxyAgent())
+
   const cli: CAC = cac(NAME)
 
   cli

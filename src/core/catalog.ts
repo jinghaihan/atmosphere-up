@@ -20,7 +20,9 @@ export function getBundlePath(bundle: Bundle): string {
       expandDirectories: false,
     },
   )
+
   if (path)
     return path
+
   throw new Error('Bundled sigpatch resources are missing. Reinstall atmosphere-up.')
 }
