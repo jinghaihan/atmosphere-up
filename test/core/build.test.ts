@@ -35,10 +35,18 @@ describe('buildPack', () => {
       asset: { ...resource.asset, name: 'JKSV.nro' },
       target: 'switch/JKSV/JKSV.nro',
     } as Resource
+    const fileManager = {
+      ...extension,
+      module: 'nx-shell',
+      asset: { ...resource.asset, name: 'NX-Shell.nro' },
+      target: 'switch/NX-Shell/NX-Shell.nro',
+    } as Resource
     const data = new TextEncoder().encode('save manager')
+    const fileManagerData = new TextEncoder().encode('file manager')
     vi.mocked(downloadAsset)
       .mockResolvedValueOnce(await readFile(join(cwd, 'test/fixtures/core.zip')))
       .mockResolvedValueOnce(data)
+      .mockResolvedValueOnce(fileManagerData)
     const onProgress = vi.fn()
 
     await buildPack(bundle, [resource], `${directory}.zip`, false, true, {
@@ -48,15 +56,16 @@ describe('buildPack', () => {
         expect(onProgress.mock.lastCall).toEqual(['setting Hekate reboot payload'])
         const [settings] = await glob('.atmosphere-up-*/pack/config/ultrahand/config.ini', { cwd: resolve(directory, '..'), dot: true, absolute: true })
         expect(await readFile(settings, 'utf8')).toContain('L+DDOWN')
-        return [extension]
+        return [extension, fileManager]
       },
     })
 
     const archive = new AdmZip(`${directory}.zip`)
     expect(archive.readFile(extension.target!)).toEqual(Buffer.from(data))
-    expect(JSON.parse(archive.readAsText('pack-manifest.json')).resources.map((item: Resource) => item.module)).toEqual(['ultrahand', 'jksv'])
+    expect(archive.readFile(fileManager.target!)).toEqual(Buffer.from(fileManagerData))
+    expect(JSON.parse(archive.readAsText('pack-manifest.json')).resources.map((item: Resource) => item.module)).toEqual(['ultrahand', 'jksv', 'nx-shell'])
     const messages = onProgress.mock.calls.map(([message]) => message)
-    expect(messages.indexOf('compressing pack into ZIP')).toBeGreaterThan(messages.indexOf('installing jksv [1/1]'))
+    expect(messages.indexOf('compressing pack into ZIP')).toBeGreaterThan(messages.indexOf('installing nx-shell [2/2]'))
   })
 
   it('cleans up the assembled core when the extension prompts are cancelled', async () => {

@@ -33,17 +33,20 @@ Ultrahand opens with **L + D-pad Down**.
 
 ### Optional extensions
 
-After assembling the core components, choose whether to include save management:
-[JKSV](https://github.com/J-D-K/JKSV) (default selection) or
-[Checkpoint](https://github.com/BernardoGiordano/Checkpoint).
+Choose optional extensions after assembling the core components. Save management
+and file management use single selections; cheat tools allow multiple selections.
 
-Cheat tools support multiple selections: [EdiZon Overlay](https://github.com/proferabg/EdiZon-Overlay),
-[EdiZon SE](https://github.com/tomvita/EdiZon-SE),
-[Breeze](https://github.com/tomvita/Breeze-Beta),
-and [Breezehand Overlay](https://github.com/tomvita/Breezehand-Overlay).
-Only EdiZon Overlay is selected by default.
+| Component | Source | Includes |
+| --- | --- | --- |
+| JKSV | [J-D-K/JKSV](https://github.com/J-D-K/JKSV) | Save backup and restore; default save manager selection |
+| Checkpoint | [BernardoGiordano/Checkpoint](https://github.com/BernardoGiordano/Checkpoint) | Save backup and restore |
+| EdiZon Overlay | [proferabg/EdiZon-Overlay](https://github.com/proferabg/EdiZon-Overlay) | In-game cheat controls; the only cheat tool selected by default |
+| EdiZon SE | [tomvita/EdiZon-SE](https://github.com/tomvita/EdiZon-SE) | Memory search and editing for creating cheats |
+| Breeze | [tomvita/Breeze-Beta](https://github.com/tomvita/Breeze-Beta) | Cheat management, memory search, and editing |
+| Breezehand Overlay | [tomvita/Breezehand-Overlay](https://github.com/tomvita/Breezehand-Overlay) | Cheat controls in an overlay |
+| NX Shell | [DefenderOfHyrule/NX-Shell](https://github.com/DefenderOfHyrule/NX-Shell) | File copying, moving, renaming, and deletion |
 
-ZIP output includes the selected extensions.
+Selected extensions are included in both directory and ZIP output.
 
 ### Pack defaults
 

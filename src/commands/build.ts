@@ -73,7 +73,7 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
 
         const selection = await promptExtensions(controller)
 
-        spinner.start(c.cyan(selection.saveManager || selection.cheats.length ? 'resolving extensions' : 'finalizing pack'))
+        spinner.start(c.cyan('finalizing pack'))
         if (process.stdin.isTTY)
           process.stdin.setRawMode(false)
 

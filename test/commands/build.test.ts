@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { runBuildCommand } from '../../src/commands'
 import { resolveConfig } from '../../src/config'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../../src/core'
-import { resolveCheats, resolveSaveManagement } from '../../src/extensions'
+import { resolveCheats, resolveFileManagement, resolveSaveManagement } from '../../src/extensions'
 
 vi.mock('@clack/prompts', () => ({
   intro: vi.fn(),
@@ -28,6 +28,10 @@ vi.mock('../../src/extensions/save-management', async original => ({
 vi.mock('../../src/extensions/cheats', async original => ({
   ...await original<typeof import('../../src/extensions/cheats')>(),
   resolveCheats: vi.fn(),
+}))
+vi.mock('../../src/extensions/file-management', async original => ({
+  ...await original<typeof import('../../src/extensions/file-management')>(),
+  resolveFileManagement: vi.fn(),
 }))
 vi.mock('../../src/core', async original => ({
   ...await original<typeof import('../../src/core')>(),
@@ -53,13 +57,19 @@ beforeEach(() => {
   vi.mocked(resolveResources).mockResolvedValue([])
   vi.mocked(resolveSaveManagement).mockResolvedValue({ module: 'jksv' } as Awaited<ReturnType<typeof resolveSaveManagement>>)
   vi.mocked(resolveCheats).mockResolvedValue([])
+  vi.mocked(resolveFileManagement).mockResolvedValue({ module: 'nx-shell' } as Awaited<ReturnType<typeof resolveFileManagement>>)
   vi.mocked(buildPack).mockResolvedValue()
 })
 
 describe('runBuildCommand', () => {
   it('collects all extension choices before resolving releases and defaults only EdiZon Overlay', async () => {
     vi.mocked(p.confirm).mockResolvedValue(true)
-    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv')
+    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv').mockImplementationOnce(async () => {
+      expect(resolveSaveManagement).not.toHaveBeenCalled()
+      expect(resolveCheats).not.toHaveBeenCalled()
+      expect(resolveFileManagement).not.toHaveBeenCalled()
+      return 'nx-shell'
+    })
     vi.mocked(p.multiselect).mockImplementationOnce(async () => {
       expect(resolveSaveManagement).not.toHaveBeenCalled()
       expect(resolveCheats).not.toHaveBeenCalled()
@@ -72,7 +82,7 @@ describe('runBuildCommand', () => {
 
     await runBuildCommand({})
 
-    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?'])
+    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?', 'include file management?'])
     expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       initialValues: ['edizon-overlay'],
       options: [
@@ -82,6 +92,13 @@ describe('runBuildCommand', () => {
         { value: 'breezehand', label: 'Breezehand Overlay', hint: 'https://github.com/tomvita/Breezehand-Overlay' },
       ],
     }))
+    expect(p.select).toHaveBeenLastCalledWith(expect.objectContaining({
+      message: 'select file manager',
+      initialValue: 'nx-shell',
+      options: [{ value: 'nx-shell', label: 'NX-Shell', hint: 'https://github.com/DefenderOfHyrule/NX-Shell' }],
+    }))
+    expect(resolveFileManagement).toHaveBeenCalledWith('nx-shell', expect.any(Object))
+    expect(vi.mocked(resolveFileManagement).mock.invocationCallOrder[0]).toBeGreaterThan(vi.mocked(resolveCheats).mock.invocationCallOrder[0])
     expect(resolveSaveManagement).toHaveBeenCalledWith('jksv', expect.any(Object))
     expect(resolveCheats).toHaveBeenCalledWith(['edizon-overlay', 'breezehand'], expect.any(Object))
   })
@@ -116,11 +133,12 @@ describe('runBuildCommand', () => {
     expect(p.select).toHaveBeenCalledTimes(1)
     expect(p.multiselect).not.toHaveBeenCalled()
     expect(resolveCheats).toHaveBeenCalledWith([], expect.any(Object))
+    expect(resolveFileManagement).not.toHaveBeenCalled()
     expect(p.outro).toHaveBeenCalled()
   })
 
   it.each(['jksv', 'checkpoint'] as const)('selects %s after the core pack is assembled, with JKSV as the default', async (module) => {
-    vi.mocked(p.confirm).mockResolvedValue(true)
+    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(true).mockResolvedValue(false)
     vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce(module)
     vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
       expect(p.confirm).not.toHaveBeenCalled()
@@ -149,6 +167,24 @@ describe('runBuildCommand', () => {
     await runBuildCommand({})
 
     expect(resolveSaveManagement).not.toHaveBeenCalled()
+    expect(p.outro).not.toHaveBeenCalled()
+    expect(process.exitCode).toBe(130)
+    process.exitCode = 0
+  })
+
+  it.each(['confirm', 'select'] as const)('cancels from the file management %s prompt before resolving extensions', async (prompt) => {
+    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(true).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
+    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv').mockResolvedValueOnce(Symbol('cancel'))
+    vi.mocked(p.multiselect).mockResolvedValueOnce(['edizon-overlay'])
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      await task!.onCoreReady!()
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveSaveManagement).not.toHaveBeenCalled()
+    expect(resolveCheats).not.toHaveBeenCalled()
+    expect(resolveFileManagement).not.toHaveBeenCalled()
     expect(p.outro).not.toHaveBeenCalled()
     expect(process.exitCode).toBe(130)
     process.exitCode = 0
@@ -198,7 +234,7 @@ describe('runBuildCommand', () => {
     const displayPath = nativeJoin('~', 'packs', 'atmosphere-1.10.2-hos-21.2.0')
     vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output, pack: false })
     vi.mocked(inspectOutput).mockReturnValue(true)
-    vi.mocked(p.confirm).mockResolvedValue(true)
+    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(true).mockResolvedValue(false)
     await runBuildCommand({})
     expect(vi.mocked(buildPack).mock.calls[0][2]).toBe(join(output, 'atmosphere-1.10.2-hos-21.2.0'))
     expect(stripVTControlCharacters(vi.mocked(p.confirm).mock.calls[0][0].message)).toBe(`output already exists: ${displayPath}. replace it?`)

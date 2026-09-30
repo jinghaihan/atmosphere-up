@@ -27,6 +27,7 @@ export const EXTENSION_REPO_CONFIG = {
   'edizon-overlay': 'proferabg/EdiZon-Overlay',
   'edizon-se': 'tomvita/EdiZon-SE',
   'jksv': 'J-D-K/JKSV',
+  'nx-shell': 'DefenderOfHyrule/NX-Shell',
 } as const
 
 export const PACK_DEFAULTS = new URL('./defaults/', import.meta.url)
