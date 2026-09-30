@@ -1,2 +1,2 @@
-src/defaults/** text eol=lf
-src/defaults/**/*.bin binary
+assets/defaults/** text eol=lf
+assets/defaults/**/*.bin binary
