@@ -45,11 +45,6 @@ After assembling the core components, choose extension categories. Save manageme
 file management, and cheats are selected by default. Only selected categories
 show their tool selection prompts; all categories can be deselected.
 
-Save management, file management, and Amiibo emulation use single selections;
-cheat, performance tuning, streaming, and controller tools allow multiple
-selections. Performance monitoring is a separate single selection, with Status
-Monitor selected by default.
-
 | Component | Source | Includes |
 | --- | --- | --- |
 | JKSV | [J-D-K/JKSV](https://github.com/J-D-K/JKSV) | Save backup and restore; default save manager selection |
