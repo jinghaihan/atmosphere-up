@@ -29,4 +29,7 @@ dev-dist
 *.sln
 *.sw?
 
-.agents
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/atmosphere-up-version-update/

@@ -1,6 +1,6 @@
 # Sigpatch bundles
 
-Each ZIP is a standalone patch bundle for extraction into a clean staging directory. Pack assembly can select one bundle without applying incremental updates or merging patch tables at runtime. The CLI integration is not implemented yet.
+Each ZIP is a standalone patch bundle for extraction into a clean staging directory. Pack assembly can select one bundle without applying incremental updates or merging patch tables at runtime. The CLI uses the manifest to offer supported HOS versions and select the matching Atmosphere release.
 
 `manifest.json` records bundle paths, SHA-256 hashes, sizes, numeric versions, official `atmosphereTag` values, and upstream sources with their original hashes. These records identify resources; they are not a hardware-tested compatibility matrix.
 
@@ -29,7 +29,7 @@ Separate historical sources for HOS 20.x, 21.0.x, and 21.1.0 have not been colle
 ## Preparation
 
 - ZIPs contain only IPS files under `atmosphere/exefs_patches/` and `atmosphere/kip_patches/`, plus `bootloader/patches.ini`.
-- Upstream `hekate_ipl.ini` files and boot configuration templates were removed. The CLI will generate its own boot configuration.
+- Upstream `hekate_ipl.ini` files and boot configuration templates were removed. The CLI applies its own boot configuration from `assets/defaults`.
 - The 22.0.0 bundle combines the 21.2.0 base with six IPS files from the 22.0.0 supplement. Its patch tables were merged after confirming that the added file paths and table sections did not conflict.
 - The 22.0.0 loader ID `82ABC222A5859040` matches the Atmosphere 1.11.0 / `931e3c37f` entry in the upstream 22.1.0 bundle, providing the basis for its version label.
 - The 22.1.0 bundle uses bth's complete source. It does not mix in AmeliaFox's supplement, whose patch contents differ in some places.
@@ -44,4 +44,4 @@ These bundles target clean staging directories. Updating an existing SD card als
 
 Official fusee stopped applying IPS patches to KIPs in Atmosphere 1.7.0. Static KIP patches require an appropriate Hekate package3 boot configuration. See the [Atmosphere release notes](https://github.com/Atmosphere-NX/Atmosphere/releases/tag/1.7.0-prerelease).
 
-Checks covered source ZIP CRCs, paths, file categories, and IPS/IPS32 record structure. Prepared ZIPs were checked for CRC integrity, source payload equality, merged 22.0.0 sections, and SHA-256 hashes. Archive contents were not executed. Hardware testing and CLI/npm packaging integration are pending.
+Checks covered source ZIP CRCs, paths, file categories, and IPS/IPS32 record structure. Prepared ZIPs were checked for CRC integrity, source payload equality, merged 22.0.0 sections, and SHA-256 hashes. Archive contents were not executed. Hardware testing remains pending. The CLI verifies bundle hashes before extraction, and the npm package includes these resources through its `assets` entry.
