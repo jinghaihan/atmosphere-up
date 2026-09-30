@@ -37,6 +37,7 @@ Ultrahand opens with **L + D-pad Down**.
 - Cheats start disabled. Toggle state is saved only when a toggle file already
   exists.
 - USB 3.0 is enabled for homebrew.
+- NRO authorization checks are relaxed for compatible game mods.
 - Serial number information is hidden in emuMMC, while sysMMC keeps its original
   information.
 - Nintendo services are blocked while running Atmosphere on sysMMC or emuMMC.
