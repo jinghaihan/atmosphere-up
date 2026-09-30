@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { mkdir, mkdtemp, rename, rm } from 'node:fs/promises'
 import { dirname, join, resolve } from 'pathe'
 import { isParentDirectory } from '../utils'
+import { compressArchive } from './archive'
 
 export function inspectOutput(directory: string, cwd: string): boolean {
   if (isParentDirectory(resolve(directory), resolve(cwd)))
@@ -9,16 +10,21 @@ export function inspectOutput(directory: string, cwd: string): boolean {
   return existsSync(directory)
 }
 
-export async function writeOutput(directory: string, replace: boolean, populate: (staging: string) => Promise<void>): Promise<void> {
+export async function writeOutput(directory: string, replace: boolean, populate: (staging: string) => Promise<void>, pack = false): Promise<void> {
   await mkdir(dirname(directory), { recursive: true })
-  const staging = await mkdtemp(join(dirname(directory), '.atmosphere-up-'))
+  const temporary = await mkdtemp(join(dirname(directory), '.atmosphere-up-'))
+  const staging = join(temporary, 'pack')
   try {
+    await mkdir(staging)
     await populate(staging)
+    const result = pack ? join(temporary, 'pack.zip') : staging
+    if (pack)
+      await compressArchive(staging, result)
     if (replace)
       await rm(directory, { recursive: true, force: true })
-    await rename(staging, directory)
+    await rename(result, directory)
   }
   finally {
-    await rm(staging, { recursive: true, force: true })
+    await rm(temporary, { recursive: true, force: true })
   }
 }

@@ -1,5 +1,6 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
+import AdmZip from 'adm-zip'
 import { join, resolve } from 'pathe'
 import { glob } from 'tinyglobby'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -31,5 +32,18 @@ describe('writeOutput', () => {
       await writeFile(join(staging, 'new'), 'complete')
     })
     expect(await glob('**/*', { cwd: directory })).toEqual(['new'])
+  })
+
+  it('writes a ZIP with SD card contents at the root, including hidden overlay folders', async () => {
+    const destination = `${directory}.zip`
+    await writeOutput(destination, false, async (staging) => {
+      await mkdir(join(staging, 'switch/.overlays'), { recursive: true })
+      await writeFile(join(staging, 'switch/.overlays/ovlmenu.ovl'), 'overlay')
+      await writeFile(join(staging, 'payload.bin'), 'payload')
+    }, true)
+    const archive = new AdmZip(destination)
+    expect(archive.readAsText('switch/.overlays/ovlmenu.ovl')).toBe('overlay')
+    expect(archive.readAsText('payload.bin')).toBe('payload')
+    expect(await glob('.atmosphere-up-*', { cwd: fixture, onlyDirectories: true, dot: true })).toEqual([])
   })
 })

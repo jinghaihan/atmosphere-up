@@ -8,11 +8,65 @@
 
 ## Usage
 
-**No data**
+Requires Node.js 20 or newer. Select a supported HOS version from the prompt:
+
+```sh
+pnpm start
+pnpm start ./output
+pnpm start ./output --pack
+```
+
+`output` is a parent directory. For HOS 21.2.0, these commands create
+`output/atmosphere-1.10.2-hos-21.2.0/` or
+`output/atmosphere-1.10.2-hos-21.2.0.zip`. Without an output setting, the named
+pack is created in the current working directory. ZIP contents start at the SD
+card root, with no enclosing package directory.
+
+If the destination already exists, the CLI asks before replacing it. Refusing
+or cancelling stops the build. The existing pack remains in place until the new
+pack has been assembled.
+
+The bundled sigpatch catalog determines the selectable HOS versions and exact
+Atmosphere release tags. Hekate, DBI, sys-patch, and Ultrahand use their latest
+GitHub releases. Firmware files are not downloaded or included.
+
+### Core components
+
+| Component | Source | Included files |
+| --- | --- | --- |
+| Atmosphere | [Atmosphere-NX/Atmosphere](https://github.com/Atmosphere-NX/Atmosphere) | Official ZIP and fusee.bin; bundled Daybreak, hbmenu, hbloader, and other upstream tools |
+| Hekate | [CTCaer/hekate](https://github.com/CTCaer/hekate) | Official ZIP and payload; CFW emuMMC, CFW sysMMC, and stock sysMMC boot entries |
+| DBI | [rashevskyv/dbi](https://github.com/rashevskyv/dbi) | DBI.nro and the upstream dbi.config |
+| sys-patch | [impeeza/sys-patch](https://github.com/impeeza/sys-patch) | Release ZIP |
+| Ultrahand | [ppkantorski/Ultrahand-Overlay](https://github.com/ppkantorski/Ultrahand-Overlay) | sdout.zip, including its bundled nx-ovlloader |
+| Sigpatches | [Bundled catalog](./assets/sigpatches/README.md) | Matching IPS patches and Hekate patches.ini |
+
+Reboot to Payload returns to Hekate. CFW boot entries use `pkg3` and
+`kip1patch=nosigchk`. A `pack-manifest.json` records the selected versions,
+sources, and downloaded file hashes.
+
+Pack assembly has been verified locally; boot compatibility has not been tested
+on Switch hardware.
 
 ## Configuration
 
-**No data**
+Create `atmosphere-up.config.ts` in the working directory:
+
+```ts
+import { defineConfig } from 'atmosphere-up'
+
+export default defineConfig({
+  output: './output',
+  pack: false,
+})
+```
+
+The repository's config writes to `./output` by default. CLI arguments override
+configuration: `--pack` enables ZIP output and `--no-pack` enables directory
+output. Use `--cwd <directory>` to select a different working directory and config.
+Relative output paths resolve from that working directory.
+
+Set `GITHUB_TOKEN` when authenticated GitHub requests are needed.
 
 ## License
 

@@ -2,23 +2,20 @@ import type { CAC } from 'cac'
 import type { CommandOptions } from './types'
 import process from 'node:process'
 import * as p from '@clack/prompts'
-import c from 'ansis'
 import { cac } from 'cac'
-import { resolveConfig } from './config'
+import { runBuildCommand } from './commands'
 import { NAME, VERSION } from './constants'
 
 try {
   const cli: CAC = cac(NAME)
 
   cli
-    .command('', 'Command description')
-    .allowUnknownOptions()
-    .action(async (options: Partial<CommandOptions>) => {
-      p.intro(`${c.yellow`${NAME} `}${c.dim`v${VERSION}`}`)
-
-      const config = await resolveConfig(options)
-
-      console.log(config)
+    .command('[output]', 'Build a core SD card pack for the selected HOS version')
+    .option('-o, --output <directory>', 'Parent directory for generated packs')
+    .option('--cwd <directory>', 'Working directory for configuration and relative paths')
+    .option('--pack', 'Output a ZIP instead of a directory (use --no-pack to override configuration)')
+    .action((output: string | undefined, options: CommandOptions) => {
+      runBuildCommand({ ...options, output: output ?? options.output }).catch(handleError)
     })
 
   cli.help()
@@ -26,6 +23,10 @@ try {
   cli.parse()
 }
 catch (error) {
-  console.error(error)
-  process.exit(1)
+  handleError(error)
+}
+
+function handleError(error: unknown): void {
+  p.cancel(error instanceof Error ? error.message : String(error))
+  process.exitCode = 1
 }

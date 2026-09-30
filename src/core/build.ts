@@ -9,7 +9,7 @@ import { extractArchive } from './archive'
 import { getBundlePath } from './catalog'
 import { writeOutput } from './output'
 
-export async function buildPack(bundle: Bundle, resources: Resource[], directory: string, replace = false): Promise<void> {
+export async function buildPack(bundle: Bundle, resources: Resource[], directory: string, replace = false, pack = false): Promise<void> {
   await writeOutput(directory, replace, async (staging) => {
     const sigpatches = await readFile(getBundlePath(bundle))
     if (sha256(sigpatches) !== bundle.sha256)
@@ -43,5 +43,5 @@ export async function buildPack(bundle: Bundle, resources: Resource[], directory
         sha256: sha256(data),
       })),
     }, null, 2)}\n`)
-  })
+  }, pack)
 }

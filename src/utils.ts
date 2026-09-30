@@ -1,7 +1,7 @@
 import type { Bundle } from './core/catalog'
 import type { Release, ReleaseAsset } from './types'
 import { createHash } from 'node:crypto'
-import { isAbsolute, relative } from 'pathe'
+import { isAbsolute, relative, resolve } from 'pathe'
 
 export function isParentDirectory(parent: string, child: string): boolean {
   const path = relative(parent, child)
@@ -10,6 +10,10 @@ export function isParentDirectory(parent: string, child: string): boolean {
 
 export function getOutputName(bundle: Bundle): string {
   return `atmosphere-${bundle.labels.atmosphere}-hos-${bundle.labels.hos}`
+}
+
+export function getOutputPath(bundle: Bundle, directory: string, pack = false): string {
+  return resolve(directory, `${getOutputName(bundle)}${pack ? '.zip' : ''}`)
 }
 
 export function selectAsset(release: Release, pattern: RegExp): ReleaseAsset {

@@ -22,4 +22,10 @@ describe('resolveConfig', () => {
   it('rejects an empty output path', async () => {
     await expect(resolveConfig({ cwd, output: '' })).rejects.toThrow('non-empty')
   })
+
+  it('retains configured ZIP output unless the CLI explicitly overrides it', async () => {
+    const directory = resolve(cwd, 'test/fixtures/packed')
+    expect((await resolveConfig({ cwd: directory, pack: undefined })).pack).toBe(true)
+    expect((await resolveConfig({ cwd: directory, pack: false })).pack).toBe(false)
+  })
 })
