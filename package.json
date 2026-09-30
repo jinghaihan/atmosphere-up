@@ -14,7 +14,15 @@
   "bugs": {
     "url": "https://github.com/jinghaihan/atmosphere-up/issues"
   },
-  "keywords": [],
+  "keywords": [
+    "nintendo-switch",
+    "atmosphere",
+    "cfw",
+    "hekate",
+    "homebrew",
+    "ultrahand",
+    "cli"
+  ],
   "exports": {
     ".": "./dist/index.mjs",
     "./cli": "./dist/cli.mjs",
