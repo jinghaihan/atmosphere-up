@@ -50,6 +50,7 @@
     "adm-zip": "catalog:prod",
     "ansis": "catalog:prod",
     "cac": "catalog:prod",
+    "ini": "catalog:prod",
     "pathe": "catalog:prod",
     "unconfig": "catalog:prod",
     "undici": "catalog:prod"
@@ -71,6 +72,7 @@
     "eslint": "catalog:lint",
     "lint-staged": "catalog:lint",
     "vitest": "catalog:test",
+    "@types/ini": "catalog:types",
     "@types/node": "catalog:types"
   },
   "simple-git-hooks": {

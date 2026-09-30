@@ -42,7 +42,7 @@ export async function promptFileManagement(controller: AbortController): Promise
     initialValue: 'nx-shell',
     signal: controller.signal,
     options: [
-      { value: 'nx-shell', label: 'NX-Shell', hint: `https://github.com/${EXTENSION_REPO_CONFIG['nx-shell']}` },
+      { value: 'nx-shell', label: 'NX Shell', hint: `https://github.com/${EXTENSION_REPO_CONFIG['nx-shell']}` },
     ],
   })
 

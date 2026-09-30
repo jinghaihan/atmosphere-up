@@ -1,6 +1,7 @@
 import type { Bundle } from './core/catalog'
 import type { Release, ReleaseAsset } from './types'
 import { createHash } from 'node:crypto'
+import { parse, stringify } from 'ini'
 import { isAbsolute, relative, resolve } from 'pathe'
 
 export function isParentDirectory(parent: string, child: string): boolean {
@@ -32,4 +33,18 @@ export function selectAsset(release: Release, pattern: RegExp): ReleaseAsset {
 
 export function sha256(data: Uint8Array): string {
   return createHash('sha256').update(data).digest('hex')
+}
+
+export function configureHorizonOcBootEntries(content: string): string {
+  const settings = parse(content)
+
+  for (const entry of Object.values(settings)) {
+    if (typeof entry !== 'object' || !entry.pkg3 || String(entry.stock) === '1')
+      continue
+
+    entry.kip1 = 'atmosphere/kips/hoc.kip'
+    entry.secmon = 'atmosphere/exosphere.bin'
+  }
+
+  return stringify(settings, { whitespace: false })
 }

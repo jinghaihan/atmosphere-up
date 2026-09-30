@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { runBuildCommand } from '../../src/commands'
 import { resolveConfig } from '../../src/config'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../../src/core'
-import { resolveCheats, resolveFileManagement, resolveSaveManagement } from '../../src/extensions'
+import { resolveCheats, resolveFileManagement, resolvePerformanceTuning, resolveSaveManagement } from '../../src/extensions'
 
 vi.mock('@clack/prompts', () => ({
   intro: vi.fn(),
@@ -32,6 +32,10 @@ vi.mock('../../src/extensions/cheats', async original => ({
 vi.mock('../../src/extensions/file-management', async original => ({
   ...await original<typeof import('../../src/extensions/file-management')>(),
   resolveFileManagement: vi.fn(),
+}))
+vi.mock('../../src/extensions/performance-tuning', async original => ({
+  ...await original<typeof import('../../src/extensions/performance-tuning')>(),
+  resolvePerformanceTuning: vi.fn(),
 }))
 vi.mock('../../src/core', async original => ({
   ...await original<typeof import('../../src/core')>(),
@@ -57,6 +61,7 @@ beforeEach(() => {
   vi.mocked(resolveResources).mockResolvedValue([])
   vi.mocked(resolveSaveManagement).mockResolvedValue({ module: 'jksv' } as Awaited<ReturnType<typeof resolveSaveManagement>>)
   vi.mocked(resolveCheats).mockResolvedValue([])
+  vi.mocked(resolvePerformanceTuning).mockResolvedValue([])
   vi.mocked(resolveFileManagement).mockResolvedValue({ module: 'nx-shell' } as Awaited<ReturnType<typeof resolveFileManagement>>)
   vi.mocked(buildPack).mockResolvedValue()
 })
@@ -74,6 +79,12 @@ describe('runBuildCommand', () => {
       expect(resolveSaveManagement).not.toHaveBeenCalled()
       expect(resolveCheats).not.toHaveBeenCalled()
       return ['edizon-overlay', 'breezehand']
+    }).mockImplementationOnce(async () => {
+      expect(resolveSaveManagement).not.toHaveBeenCalled()
+      expect(resolveCheats).not.toHaveBeenCalled()
+      expect(resolveFileManagement).not.toHaveBeenCalled()
+      expect(resolvePerformanceTuning).not.toHaveBeenCalled()
+      return ['sys-clk', 'sys-clk-ultrahand-overlay', 'fps-locker', 'reverse-nx-rt']
     })
     vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
       expect(p.confirm).not.toHaveBeenCalled()
@@ -82,7 +93,7 @@ describe('runBuildCommand', () => {
 
     await runBuildCommand({})
 
-    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?', 'include file management?'])
+    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?', 'include file management?', 'include performance tuning?'])
     expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       initialValues: ['edizon-overlay'],
       options: [
@@ -95,8 +106,20 @@ describe('runBuildCommand', () => {
     expect(p.select).toHaveBeenLastCalledWith(expect.objectContaining({
       message: 'select file manager',
       initialValue: 'nx-shell',
-      options: [{ value: 'nx-shell', label: 'NX-Shell', hint: 'https://github.com/DefenderOfHyrule/NX-Shell' }],
+      options: [{ value: 'nx-shell', label: 'NX Shell', hint: 'https://github.com/DefenderOfHyrule/NX-Shell' }],
     }))
+    expect(p.multiselect).toHaveBeenLastCalledWith(expect.objectContaining({
+      message: 'select performance tools',
+      initialValues: ['sys-clk', 'sys-clk-ultrahand-overlay', 'fps-locker', 'reverse-nx-rt'],
+      options: [
+        { value: 'sys-clk', label: 'Sys Clk', hint: 'https://github.com/retronx-team/sys-clk' },
+        { value: 'sys-clk-ultrahand-overlay', label: 'Sys Clk Ultrahand Overlay', hint: 'https://github.com/ppkantorski/sys-clk' },
+        { value: 'horizon-oc', label: 'Horizon OC', hint: 'https://github.com/Horizon-OC/Horizon-OC' },
+        { value: 'fps-locker', label: 'FPS Locker', hint: 'https://github.com/masagrator/FPSLocker' },
+        { value: 'reverse-nx-rt', label: 'ReverseNx RT', hint: 'https://github.com/masagrator/ReverseNX-RT' },
+      ],
+    }))
+    expect(resolvePerformanceTuning).toHaveBeenCalledWith(['sys-clk', 'sys-clk-ultrahand-overlay', 'fps-locker', 'reverse-nx-rt'], expect.any(Object), '1.10.2')
     expect(resolveFileManagement).toHaveBeenCalledWith('nx-shell', expect.any(Object))
     expect(vi.mocked(resolveFileManagement).mock.invocationCallOrder[0]).toBeGreaterThan(vi.mocked(resolveCheats).mock.invocationCallOrder[0])
     expect(resolveSaveManagement).toHaveBeenCalledWith('jksv', expect.any(Object))
@@ -185,6 +208,22 @@ describe('runBuildCommand', () => {
     expect(resolveSaveManagement).not.toHaveBeenCalled()
     expect(resolveCheats).not.toHaveBeenCalled()
     expect(resolveFileManagement).not.toHaveBeenCalled()
+    expect(p.outro).not.toHaveBeenCalled()
+    expect(process.exitCode).toBe(130)
+    process.exitCode = 0
+  })
+
+  it.each(['confirm', 'multiselect'] as const)('cancels from the performance %s prompt before resolving extensions', async (prompt) => {
+    vi.mocked(p.confirm).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
+    vi.mocked(p.multiselect).mockResolvedValueOnce(Symbol('cancel'))
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      await task!.onCoreReady!()
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveCheats).not.toHaveBeenCalled()
+    expect(resolvePerformanceTuning).not.toHaveBeenCalled()
     expect(p.outro).not.toHaveBeenCalled()
     expect(process.exitCode).toBe(130)
     process.exitCode = 0

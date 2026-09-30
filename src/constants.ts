@@ -26,8 +26,14 @@ export const EXTENSION_REPO_CONFIG = {
   'checkpoint': 'BernardoGiordano/Checkpoint',
   'edizon-overlay': 'proferabg/EdiZon-Overlay',
   'edizon-se': 'tomvita/EdiZon-SE',
+  'fps-locker': 'masagrator/FPSLocker',
+  'horizon-oc': 'Horizon-OC/Horizon-OC',
   'jksv': 'J-D-K/JKSV',
   'nx-shell': 'DefenderOfHyrule/NX-Shell',
+  'reverse-nx-rt': 'masagrator/ReverseNX-RT',
+  'salty-nx': 'masagrator/SaltyNX',
+  'sys-clk-ultrahand-overlay': 'ppkantorski/sys-clk',
+  'sys-clk': 'retronx-team/sys-clk',
 } as const
 
 export const PACK_DEFAULTS = new URL('./defaults/', import.meta.url)
