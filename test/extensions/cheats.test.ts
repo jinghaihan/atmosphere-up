@@ -20,14 +20,18 @@ describe('resolveCheats', () => {
     ])
   })
 
-  it('selects the Breeze archive and only its application directory', async () => {
+  it.each([
+    ['edizon-se', 'tomvita/EdiZon-SE', 'edizon.zip', 'EdiZon_alt.zip', 'switch/edizon/'],
+    ['breeze', 'tomvita/Breeze-Beta', 'Breeze.zip', 'version.txt', 'switch/breeze/'],
+  ] as const)('selects the regular %s archive and only its application directory', async (module, repository, name, otherAsset, path) => {
     vi.mocked(getRelease)
-      .mockResolvedValueOnce({ tag_name: 'v2', assets: [{ name: 'Breeze.zip' }, { name: 'version.txt' }] } as Release)
+      .mockResolvedValueOnce({ tag_name: 'v2', assets: [{ name }, { name: otherAsset }] } as Release)
 
-    const resources = await resolveCheats(['breeze'])
+    const resources = await resolveCheats([module])
 
+    expect(getRelease).toHaveBeenLastCalledWith(repository, undefined, undefined)
     expect(resources).toMatchObject([
-      { module: 'breeze', asset: { name: 'Breeze.zip' }, paths: ['switch/breeze/'] },
+      { module, asset: { name }, paths: [path] },
     ])
   })
 })

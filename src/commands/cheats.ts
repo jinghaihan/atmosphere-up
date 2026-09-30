@@ -22,6 +22,7 @@ export async function promptCheats(controller: AbortController): Promise<CheatTo
     signal: controller.signal,
     options: [
       { value: 'edizon-overlay', label: 'EdiZon Overlay', hint: `https://github.com/${EXTENSION_REPO_CONFIG['edizon-overlay']}` },
+      { value: 'edizon-se', label: 'EdiZon SE', hint: `https://github.com/${EXTENSION_REPO_CONFIG['edizon-se']}` },
       { value: 'breeze', label: 'Breeze', hint: `https://github.com/${EXTENSION_REPO_CONFIG.breeze}` },
       { value: 'breezehand', label: 'Breezehand Overlay', hint: `https://github.com/${EXTENSION_REPO_CONFIG.breezehand}` },
     ],

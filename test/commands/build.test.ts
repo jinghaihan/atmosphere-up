@@ -70,6 +70,7 @@ describe('runBuildCommand', () => {
       initialValues: ['edizon-overlay'],
       options: [
         { value: 'edizon-overlay', label: 'EdiZon Overlay', hint: 'https://github.com/proferabg/EdiZon-Overlay' },
+        { value: 'edizon-se', label: 'EdiZon SE', hint: 'https://github.com/tomvita/EdiZon-SE' },
         { value: 'breeze', label: 'Breeze', hint: 'https://github.com/tomvita/Breeze-Beta' },
         { value: 'breezehand', label: 'Breezehand Overlay', hint: 'https://github.com/tomvita/Breezehand-Overlay' },
       ],

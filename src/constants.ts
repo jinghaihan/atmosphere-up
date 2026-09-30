@@ -25,6 +25,7 @@ export const EXTENSION_REPO_CONFIG = {
   'breezehand': 'tomvita/Breezehand-Overlay',
   'checkpoint': 'BernardoGiordano/Checkpoint',
   'edizon-overlay': 'proferabg/EdiZon-Overlay',
+  'edizon-se': 'tomvita/EdiZon-SE',
   'jksv': 'J-D-K/JKSV',
 } as const
 

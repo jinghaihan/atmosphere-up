@@ -38,6 +38,7 @@ After assembling the core components, choose whether to include save management:
 [Checkpoint](https://github.com/BernardoGiordano/Checkpoint).
 
 Cheat tools support multiple selections: [EdiZon Overlay](https://github.com/proferabg/EdiZon-Overlay),
+[EdiZon SE](https://github.com/tomvita/EdiZon-SE),
 [Breeze](https://github.com/tomvita/Breeze-Beta),
 and [Breezehand Overlay](https://github.com/tomvita/Breezehand-Overlay).
 Only EdiZon Overlay is selected by default.

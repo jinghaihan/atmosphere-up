@@ -4,7 +4,7 @@ import { EXTENSION_REPO_CONFIG } from '../constants'
 import { getRelease } from '../download'
 import { selectAsset } from '../utils'
 
-export type CheatTool = 'edizon-overlay' | 'breeze' | 'breezehand'
+export type CheatTool = 'edizon-overlay' | 'edizon-se' | 'breeze' | 'breezehand'
 
 export async function resolveCheats(modules: CheatTool[], { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
   const resources: Resource[] = []
@@ -25,6 +25,9 @@ export async function resolveCheats(modules: CheatTool[], { signal, onProgress }
     switch (module) {
       case 'edizon-overlay':
         resources.push(resource(/^ovlEdiZon\.ovl$/, { target: 'switch/.overlays/ovlEdiZon.ovl' }))
+        break
+      case 'edizon-se':
+        resources.push(resource(/^edizon\.zip$/, { paths: ['switch/edizon/'] }))
         break
       case 'breeze':
         resources.push(resource(/^Breeze\.zip$/, { paths: ['switch/breeze/'] }))
