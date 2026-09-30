@@ -20,22 +20,4 @@ export const MODULE_REPO_CONFIG = {
   'ultrahand': 'ppkantorski/Ultrahand-Overlay',
 } as const
 
-export const HEKATE_BOOT_CONFIG = `[config]
-autoboot=0
-bootwait=3
-
-[CFW emuMMC]
-pkg3=atmosphere/package3
-kip1patch=nosigchk
-emummcforce=1
-
-[CFW sysMMC]
-pkg3=atmosphere/package3
-kip1patch=nosigchk
-emummc_force_disable=1
-
-[Stock sysMMC]
-pkg3=atmosphere/package3
-stock=1
-emummc_force_disable=1
-\n`
+export const HEKATE_BOOT_CONFIG = new URL('./hekate_ipl.ini', import.meta.url)

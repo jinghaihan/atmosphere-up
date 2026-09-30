@@ -31,6 +31,7 @@ describe('buildPack', () => {
     expect(await readFile(join(directory, 'config/ultrahand/config.ini'), 'utf8')).toBe('[ultrahand]\nkey_combo=L+DDOWN\n')
     expect(await readFile(join(directory, 'config/tesla/config.ini'), 'utf8')).toBe('[tesla]\nkey_combo=L+DDOWN\n')
     expect(await readFile(join(directory, 'atmosphere/reboot_payload.bin'))).toEqual(await readFile(join(directory, 'payload.bin')))
+    expect(await readFile(join(directory, 'bootloader/hekate_ipl.ini'))).toEqual(await readFile(join(cwd, 'src/hekate_ipl.ini')))
     const messages = onProgress.mock.calls.map(([message]) => message)
     expect(messages).toContain('extracting ultrahand [1/1]')
     expect(messages).toContain('writing Hekate boot entries and Ultrahand wake keys')

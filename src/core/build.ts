@@ -46,7 +46,7 @@ export async function buildPack(bundle: Bundle, resources: Resource[], directory
     onProgress?.('writing Hekate boot entries and Ultrahand wake keys')
     // Return to Hekate after a reboot so package3 boot keeps using patches.ini.
     await copyFile(join(staging, 'payload.bin'), join(staging, 'atmosphere/reboot_payload.bin'))
-    await writeFile(join(staging, 'bootloader/hekate_ipl.ini'), HEKATE_BOOT_CONFIG)
+    await writeFile(join(staging, 'bootloader/hekate_ipl.ini'), await readFile(HEKATE_BOOT_CONFIG))
     for (const name of ['ultrahand', 'tesla']) {
       const directory = join(staging, 'config', name)
       await mkdir(directory, { recursive: true })
