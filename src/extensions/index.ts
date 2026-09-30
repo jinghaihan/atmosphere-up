@@ -1,17 +1,8 @@
 import type { Resource } from '../core/plan'
-import type { TaskOptions } from '../types'
-import type { AmiiboTool } from './amiibo'
-import type { CheatTool } from './cheats'
-import type { ControllerTool } from './controller-support'
-import type { FileManager } from './file-management'
-import type { PerformanceMonitor } from './performance-monitoring'
-import type { PerformanceTool } from './performance-tuning'
-import type { SaveManager } from './save-management'
-import type { StreamingTool } from './streaming'
+import type { Extension, ExtensionContext } from './types'
 import { promptAmiibo, resolveAmiibo } from './amiibo'
 import { promptCheats, resolveCheats } from './cheats'
 import { promptControllerSupport, resolveControllerSupport } from './controller-support'
-import { resolveSaltyNx } from './dependencies'
 import { promptFileManagement, resolveFileManagement } from './file-management'
 import { promptPerformanceMonitoring, resolvePerformanceMonitoring } from './performance-monitoring'
 import { promptPerformanceTuning, resolvePerformanceTuning } from './performance-tuning'
@@ -27,63 +18,48 @@ export * from './performance-tuning'
 export * from './save-management'
 export * from './streaming'
 
-export interface ExtensionSelection {
-  saveManager?: SaveManager
-  cheats: CheatTool[]
-  fileManager?: FileManager
-  performance: PerformanceTool[]
-  performanceMonitor?: PerformanceMonitor
-  streaming: StreamingTool[]
-  amiibo?: AmiiboTool
-  controllers: ControllerTool[]
+export interface SelectedExtension {
+  modules: string[]
+  resolve: (context: ExtensionContext) => Promise<Resource[]>
 }
+
+export type ExtensionSelection = SelectedExtension[]
+
+function defineExtension<T extends string>({ prompt, resolve }: Extension<T>) {
+  return async (controller: AbortController): Promise<SelectedExtension> => {
+    const modules = await prompt(controller)
+
+    return { modules, resolve: context => resolve(modules, context) }
+  }
+}
+
+const extensions = [
+  defineExtension({ prompt: promptSaveManagement, resolve: resolveSaveManagement }),
+  defineExtension({ prompt: promptFileManagement, resolve: resolveFileManagement }),
+  defineExtension({ prompt: promptCheats, resolve: resolveCheats }),
+  defineExtension({ prompt: promptPerformanceTuning, resolve: resolvePerformanceTuning }),
+  defineExtension({ prompt: promptPerformanceMonitoring, resolve: resolvePerformanceMonitoring }),
+  defineExtension({ prompt: promptControllerSupport, resolve: resolveControllerSupport }),
+  defineExtension({ prompt: promptStreaming, resolve: resolveStreaming }),
+  defineExtension({ prompt: promptAmiibo, resolve: resolveAmiibo }),
+]
 
 export async function promptExtensions(controller: AbortController): Promise<ExtensionSelection> {
-  const saveManager = await promptSaveManagement(controller)
+  const selection: ExtensionSelection = []
 
-  const cheats = await promptCheats(controller)
+  for (const extension of extensions)
+    selection.push(await extension(controller))
 
-  const fileManager = await promptFileManagement(controller)
-
-  const performance = await promptPerformanceTuning(controller)
-
-  const performanceMonitor = await promptPerformanceMonitoring(controller)
-
-  const streaming = await promptStreaming(controller)
-
-  const amiibo = await promptAmiibo(controller)
-
-  const controllers = await promptControllerSupport(controller)
-
-  return { saveManager, cheats, fileManager, performance, performanceMonitor, streaming, amiibo, controllers }
+  return selection
 }
 
-export async function resolveExtensions({ saveManager, cheats, fileManager, performance, performanceMonitor, streaming, amiibo, controllers }: ExtensionSelection, task: TaskOptions = {}, atmosphere?: string, hos?: string): Promise<Resource[]> {
+export async function resolveExtensions(selection: ExtensionSelection, context: ExtensionContext = {}): Promise<Resource[]> {
   const resources: Resource[] = []
 
-  if (saveManager)
-    resources.push(await resolveSaveManagement(saveManager, task))
-
-  resources.push(...await resolveCheats(cheats, task))
-
-  if (fileManager)
-    resources.push(await resolveFileManagement(fileManager, task))
-
-  resources.push(...await resolvePerformanceTuning(performance, task, atmosphere))
-
-  if (performanceMonitor) {
-    if (!resources.some(resource => resource.module === 'salty-nx'))
-      resources.push(await resolveSaltyNx(task))
-
-    resources.push(await resolvePerformanceMonitoring(performanceMonitor, task))
+  for (const extension of selection) {
+    if (extension.modules.length)
+      resources.push(...await extension.resolve({ ...context, resources: [...resources] }))
   }
-
-  resources.push(...await resolveStreaming(streaming, task))
-
-  if (amiibo)
-    resources.push(await resolveAmiibo(amiibo, task))
-
-  resources.push(...await resolveControllerSupport(controllers, task, hos))
 
   return resources
 }

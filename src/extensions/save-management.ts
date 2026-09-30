@@ -7,23 +7,29 @@ import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type SaveManager = 'jksv' | 'checkpoint'
 
-export async function resolveSaveManagement(module: SaveManager, { signal, onProgress }: TaskOptions = {}): Promise<Resource> {
-  signal?.throwIfAborted()
+export async function resolveSaveManagement(modules: SaveManager[], { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
+  const resources: Resource[] = []
 
-  onProgress?.(`resolving ${module} (latest)`)
-  const release = await getRelease(EXTENSION_REPO_CONFIG[module], undefined, signal)
-  const asset = selectAsset(release, new RegExp(`^${module}\\.nro$`, 'i'))
+  for (const module of modules) {
+    signal?.throwIfAborted()
 
-  return {
-    module,
-    release: release.tag_name,
-    page: release.html_url,
-    asset,
-    target: `switch/${asset.name.slice(0, -4)}/${asset.name}`,
+    onProgress?.(`resolving ${module} (latest)`)
+    const release = await getRelease(EXTENSION_REPO_CONFIG[module], undefined, signal)
+    const asset = selectAsset(release, new RegExp(`^${module}\\.nro$`, 'i'))
+
+    resources.push({
+      module,
+      release: release.tag_name,
+      page: release.html_url,
+      asset,
+      target: `switch/${asset.name.slice(0, -4)}/${asset.name}`,
+    })
   }
+
+  return resources
 }
 
-export async function promptSaveManagement(controller: AbortController): Promise<SaveManager | undefined> {
+export async function promptSaveManagement(controller: AbortController): Promise<SaveManager[]> {
   const enabled = await p.confirm({
     message: 'include save management?',
     signal: controller.signal,
@@ -35,7 +41,7 @@ export async function promptSaveManagement(controller: AbortController): Promise
   }
 
   if (!enabled)
-    return undefined
+    return []
 
   const module = await p.select<SaveManager>({
     message: 'select save manager',
@@ -52,5 +58,5 @@ export async function promptSaveManagement(controller: AbortController): Promise
     throw controller.signal.reason
   }
 
-  return module
+  return [module]
 }

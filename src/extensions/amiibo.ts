@@ -9,26 +9,32 @@ import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type AmiiboTool = 'emuiibo'
 
-export async function resolveAmiibo(module: AmiiboTool, { signal, onProgress }: TaskOptions = {}): Promise<Resource> {
-  signal?.throwIfAborted()
+export async function resolveAmiibo(modules: AmiiboTool[], { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
+  const resources: Resource[] = []
 
-  onProgress?.(`resolving ${module} (latest)`)
-  const release = await getRelease(EXTENSION_REPO_CONFIG[module], undefined, signal)
+  for (const module of modules) {
+    signal?.throwIfAborted()
 
-  return {
-    module,
-    release: release.tag_name,
-    page: release.html_url,
-    asset: selectAsset(release, /^emuiibo\.zip$/),
-    configure: async (directory) => {
-      const source = join(directory, 'SdOut')
-      await cp(source, directory, { recursive: true })
-      await rm(source, { recursive: true })
-    },
+    onProgress?.(`resolving ${module} (latest)`)
+    const release = await getRelease(EXTENSION_REPO_CONFIG[module], undefined, signal)
+
+    resources.push({
+      module,
+      release: release.tag_name,
+      page: release.html_url,
+      asset: selectAsset(release, /^emuiibo\.zip$/),
+      configure: async (directory) => {
+        const source = join(directory, 'SdOut')
+        await cp(source, directory, { recursive: true })
+        await rm(source, { recursive: true })
+      },
+    })
   }
+
+  return resources
 }
 
-export async function promptAmiibo(controller: AbortController): Promise<AmiiboTool | undefined> {
+export async function promptAmiibo(controller: AbortController): Promise<AmiiboTool[]> {
   const enabled = await p.confirm({
     message: 'include amiibo emulation?',
     signal: controller.signal,
@@ -40,7 +46,7 @@ export async function promptAmiibo(controller: AbortController): Promise<AmiiboT
   }
 
   if (!enabled)
-    return undefined
+    return []
 
   const module = await p.select<AmiiboTool>({
     message: 'select amiibo tool',
@@ -56,5 +62,5 @@ export async function promptAmiibo(controller: AbortController): Promise<AmiiboT
     throw controller.signal.reason
   }
 
-  return module
+  return [module]
 }

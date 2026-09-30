@@ -1,5 +1,5 @@
 import type { Resource } from '../core/plan'
-import type { TaskOptions } from '../types'
+import type { ExtensionContext } from './types'
 import * as p from '@clack/prompts'
 import versions from '../../assets/mission-control/versions.json'
 import { EXTENSION_REPO_CONFIG } from '../constants'
@@ -40,7 +40,7 @@ export async function promptControllerSupport(controller: AbortController): Prom
   return modules
 }
 
-export async function resolveControllerSupport(modules: ControllerTool[], { signal, onProgress }: TaskOptions = {}, hos?: string): Promise<Resource[]> {
+export async function resolveControllerSupport(modules: ControllerTool[], { signal, onProgress, hos }: ExtensionContext = {}): Promise<Resource[]> {
   const resources: Resource[] = []
 
   for (const module of modules) {

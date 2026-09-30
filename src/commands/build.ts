@@ -78,7 +78,11 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
           if (process.stdin.isTTY)
             process.stdin.setRawMode(false)
 
-          return resolveExtensions(selection, task, bundle.labels.atmosphere, bundle.labels.hos)
+          return resolveExtensions(selection, {
+            ...task,
+            atmosphere: bundle.labels.atmosphere,
+            hos: bundle.labels.hos,
+          })
         }
         : undefined,
     })

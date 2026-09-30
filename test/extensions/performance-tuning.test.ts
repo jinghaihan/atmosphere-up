@@ -61,7 +61,7 @@ describe('resolvePerformanceTuning', () => {
   })
 
   it('allows HOC and Sys Clk together and excludes bundled monitoring tools', async () => {
-    const resources = await resolvePerformanceTuning(['horizon-oc', 'sys-clk', 'sys-clk-overlay-ultrahand'], {}, '1.11.2')
+    const resources = await resolvePerformanceTuning(['horizon-oc', 'sys-clk', 'sys-clk-overlay-ultrahand'], { atmosphere: '1.11.2' })
 
     expect(resources.map(resource => resource.module)).toEqual(['sys-clk', 'horizon-oc', 'sys-clk-overlay-ultrahand'])
     expect(resources[1]).toMatchObject({
@@ -71,12 +71,12 @@ describe('resolvePerformanceTuning', () => {
   })
 
   it('rejects a HOC release built for a different Atmosphere version', async () => {
-    await expect(resolvePerformanceTuning(['horizon-oc'], {}, '1.10.2')).rejects.toThrow('requires Atmosphere 1.11.2')
+    await expect(resolvePerformanceTuning(['horizon-oc'], { atmosphere: '1.10.2' })).rejects.toThrow('requires Atmosphere 1.11.2')
     expect(getRepositoryFile).toHaveBeenLastCalledWith('Horizon-OC/Horizon-OC', 'ams_ver.txt', 'v1', undefined)
   })
 
   it('uses HOC as the dependency for its compatible overlay without adding the original service', async () => {
-    const resources = await resolvePerformanceTuning(['sys-clk-overlay-ultrahand', 'horizon-oc'], {}, '1.11.2')
+    const resources = await resolvePerformanceTuning(['sys-clk-overlay-ultrahand', 'horizon-oc'], { atmosphere: '1.11.2' })
 
     expect(resources.map(resource => resource.module)).toEqual(['horizon-oc', 'sys-clk-overlay-ultrahand'])
   })
@@ -95,7 +95,7 @@ describe('resolvePerformanceTuning', () => {
       await mkdir(join(directory, 'bootloader'))
       await writeFile(join(directory, 'bootloader/hekate_ipl.ini'), '[config]\nautoboot=0\n\n[custom cfw]\npkg3=atmosphere/package3\n\n[custom stock]\npkg3=atmosphere/package3\nstock=1\n')
 
-      await installResources(await resolvePerformanceTuning(['horizon-oc'], {}, '1.11.2'), directory)
+      await installResources(await resolvePerformanceTuning(['horizon-oc'], { atmosphere: '1.11.2' }), directory)
 
       const settings = parse(await readFile(join(directory, 'bootloader/hekate_ipl.ini'), 'utf8'))
       expect(settings['custom cfw']).toEqual({ pkg3: 'atmosphere/package3', kip1: 'atmosphere/kips/hoc.kip', secmon: 'atmosphere/exosphere.bin' })

@@ -1,5 +1,5 @@
 import type { Resource } from '../core/plan'
-import type { TaskOptions } from '../types'
+import type { ExtensionContext } from './types'
 import { readFile, writeFile } from 'node:fs/promises'
 import * as p from '@clack/prompts'
 import { join } from 'pathe'
@@ -53,7 +53,7 @@ export async function promptPerformanceTuning(controller: AbortController): Prom
   return modules
 }
 
-export async function resolvePerformanceTuning(modules: PerformanceTool[], { signal, onProgress }: TaskOptions = {}, atmosphere?: string): Promise<Resource[]> {
+export async function resolvePerformanceTuning(modules: PerformanceTool[], { signal, onProgress, atmosphere, resources: existing = [] }: ExtensionContext = {}): Promise<Resource[]> {
   const selected = new Set<PerformanceTool | 'salty-nx'>(modules)
 
   if (selected.has('sys-clk-overlay-ultrahand') && !selected.has('horizon-oc'))
@@ -73,6 +73,9 @@ export async function resolvePerformanceTuning(modules: PerformanceTool[], { sig
     signal?.throwIfAborted()
 
     if (module === 'salty-nx') {
+      if (existing.some(resource => resource.module === 'salty-nx'))
+        continue
+
       resources.push(await resolveSaltyNx({ signal, onProgress }))
       continue
     }

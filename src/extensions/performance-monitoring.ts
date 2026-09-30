@@ -1,13 +1,14 @@
 import type { Resource } from '../core/plan'
-import type { TaskOptions } from '../types'
+import type { ExtensionContext } from './types'
 import * as p from '@clack/prompts'
 import { EXTENSION_REPO_CONFIG } from '../constants'
 import { getRelease } from '../download'
 import { getRepositoryUrl, selectAsset } from '../utils'
+import { resolveSaltyNx } from './dependencies'
 
 export type PerformanceMonitor = 'status-monitor' | 'status-monitor-deux'
 
-export async function promptPerformanceMonitoring(controller: AbortController): Promise<PerformanceMonitor | undefined> {
+export async function promptPerformanceMonitoring(controller: AbortController): Promise<PerformanceMonitor[]> {
   const enabled = await p.confirm({
     message: 'include performance monitoring?',
     signal: controller.signal,
@@ -19,7 +20,7 @@ export async function promptPerformanceMonitoring(controller: AbortController): 
   }
 
   if (!enabled)
-    return undefined
+    return []
 
   const module = await p.select<PerformanceMonitor>({
     message: 'select performance monitor',
@@ -36,21 +37,30 @@ export async function promptPerformanceMonitoring(controller: AbortController): 
     throw controller.signal.reason
   }
 
-  return module
+  return [module]
 }
 
-export async function resolvePerformanceMonitoring(module: PerformanceMonitor, { signal, onProgress }: TaskOptions = {}): Promise<Resource> {
-  signal?.throwIfAborted()
+export async function resolvePerformanceMonitoring(modules: PerformanceMonitor[], { signal, onProgress, resources: existing = [] }: ExtensionContext = {}): Promise<Resource[]> {
+  const resources: Resource[] = []
 
-  onProgress?.(`resolving ${module} (latest)`)
-  const release = await getRelease(EXTENSION_REPO_CONFIG[module], undefined, signal)
-  const asset = selectAsset(release, module === 'status-monitor' ? /^Status-Monitor-Overlay\.ovl$/ : /^Status-Monitor-Deux\.zip$/)
+  if (modules.length && !existing.some(resource => resource.module === 'salty-nx'))
+    resources.push(await resolveSaltyNx({ signal, onProgress }))
 
-  return {
-    module,
-    release: release.tag_name,
-    page: release.html_url,
-    asset,
-    target: module === 'status-monitor' ? 'switch/.overlays/Status-Monitor-Overlay.ovl' : undefined,
+  for (const module of modules) {
+    signal?.throwIfAborted()
+
+    onProgress?.(`resolving ${module} (latest)`)
+    const release = await getRelease(EXTENSION_REPO_CONFIG[module], undefined, signal)
+    const asset = selectAsset(release, module === 'status-monitor' ? /^Status-Monitor-Overlay\.ovl$/ : /^Status-Monitor-Deux\.zip$/)
+
+    resources.push({
+      module,
+      release: release.tag_name,
+      page: release.html_url,
+      asset,
+      target: module === 'status-monitor' ? 'switch/.overlays/Status-Monitor-Overlay.ovl' : undefined,
+    })
   }
+
+  return resources
 }

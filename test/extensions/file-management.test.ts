@@ -13,7 +13,7 @@ describe('resolveFileManagement', () => {
       assets: [{ name: 'NX-Shell.nro' }, { name: 'source.zip' }],
     } as Release)
 
-    const resource = await resolveFileManagement('nx-shell')
+    const [resource] = await resolveFileManagement(['nx-shell'])
 
     expect(getRelease).toHaveBeenCalledWith('DefenderOfHyrule/NX-Shell', undefined, undefined)
     expect(resource).toMatchObject({

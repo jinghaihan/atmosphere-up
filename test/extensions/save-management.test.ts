@@ -16,7 +16,7 @@ describe('resolveSaveManagement', () => {
       assets: [{ name: 'Checkpoint.3dsx' }, { name: 'checkpoint.cia' }, { name }],
     } as Release)
 
-    const resource = await resolveSaveManagement(module)
+    const [resource] = await resolveSaveManagement([module])
 
     expect(getRelease).toHaveBeenLastCalledWith(repository, undefined, undefined)
     expect(resource).toMatchObject({ module, asset: { name }, target: `switch/${name.slice(0, -4)}/${name}` })

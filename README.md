@@ -47,11 +47,11 @@ a separate single selection, with Status Monitor selected by default.
 | --- | --- | --- |
 | JKSV | [J-D-K/JKSV](https://github.com/J-D-K/JKSV) | Save backup and restore; default save manager selection |
 | Checkpoint | [BernardoGiordano/Checkpoint](https://github.com/BernardoGiordano/Checkpoint) | Save backup and restore |
+| NX Shell | [DefenderOfHyrule/NX-Shell](https://github.com/DefenderOfHyrule/NX-Shell) | File copying, moving, renaming, and deletion |
 | EdiZon Overlay | [proferabg/EdiZon-Overlay](https://github.com/proferabg/EdiZon-Overlay) | In-game cheat controls; the only cheat tool selected by default |
 | EdiZon SE | [tomvita/EdiZon-SE](https://github.com/tomvita/EdiZon-SE) | Memory search and editing for creating cheats |
 | Breeze | [tomvita/Breeze-Beta](https://github.com/tomvita/Breeze-Beta) | Cheat management, memory search, and editing |
 | Breezehand Overlay | [tomvita/Breezehand-Overlay](https://github.com/tomvita/Breezehand-Overlay) | Cheat controls in an overlay |
-| NX Shell | [DefenderOfHyrule/NX-Shell](https://github.com/DefenderOfHyrule/NX-Shell) | File copying, moving, renaming, and deletion |
 | Sys Clk | [retronx-team/sys-clk](https://github.com/retronx-team/sys-clk) | Clock service, homebrew manager, and overlay |
 | Sys Clk Overlay Ultrahand | [ppkantorski/sys-clk](https://github.com/ppkantorski/sys-clk) | Enhanced clock controls for Ultrahand, including Horizon OC support |
 | Horizon OC | [Horizon-OC/Horizon-OC](https://github.com/Horizon-OC/Horizon-OC) | Advanced CPU, GPU, RAM, and voltage tuning; not selected by default |
@@ -60,11 +60,11 @@ a separate single selection, with Status Monitor selected by default.
 | Fizeau | [averne/Fizeau](https://github.com/averne/Fizeau) | Screen color temperature, saturation, gamma, and contrast controls; not selected by default |
 | Status Monitor | [ppkantorski/Status-Monitor-Overlay](https://github.com/ppkantorski/Status-Monitor-Overlay) | FPS, frequencies, load, temperatures, and power monitoring; default monitor selection |
 | Status Monitor Deux | [masagrator/Status-Monitor-Deux](https://github.com/masagrator/Status-Monitor-Deux) | Performance monitoring with customizable layouts |
+| Mission Control | [ndeadly/MissionControl](https://github.com/ndeadly/MissionControl) | Third-party Bluetooth controller support; selected by default when controller support is enabled |
+| Sys Con | [o0Zz/sys-con](https://github.com/o0Zz/sys-con) | Third-party USB controller support; selected by default when controller support is enabled |
 | Moonlight Switch | [XITRIX/Moonlight-Switch](https://github.com/XITRIX/Moonlight-Switch) | Stream PC games to Switch; selected by default when streaming is enabled |
 | SysDVR | [exelix11/SysDVR](https://github.com/exelix11/SysDVR) | Stream Switch gameplay to a PC over USB or network, with a settings app; selected by default when streaming is enabled |
 | Emuiibo | [XorTroll/emuiibo](https://github.com/XorTroll/emuiibo) | Virtual Amiibo emulation with a background service and in-game overlay |
-| Mission Control | [ndeadly/MissionControl](https://github.com/ndeadly/MissionControl) | Third-party Bluetooth controller support; selected by default when controller support is enabled |
-| Sys Con | [o0Zz/sys-con](https://github.com/o0Zz/sys-con) | Third-party USB controller support; selected by default when controller support is enabled |
 
 All performance tuning tools except Horizon OC and Fizeau are selected by default. Selecting the
 Ultrahand clock overlay also includes a clock service. FPS Locker, ReverseNx RT,

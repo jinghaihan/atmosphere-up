@@ -26,7 +26,7 @@ describe('resolveAmiibo', () => {
 
     try {
       await writeFile(join(directory, 'payload.bin'), 'hekate')
-      const resource = await resolveAmiibo('emuiibo')
+      const [resource] = await resolveAmiibo(['emuiibo'])
       expect(getRelease).toHaveBeenCalledWith('XorTroll/emuiibo', undefined, undefined)
       expect(resource).toMatchObject({ module: 'emuiibo', asset: { name: 'emuiibo.zip' } })
 

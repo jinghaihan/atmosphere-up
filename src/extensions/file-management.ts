@@ -7,23 +7,29 @@ import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type FileManager = 'nx-shell'
 
-export async function resolveFileManagement(module: FileManager, { signal, onProgress }: TaskOptions = {}): Promise<Resource> {
-  signal?.throwIfAborted()
+export async function resolveFileManagement(modules: FileManager[], { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
+  const resources: Resource[] = []
 
-  onProgress?.(`resolving ${module} (latest)`)
-  const release = await getRelease(EXTENSION_REPO_CONFIG[module], undefined, signal)
-  const asset = selectAsset(release, /^NX-Shell\.nro$/i)
+  for (const module of modules) {
+    signal?.throwIfAborted()
 
-  return {
-    module,
-    release: release.tag_name,
-    page: release.html_url,
-    asset,
-    target: 'switch/NX-Shell/NX-Shell.nro',
+    onProgress?.(`resolving ${module} (latest)`)
+    const release = await getRelease(EXTENSION_REPO_CONFIG[module], undefined, signal)
+    const asset = selectAsset(release, /^NX-Shell\.nro$/i)
+
+    resources.push({
+      module,
+      release: release.tag_name,
+      page: release.html_url,
+      asset,
+      target: 'switch/NX-Shell/NX-Shell.nro',
+    })
   }
+
+  return resources
 }
 
-export async function promptFileManagement(controller: AbortController): Promise<FileManager | undefined> {
+export async function promptFileManagement(controller: AbortController): Promise<FileManager[]> {
   const enabled = await p.confirm({
     message: 'include file management?',
     signal: controller.signal,
@@ -35,7 +41,7 @@ export async function promptFileManagement(controller: AbortController): Promise
   }
 
   if (!enabled)
-    return undefined
+    return []
 
   const module = await p.select<FileManager>({
     message: 'select file manager',
@@ -51,5 +57,5 @@ export async function promptFileManagement(controller: AbortController): Promise
     throw controller.signal.reason
   }
 
-  return module
+  return [module]
 }

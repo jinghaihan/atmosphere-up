@@ -77,15 +77,15 @@ beforeEach(() => {
   vi.mocked(p.multiselect).mockResolvedValue([])
   vi.mocked(inspectOutput).mockReturnValue(false)
   vi.mocked(resolveResources).mockResolvedValue([])
-  vi.mocked(resolveSaveManagement).mockResolvedValue({ module: 'jksv' } as Awaited<ReturnType<typeof resolveSaveManagement>>)
+  vi.mocked(resolveSaveManagement).mockResolvedValue([{ module: 'jksv' }] as Awaited<ReturnType<typeof resolveSaveManagement>>)
   vi.mocked(resolveCheats).mockResolvedValue([])
   vi.mocked(resolvePerformanceTuning).mockResolvedValue([])
   vi.mocked(resolveStreaming).mockResolvedValue([])
   vi.mocked(resolveControllerSupport).mockResolvedValue([])
   vi.mocked(resolveSaltyNx).mockResolvedValue({ module: 'salty-nx' } as Awaited<ReturnType<typeof resolveSaltyNx>>)
-  vi.mocked(resolvePerformanceMonitoring).mockResolvedValue({ module: 'status-monitor' } as Awaited<ReturnType<typeof resolvePerformanceMonitoring>>)
-  vi.mocked(resolveFileManagement).mockResolvedValue({ module: 'nx-shell' } as Awaited<ReturnType<typeof resolveFileManagement>>)
-  vi.mocked(resolveAmiibo).mockResolvedValue({ module: 'emuiibo' } as Awaited<ReturnType<typeof resolveAmiibo>>)
+  vi.mocked(resolvePerformanceMonitoring).mockResolvedValue([{ module: 'status-monitor' }] as Awaited<ReturnType<typeof resolvePerformanceMonitoring>>)
+  vi.mocked(resolveFileManagement).mockResolvedValue([{ module: 'nx-shell' }] as Awaited<ReturnType<typeof resolveFileManagement>>)
+  vi.mocked(resolveAmiibo).mockResolvedValue([{ module: 'emuiibo' }] as Awaited<ReturnType<typeof resolveAmiibo>>)
   vi.mocked(buildPack).mockResolvedValue()
 })
 
@@ -138,38 +138,14 @@ describe('runBuildCommand', () => {
       expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
       expect(resolveStreaming).not.toHaveBeenCalled()
       expect(resolveAmiibo).not.toHaveBeenCalled()
+      expect(resolveControllerSupport).not.toHaveBeenCalled()
       return 'emuiibo'
     })
-    vi.mocked(p.multiselect).mockImplementationOnce(async () => {
-      expect(resolveSaveManagement).not.toHaveBeenCalled()
-      expect(resolveCheats).not.toHaveBeenCalled()
-      return ['edizon-overlay', 'breezehand']
-    }).mockImplementationOnce(async () => {
-      expect(resolveSaveManagement).not.toHaveBeenCalled()
-      expect(resolveCheats).not.toHaveBeenCalled()
-      expect(resolveFileManagement).not.toHaveBeenCalled()
-      expect(resolvePerformanceTuning).not.toHaveBeenCalled()
-      return ['sys-clk', 'sys-clk-overlay-ultrahand', 'fps-locker', 'reverse-nx-rt']
-    }).mockImplementationOnce(async () => {
-      expect(resolveSaveManagement).not.toHaveBeenCalled()
-      expect(resolveCheats).not.toHaveBeenCalled()
-      expect(resolveFileManagement).not.toHaveBeenCalled()
-      expect(resolvePerformanceTuning).not.toHaveBeenCalled()
-      expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
-      expect(resolveSaltyNx).not.toHaveBeenCalled()
-      expect(resolveStreaming).not.toHaveBeenCalled()
-      return ['moonlight-switch', 'sys-dvr']
-    }).mockImplementationOnce(async () => {
-      expect(resolveSaveManagement).not.toHaveBeenCalled()
-      expect(resolveCheats).not.toHaveBeenCalled()
-      expect(resolveFileManagement).not.toHaveBeenCalled()
-      expect(resolvePerformanceTuning).not.toHaveBeenCalled()
-      expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
-      expect(resolveStreaming).not.toHaveBeenCalled()
-      expect(resolveAmiibo).not.toHaveBeenCalled()
-      expect(resolveControllerSupport).not.toHaveBeenCalled()
-      return ['mission-control', 'sys-con']
-    })
+    vi.mocked(p.multiselect)
+      .mockResolvedValueOnce(['edizon-overlay', 'breezehand'])
+      .mockResolvedValueOnce(['sys-clk', 'sys-clk-overlay-ultrahand', 'fps-locker', 'reverse-nx-rt'])
+      .mockResolvedValueOnce(['mission-control', 'sys-con'])
+      .mockResolvedValueOnce(['moonlight-switch', 'sys-dvr'])
     vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
       expect(p.confirm).not.toHaveBeenCalled()
       await task!.onCoreReady!()
@@ -177,7 +153,7 @@ describe('runBuildCommand', () => {
 
     await runBuildCommand({})
 
-    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?', 'include file management?', 'include performance tuning?', 'include performance monitoring?', 'include streaming?', 'include amiibo emulation?', 'include controller support?'])
+    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include file management?', 'include cheats?', 'include performance tuning?', 'include performance monitoring?', 'include controller support?', 'include streaming?', 'include amiibo emulation?'])
     expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       initialValues: ['edizon-overlay'],
       options: [
@@ -212,11 +188,11 @@ describe('runBuildCommand', () => {
         { value: 'status-monitor-deux', label: 'Status Monitor Deux', hint: 'https://github.com/masagrator/Status-Monitor-Deux' },
       ],
     }))
-    expect(resolvePerformanceMonitoring).toHaveBeenCalledWith('status-monitor', expect.any(Object))
-    expect(resolvePerformanceTuning).toHaveBeenCalledWith(['sys-clk', 'sys-clk-overlay-ultrahand', 'fps-locker', 'reverse-nx-rt'], expect.any(Object), '1.10.2')
-    expect(resolveFileManagement).toHaveBeenCalledWith('nx-shell', expect.any(Object))
-    expect(vi.mocked(resolveFileManagement).mock.invocationCallOrder[0]).toBeGreaterThan(vi.mocked(resolveCheats).mock.invocationCallOrder[0])
-    expect(resolveSaveManagement).toHaveBeenCalledWith('jksv', expect.any(Object))
+    expect(resolvePerformanceMonitoring).toHaveBeenCalledWith(['status-monitor'], expect.any(Object))
+    expect(resolvePerformanceTuning).toHaveBeenCalledWith(['sys-clk', 'sys-clk-overlay-ultrahand', 'fps-locker', 'reverse-nx-rt'], expect.objectContaining({ atmosphere: '1.10.2' }))
+    expect(resolveFileManagement).toHaveBeenCalledWith(['nx-shell'], expect.any(Object))
+    expect(vi.mocked(resolveFileManagement).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(resolveCheats).mock.invocationCallOrder[0])
+    expect(resolveSaveManagement).toHaveBeenCalledWith(['jksv'], expect.any(Object))
     expect(resolveCheats).toHaveBeenCalledWith(['edizon-overlay', 'breezehand'], expect.any(Object))
     expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       message: 'select streaming tools',
@@ -232,8 +208,8 @@ describe('runBuildCommand', () => {
       initialValue: 'emuiibo',
       options: [{ value: 'emuiibo', label: 'Emuiibo', hint: 'https://github.com/XorTroll/emuiibo' }],
     }))
-    expect(resolveAmiibo).toHaveBeenCalledWith('emuiibo', expect.any(Object))
-    expect(p.multiselect).toHaveBeenLastCalledWith(expect.objectContaining({
+    expect(resolveAmiibo).toHaveBeenCalledWith(['emuiibo'], expect.any(Object))
+    expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       message: 'select controller tools',
       initialValues: ['mission-control', 'sys-con'],
       options: [
@@ -241,11 +217,11 @@ describe('runBuildCommand', () => {
         { value: 'sys-con', label: 'Sys Con', hint: 'https://github.com/o0Zz/sys-con' },
       ],
     }))
-    expect(resolveControllerSupport).toHaveBeenCalledWith(['mission-control', 'sys-con'], expect.any(Object), '21.2.0')
+    expect(resolveControllerSupport).toHaveBeenCalledWith(['mission-control', 'sys-con'], expect.objectContaining({ hos: '21.2.0' }))
   })
 
   it.each(['confirm', 'multiselect'] as const)('cancels from the cheats %s prompt before resolving any selected extension', async (prompt) => {
-    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
+    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(false).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
     vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv')
     vi.mocked(p.multiselect).mockResolvedValueOnce(Symbol('cancel'))
     vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
@@ -273,14 +249,14 @@ describe('runBuildCommand', () => {
     expect(resolveSaveManagement).not.toHaveBeenCalled()
     expect(p.select).toHaveBeenCalledTimes(1)
     expect(p.multiselect).not.toHaveBeenCalled()
-    expect(resolveCheats).toHaveBeenCalledWith([], expect.any(Object))
+    expect(resolveCheats).not.toHaveBeenCalled()
     expect(resolveFileManagement).not.toHaveBeenCalled()
     expect(resolveAmiibo).not.toHaveBeenCalled()
     expect(p.outro).toHaveBeenCalled()
   })
 
   it.each(['jksv', 'checkpoint'] as const)('selects %s after the core pack is assembled, with JKSV as the default', async (module) => {
-    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(true).mockResolvedValue(false)
+    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValue(false)
     vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce(module)
     vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
       expect(p.confirm).not.toHaveBeenCalled()
@@ -289,7 +265,7 @@ describe('runBuildCommand', () => {
 
     await runBuildCommand({})
 
-    expect(resolveSaveManagement).toHaveBeenCalledWith(module, expect.any(Object))
+    expect(resolveSaveManagement).toHaveBeenCalledWith([module], expect.any(Object))
     expect(vi.mocked(p.select).mock.calls[1][0]).toMatchObject({
       initialValue: 'jksv',
       options: [
@@ -315,7 +291,7 @@ describe('runBuildCommand', () => {
   })
 
   it.each(['confirm', 'select'] as const)('cancels from the file management %s prompt before resolving extensions', async (prompt) => {
-    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(true).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
+    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
     vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv').mockResolvedValueOnce(Symbol('cancel'))
     vi.mocked(p.multiselect).mockResolvedValueOnce(['edizon-overlay'])
     vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
@@ -357,9 +333,9 @@ describe('runBuildCommand', () => {
 
     await runBuildCommand({})
 
-    expect(resolvePerformanceTuning).toHaveBeenCalledWith([], expect.any(Object), '1.10.2')
-    expect(resolvePerformanceMonitoring).toHaveBeenCalledWith(module, expect.any(Object))
-    expect(resolveSaltyNx).toHaveBeenCalledTimes(1)
+    expect(resolvePerformanceTuning).not.toHaveBeenCalled()
+    expect(resolvePerformanceMonitoring).toHaveBeenCalledWith([module], expect.any(Object))
+    expect(resolvePerformanceMonitoring).toHaveBeenCalledWith([module], expect.objectContaining({ resources: [] }))
     expect(p.multiselect).not.toHaveBeenCalled()
   })
 
@@ -376,7 +352,7 @@ describe('runBuildCommand', () => {
     await runBuildCommand({})
 
     expect(resolveSaltyNx).not.toHaveBeenCalled()
-    expect(resolvePerformanceMonitoring).toHaveBeenCalledWith('status-monitor', expect.any(Object))
+    expect(resolvePerformanceMonitoring).toHaveBeenCalledWith(['status-monitor'], expect.objectContaining({ resources: [{ module: 'salty-nx' }] }))
   })
 
   it.each(['confirm', 'select'] as const)('cancels from the monitoring %s prompt before resolving extensions', async (prompt) => {
@@ -398,7 +374,7 @@ describe('runBuildCommand', () => {
   })
 
   it.each(['confirm', 'multiselect'] as const)('cancels from the streaming %s prompt before resolving extensions', async (prompt) => {
-    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
+    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
     vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv')
     vi.mocked(p.multiselect).mockResolvedValueOnce(Symbol('cancel'))
     vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
@@ -418,7 +394,7 @@ describe('runBuildCommand', () => {
   })
 
   it.each(['confirm', 'select'] as const)('cancels from the amiibo %s prompt before resolving extensions', async (prompt) => {
-    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
+    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
     vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv').mockResolvedValueOnce(Symbol('cancel'))
     vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
       await task!.onCoreReady!()
