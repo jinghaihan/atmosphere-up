@@ -11,16 +11,23 @@ import { installResources } from './install'
 import { writeOutput } from './output'
 
 export interface BuildOptions extends TaskOptions {
+  bundle: Bundle
+  resources: Resource[]
+  directory: string
+  replace?: boolean
+  pack?: boolean
   onCoreReady?: () => Promise<Resource[]>
 }
 
-export async function buildPack(bundle: Bundle, resources: Resource[], directory: string, replace = false, pack = false, task: BuildOptions = {}): Promise<void> {
+export async function buildPack({ bundle, resources, directory, replace = false, pack = false, ...task }: BuildOptions): Promise<void> {
   const { signal, onProgress } = task
 
-  await writeOutput(
+  await writeOutput({
+    ...task,
     directory,
     replace,
-    async (staging) => {
+    pack,
+    populate: async (staging) => {
       onProgress?.(`checking bundled sigpatches for HOS ${bundle.labels.hos}`)
       const sigpatches = await readFile(getBundlePath(bundle))
       if (sha256(sigpatches) !== bundle.sha256)
@@ -71,7 +78,5 @@ export async function buildPack(bundle: Bundle, resources: Resource[], directory
         }, null, 2)}\n`,
       )
     },
-    pack,
-    task,
-  )
+  })
 }

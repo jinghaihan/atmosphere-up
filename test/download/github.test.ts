@@ -51,7 +51,7 @@ describe('getRepositoryFile', () => {
     vi.stubGlobal('fetch', fetch)
     const controller = new AbortController()
 
-    expect(await getRepositoryFile('Horizon-OC/Horizon-OC', 'ams_ver.txt', '2.5.1', controller.signal)).toBe('1.11.2\n')
+    expect(await getRepositoryFile({ repository: 'Horizon-OC/Horizon-OC', path: 'ams_ver.txt', ref: '2.5.1', signal: controller.signal })).toBe('1.11.2\n')
     expect(fetch.mock.calls[0][0]).toBe('https://api.github.com/repos/Horizon-OC/Horizon-OC/contents/ams_ver.txt?ref=2.5.1')
     expect(fetch.mock.calls[0][1].signal).toBe(controller.signal)
   })

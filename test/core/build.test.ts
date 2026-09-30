@@ -49,16 +49,13 @@ describe('buildPack', () => {
       .mockResolvedValueOnce(fileManagerData)
     const onProgress = vi.fn()
 
-    await buildPack(bundle, [resource], `${directory}.zip`, false, true, {
-      onProgress,
-      onCoreReady: async () => {
-        expect(downloadAsset).toHaveBeenCalledTimes(1)
-        expect(onProgress.mock.lastCall).toEqual(['setting Hekate reboot payload'])
-        const [settings] = await glob('.atmosphere-up-*/pack/config/ultrahand/config.ini', { cwd: resolve(directory, '..'), dot: true, absolute: true })
-        expect(await readFile(settings, 'utf8')).toContain('L+DDOWN')
-        return [extension, fileManager]
-      },
-    })
+    await buildPack({ bundle, resources: [resource], directory: `${directory}.zip`, pack: true, onProgress, onCoreReady: async () => {
+      expect(downloadAsset).toHaveBeenCalledTimes(1)
+      expect(onProgress.mock.lastCall).toEqual(['setting Hekate reboot payload'])
+      const [settings] = await glob('.atmosphere-up-*/pack/config/ultrahand/config.ini', { cwd: resolve(directory, '..'), dot: true, absolute: true })
+      expect(await readFile(settings, 'utf8')).toContain('L+DDOWN')
+      return [extension, fileManager]
+    } })
 
     const archive = new AdmZip(`${directory}.zip`)
     expect(archive.readFile(extension.target!)).toEqual(Buffer.from(data))
@@ -72,13 +69,10 @@ describe('buildPack', () => {
     vi.mocked(downloadAsset).mockResolvedValueOnce(await readFile(join(cwd, 'test/fixtures/core.zip')))
     const controller = new AbortController()
 
-    await expect(buildPack(bundle, [resource], `${directory}.zip`, false, true, {
-      signal: controller.signal,
-      onCoreReady: async () => {
-        controller.abort()
-        throw controller.signal.reason
-      },
-    })).rejects.toThrow('aborted')
+    await expect(buildPack({ bundle, resources: [resource], directory: `${directory}.zip`, pack: true, signal: controller.signal, onCoreReady: async () => {
+      controller.abort()
+      throw controller.signal.reason
+    } })).rejects.toThrow('aborted')
 
     expect(await glob(['.atmosphere-up-*', 'build.zip'], { cwd: resolve(directory, '..'), dot: true, onlyFiles: false })).toEqual([])
   })
@@ -86,7 +80,7 @@ describe('buildPack', () => {
   it('sets overlay wake keys and an 8 MiB allocation and returns to Hekate on reboot', async () => {
     vi.mocked(downloadAsset).mockResolvedValue(await readFile(join(cwd, 'test/fixtures/core.zip')))
     const onProgress = vi.fn()
-    await buildPack(bundle, [resource], directory, false, false, { onProgress })
+    await buildPack({ bundle, resources: [resource], directory, onProgress })
     expect(await readFile(join(directory, 'config/ultrahand/config.ini'), 'utf8')).toBe('[ultrahand]\nkey_combo=L+DDOWN\n')
     expect(await readFile(join(directory, 'config/tesla/config.ini'), 'utf8')).toBe('[tesla]\nkey_combo=L+DDOWN\n')
     const heapSize = await readFile(join(directory, 'config/nx-ovlloader/heap_size.bin'))

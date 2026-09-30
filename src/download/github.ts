@@ -35,7 +35,14 @@ export async function getRelease(repository: string, tag?: string, signal?: Abor
   return response.data
 }
 
-export async function getRepositoryFile(repository: string, path: string, ref: string, signal?: AbortSignal): Promise<string> {
+interface RepositoryFileOptions {
+  repository: string
+  path: string
+  ref: string
+  signal?: AbortSignal
+}
+
+export async function getRepositoryFile({ repository, path, ref, signal }: RepositoryFileOptions): Promise<string> {
   signal?.throwIfAborted()
 
   const github = await getGithub()

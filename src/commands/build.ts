@@ -66,8 +66,13 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
   try {
     const resources = await resolveResources(bundle, task)
 
-    await buildPack(bundle, resources, destination, replace, config.pack, {
+    await buildPack({
       ...task,
+      bundle,
+      resources,
+      directory: destination,
+      replace,
+      pack: config.pack,
       onCoreReady: config.ext
         ? async () => {
           spinner.stop(c.green('core pack assembled'))

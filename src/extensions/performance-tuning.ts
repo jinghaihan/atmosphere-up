@@ -102,7 +102,7 @@ export async function resolvePerformanceTuning(modules: PerformanceTool[], { sig
         break
       case 'horizon-oc': {
         if (atmosphere) {
-          const supported = (await getRepositoryFile(repository, 'ams_ver.txt', release.tag_name, signal)).trim()
+          const supported = (await getRepositoryFile({ repository, path: 'ams_ver.txt', ref: release.tag_name, signal })).trim()
           if (supported !== atmosphere)
             throw new Error(`Horizon OC ${release.tag_name} requires Atmosphere ${supported}; the selected pack uses ${atmosphere}.`)
         }

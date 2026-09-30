@@ -72,7 +72,7 @@ describe('resolvePerformanceTuning', () => {
 
   it('rejects a HOC release built for a different Atmosphere version', async () => {
     await expect(resolvePerformanceTuning(['horizon-oc'], { atmosphere: '1.10.2' })).rejects.toThrow('requires Atmosphere 1.11.2')
-    expect(getRepositoryFile).toHaveBeenLastCalledWith('Horizon-OC/Horizon-OC', 'ams_ver.txt', 'v1', undefined)
+    expect(getRepositoryFile).toHaveBeenLastCalledWith({ repository: 'Horizon-OC/Horizon-OC', path: 'ams_ver.txt', ref: 'v1', signal: undefined })
   })
 
   it('uses HOC as the dependency for its compatible overlay without adding the original service', async () => {

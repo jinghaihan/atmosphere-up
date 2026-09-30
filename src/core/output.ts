@@ -13,7 +13,14 @@ export function inspectOutput(directory: string, cwd: string): boolean {
   return existsSync(directory)
 }
 
-export async function writeOutput(directory: string, replace: boolean, populate: (staging: string) => Promise<void>, pack = false, { signal, onProgress }: TaskOptions = {}): Promise<void> {
+export interface OutputOptions extends TaskOptions {
+  directory: string
+  replace?: boolean
+  populate: (staging: string) => Promise<void>
+  pack?: boolean
+}
+
+export async function writeOutput({ directory, replace = false, populate, pack = false, signal, onProgress }: OutputOptions): Promise<void> {
   signal?.throwIfAborted()
 
   await mkdir(dirname(directory), { recursive: true })
