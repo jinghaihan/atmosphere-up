@@ -1,4 +1,5 @@
 import type { ReleaseAsset } from '../types'
+import { Buffer } from 'node:buffer'
 import { Octokit } from '@octokit/rest'
 import { sha256 } from '../utils'
 import { resolveGithubToken } from './auth'
@@ -32,6 +33,19 @@ export async function getRelease(repository: string, tag?: string, signal?: Abor
       })
 
   return response.data
+}
+
+export async function getRepositoryFile(repository: string, path: string, ref: string, signal?: AbortSignal): Promise<string> {
+  signal?.throwIfAborted()
+
+  const github = await getGithub()
+  const [owner, repo] = repository.split('/')
+  const { data } = await github.rest.repos.getContent({ owner, repo, path, ref, request: { signal } })
+
+  if (Array.isArray(data) || data.type !== 'file')
+    throw new Error(`Expected a file at ${repository}/${path}.`)
+
+  return Buffer.from(data.content, 'base64').toString('utf8')
 }
 
 export async function downloadAsset(asset: ReleaseAsset, { signal, onProgress }: DownloadOptions = {}): Promise<Uint8Array> {

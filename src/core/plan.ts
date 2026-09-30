@@ -12,6 +12,7 @@ export interface Resource {
   asset: ReleaseAsset
   target?: string
   paths?: string[]
+  configure?: (directory: string) => Promise<void>
 }
 
 export async function resolveResources(bundle: Bundle, { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {

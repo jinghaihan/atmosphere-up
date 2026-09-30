@@ -31,6 +31,12 @@ export async function installResources(resources: Resource[], directory: string,
       await extractArchive(data, directory, resource.paths)
     }
 
+    signal?.throwIfAborted()
+    if (resource.configure) {
+      onProgress?.(`configuring ${label}`)
+      await resource.configure(directory)
+    }
+
     downloads.push({ resource, sha256: sha256(data) })
   }
 
