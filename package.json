@@ -30,7 +30,7 @@
     "dist"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=20.18.1"
   },
   "scripts": {
     "start": "tsx ./src/cli.ts",
@@ -47,10 +47,12 @@
   },
   "dependencies": {
     "@clack/prompts": "catalog:prod",
+    "adm-zip": "catalog:prod",
     "ansis": "catalog:prod",
     "cac": "catalog:prod",
     "pathe": "catalog:prod",
-    "unconfig": "catalog:prod"
+    "unconfig": "catalog:prod",
+    "undici": "catalog:prod"
   },
   "devDependencies": {
     "tsdown": "catalog:build",
@@ -61,7 +63,6 @@
     "tsx": "catalog:dev",
     "typescript": "catalog:dev",
     "@octokit/rest": "catalog:inlined",
-    "adm-zip": "catalog:inlined",
     "tinyexec": "catalog:inlined",
     "tinyglobby": "catalog:inlined",
     "verkit": "catalog:inlined",
@@ -88,7 +89,6 @@
     "@octokit/request": "10.0.16",
     "@octokit/request-error": "7.1.2",
     "@octokit/rest": "22.0.1",
-    "adm-zip": "0.6.1",
     "before-after-hook": "4.0.0",
     "content-type": "3.1.1",
     "fdir": "6.5.0",

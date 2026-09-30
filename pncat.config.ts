@@ -6,7 +6,6 @@ export default defineConfig({
       name: 'inlined',
       match: [
         '@octokit/rest',
-        'adm-zip',
         'tinyexec',
         'tinyglobby',
         'verkit',

@@ -3,10 +3,12 @@ import type { CommandOptions } from './types'
 import process from 'node:process'
 import * as p from '@clack/prompts'
 import { cac } from 'cac'
+import { EnvHttpProxyAgent, setGlobalDispatcher } from 'undici'
 import { runBuildCommand } from './commands'
 import { NAME, VERSION } from './constants'
 
 try {
+  setGlobalDispatcher(new EnvHttpProxyAgent())
   const cli: CAC = cac(NAME)
 
   cli

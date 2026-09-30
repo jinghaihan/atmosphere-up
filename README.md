@@ -1,14 +1,13 @@
 # atmosphere-up
 
 [![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![bundle][bundle-src]][bundle-href]
 [![JSDocs][jsdocs-src]][jsdocs-href]
 [![License][license-src]][license-href]
 
 ## Usage
 
-Requires Node.js 20 or newer. Select a supported HOS version from the prompt:
+Requires Node.js 20.18.1 or newer. Select a supported HOS version from the prompt:
 
 ```sh
 pnpm start
@@ -80,6 +79,9 @@ environment, or reuses an existing GitHub CLI login through
 `gh auth token --hostname github.com`. No environment variable is needed when
 `gh` is already logged in. Without either credential source, requests are
 anonymous and use GitHub's lower API rate limit.
+
+GitHub queries and downloads honor `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`
+(including their lowercase forms) through Undici's `EnvHttpProxyAgent`.
 
 ## License
 
