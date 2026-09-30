@@ -5,7 +5,7 @@ import * as p from '@clack/prompts'
 import { join } from 'pathe'
 import { EXTENSION_REPO_CONFIG } from '../constants'
 import { getRelease, getRepositoryFile } from '../download'
-import { configureHorizonOcBootEntries, selectAsset } from '../utils'
+import { configureHorizonOcBootEntries, getRepositoryUrl, selectAsset } from '../utils'
 import { resolveSaltyNx } from './dependencies'
 
 export type PerformanceTool = 'sys-clk' | 'sys-clk-ultrahand-overlay' | 'horizon-oc' | 'fps-locker' | 'reverse-nx-rt'
@@ -29,11 +29,11 @@ export async function promptPerformanceTuning(controller: AbortController): Prom
     initialValues: ['sys-clk', 'sys-clk-ultrahand-overlay', 'fps-locker', 'reverse-nx-rt'],
     signal: controller.signal,
     options: [
-      { value: 'sys-clk', label: 'Sys Clk', hint: `https://github.com/${EXTENSION_REPO_CONFIG['sys-clk']}` },
-      { value: 'sys-clk-ultrahand-overlay', label: 'Sys Clk Ultrahand Overlay', hint: `https://github.com/${EXTENSION_REPO_CONFIG['sys-clk-ultrahand-overlay']}` },
-      { value: 'horizon-oc', label: 'Horizon OC', hint: `https://github.com/${EXTENSION_REPO_CONFIG['horizon-oc']}` },
-      { value: 'fps-locker', label: 'FPS Locker', hint: `https://github.com/${EXTENSION_REPO_CONFIG['fps-locker']}` },
-      { value: 'reverse-nx-rt', label: 'ReverseNx RT', hint: `https://github.com/${EXTENSION_REPO_CONFIG['reverse-nx-rt']}` },
+      { value: 'sys-clk', label: 'Sys Clk', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-clk']) },
+      { value: 'sys-clk-ultrahand-overlay', label: 'Sys Clk Ultrahand Overlay', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-clk-ultrahand-overlay']) },
+      { value: 'horizon-oc', label: 'Horizon OC', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['horizon-oc']) },
+      { value: 'fps-locker', label: 'FPS Locker', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['fps-locker']) },
+      { value: 'reverse-nx-rt', label: 'ReverseNx RT', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['reverse-nx-rt']) },
     ],
   })
 

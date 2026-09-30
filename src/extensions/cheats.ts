@@ -3,7 +3,7 @@ import type { TaskOptions } from '../types'
 import * as p from '@clack/prompts'
 import { EXTENSION_REPO_CONFIG } from '../constants'
 import { getRelease } from '../download'
-import { selectAsset } from '../utils'
+import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type CheatTool = 'edizon-overlay' | 'edizon-se' | 'breeze' | 'breezehand'
 
@@ -61,10 +61,10 @@ export async function promptCheats(controller: AbortController): Promise<CheatTo
     initialValues: ['edizon-overlay'],
     signal: controller.signal,
     options: [
-      { value: 'edizon-overlay', label: 'EdiZon Overlay', hint: `https://github.com/${EXTENSION_REPO_CONFIG['edizon-overlay']}` },
-      { value: 'edizon-se', label: 'EdiZon SE', hint: `https://github.com/${EXTENSION_REPO_CONFIG['edizon-se']}` },
-      { value: 'breeze', label: 'Breeze', hint: `https://github.com/${EXTENSION_REPO_CONFIG.breeze}` },
-      { value: 'breezehand', label: 'Breezehand Overlay', hint: `https://github.com/${EXTENSION_REPO_CONFIG.breezehand}` },
+      { value: 'edizon-overlay', label: 'EdiZon Overlay', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['edizon-overlay']) },
+      { value: 'edizon-se', label: 'EdiZon SE', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['edizon-se']) },
+      { value: 'breeze', label: 'Breeze', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.breeze) },
+      { value: 'breezehand', label: 'Breezehand Overlay', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.breezehand) },
     ],
   })
 

@@ -3,7 +3,7 @@ import type { TaskOptions } from '../types'
 import * as p from '@clack/prompts'
 import { EXTENSION_REPO_CONFIG } from '../constants'
 import { getRelease } from '../download'
-import { selectAsset } from '../utils'
+import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type PerformanceMonitor = 'status-monitor' | 'status-monitor-deux'
 
@@ -26,8 +26,8 @@ export async function promptPerformanceMonitoring(controller: AbortController): 
     initialValue: 'status-monitor',
     signal: controller.signal,
     options: [
-      { value: 'status-monitor', label: 'Status Monitor', hint: `https://github.com/${EXTENSION_REPO_CONFIG['status-monitor']}` },
-      { value: 'status-monitor-deux', label: 'Status Monitor Deux', hint: `https://github.com/${EXTENSION_REPO_CONFIG['status-monitor-deux']}` },
+      { value: 'status-monitor', label: 'Status Monitor', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['status-monitor']) },
+      { value: 'status-monitor-deux', label: 'Status Monitor Deux', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['status-monitor-deux']) },
     ],
   })
 

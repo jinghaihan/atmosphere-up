@@ -3,7 +3,7 @@ import type { TaskOptions } from '../types'
 import * as p from '@clack/prompts'
 import { EXTENSION_REPO_CONFIG } from '../constants'
 import { getRelease } from '../download'
-import { selectAsset } from '../utils'
+import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type SaveManager = 'jksv' | 'checkpoint'
 
@@ -42,8 +42,8 @@ export async function promptSaveManagement(controller: AbortController): Promise
     initialValue: 'jksv',
     signal: controller.signal,
     options: [
-      { value: 'jksv', label: 'JKSV', hint: `https://github.com/${EXTENSION_REPO_CONFIG.jksv}` },
-      { value: 'checkpoint', label: 'Checkpoint', hint: `https://github.com/${EXTENSION_REPO_CONFIG.checkpoint}` },
+      { value: 'jksv', label: 'JKSV', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.jksv) },
+      { value: 'checkpoint', label: 'Checkpoint', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.checkpoint) },
     ],
   })
 

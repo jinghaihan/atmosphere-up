@@ -3,7 +3,7 @@ import type { TaskOptions } from '../types'
 import * as p from '@clack/prompts'
 import { EXTENSION_REPO_CONFIG } from '../constants'
 import { getRelease } from '../download'
-import { selectAsset } from '../utils'
+import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type FileManager = 'nx-shell'
 
@@ -42,7 +42,7 @@ export async function promptFileManagement(controller: AbortController): Promise
     initialValue: 'nx-shell',
     signal: controller.signal,
     options: [
-      { value: 'nx-shell', label: 'NX Shell', hint: `https://github.com/${EXTENSION_REPO_CONFIG['nx-shell']}` },
+      { value: 'nx-shell', label: 'NX Shell', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['nx-shell']) },
     ],
   })
 

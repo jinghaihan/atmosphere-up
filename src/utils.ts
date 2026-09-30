@@ -22,6 +22,10 @@ export function formatDownloadProgress(received: number, total: number): string 
   return `${(received / 1024 ** 2).toFixed(1)} / ${(total / 1024 ** 2).toFixed(1)} MiB (${Math.floor(received / total * 100)}%)`
 }
 
+export function getRepositoryUrl(repository: string): string {
+  return `https://github.com/${repository}`
+}
+
 export function selectAsset(release: Release, pattern: RegExp): ReleaseAsset {
   const matches = release.assets.filter(asset => pattern.test(asset.name))
 
