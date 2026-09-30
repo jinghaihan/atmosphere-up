@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 2,
+  "preparedOn": "2026-09-30",
+  "description": "Standalone normalized sigpatch bundles for extraction into a clean staging directory. Labels are resource versions, not a tested core compatibility matrix.",
+  "bundles": [
+    {
+      "id": "hos-16.1.0-ams-1.6.1",
+      "file": "archives/sigpatches-hos-16.1.0-ams-1.6.1.zip",
+      "labels": {
+        "hos": "16.1.0",
+        "atmosphere": "1.6.1"
+      },
+      "sha256": "bfb723c33e17f8b8088c7c196f8257a362ba1ccb866c99b06cf3ae90c6dce8e8",
+      "bytes": 47791,
+      "ips": 150,
+      "sources": [
+        {
+          "file": "Hekate+AMS-package3-sigpatches-1.6.1-cfw-16.1.0.zip",
+          "page": "https://gbatemp.net/threads/super-mario-bros-wonder-says-needs-system-update-help.641589/page-2",
+          "download": "https://gbatemp.net/attachments/hekate-ams-package3-sigpatches-1-6-1-cfw-16-1-0-zip.399607/",
+          "publisher": "impeeza",
+          "sha256": "b7da172ace4ee4d0132b6f4d8f5eb9dd0ae5d1d7dd456d124a34b920668c0d04",
+          "bytes": 54143
+        }
+      ],
+      "notes": [
+        "patches.ini labels the newest loader patch as Atmosphere 1.6.1 prerelease."
+      ],
+      "atmosphereTag": "1.6.1-prerelease"
+    },
+    {
+      "id": "hos-17.0.0-ams-1.6.1",
+      "file": "archives/sigpatches-hos-17.0.0-ams-1.6.1.zip",
+      "labels": {
+        "hos": "17.0.0",
+        "atmosphere": "1.6.1"
+      },
+      "sha256": "f1003e34c91388abd5333a2e3ec5440fb892b4b37d773181b9350ebf9f822aed",
+      "bytes": 49006,
+      "ips": 154,
+      "sources": [
+        {
+          "file": "Hekate+AMS-package3-sigpatches-1.6.1-cfw-17.0.0.zip",
+          "page": "https://gbatemp.net/threads/sigpatches-for-atmosphere-hekate-fss0-fusee-package3.571543/post-10275682",
+          "download": "https://gbatemp.net/attachments/hekate-ams-package3-sigpatches-1-6-1-cfw-17-0-0-zip.400913/",
+          "publisher": "impeeza",
+          "sha256": "61d9fb12029aae7fb1c95d2fdf81a98f658f4e2480752972a46c734e926fab27",
+          "bytes": 55760
+        }
+      ],
+      "notes": [
+        "Publisher claims firmware 1.0.0–17.0.0 and Atmosphere 0.11.0–1.6.1 prerelease."
+      ],
+      "atmosphereTag": "1.6.1-prerelease"
+    },
+    {
+      "id": "hos-18.0.0-ams-1.7.0",
+      "file": "archives/sigpatches-hos-18.0.0-ams-1.7.0.zip",
+      "labels": {
+        "hos": "18.0.0",
+        "atmosphere": "1.7.0"
+      },
+      "sha256": "c4c6270952c76a86e1828d8f0cd4aade9ae82bac48390bfb1ac60713f46a6989",
+      "bytes": 50815,
+      "ips": 160,
+      "sources": [
+        {
+          "file": "Hekate+AMS-package3-sigpatches-1.7.0p-cfw-18.0.0.zip",
+          "page": "https://gbatemp.net/threads/sigpatches-for-atmosphere-hekate-fss0-fusee-package3.571543/post-10388870",
+          "download": "https://gbatemp.net/attachments/hekate-ams-package3-sigpatches-1-7-0p-cfw-18-0-0-zip.428521/",
+          "publisher": "impeeza",
+          "sha256": "95cb8230b2d9a1a9be1e946db68b5ff5d41f119efe1e79fe5bb67299e8302cba",
+          "bytes": 57731
+        }
+      ],
+      "notes": [
+        "Official release tag is 1.7.0-prerelease. Filename and version label use the numeric release version."
+      ],
+      "atmosphereTag": "1.7.0-prerelease"
+    },
+    {
+      "id": "hos-18.1.0-ams-1.7.1",
+      "file": "archives/sigpatches-hos-18.1.0-ams-1.7.1.zip",
+      "labels": {
+        "hos": "18.1.0",
+        "atmosphere": "1.7.1"
+      },
+      "sha256": "68dc1478e34d45ee9ad28a93c2a20d80f499f3b743eff92b6ddf3f310d4c459c",
+      "bytes": 52061,
+      "ips": 164,
+      "sources": [
+        {
+          "file": "Hekate+AMS-package3-sigpatches-1.7.1-cfw-18.1.0V2.zip",
+          "page": "https://gbatemp.net/threads/sigpatches-for-atmosphere-hekate-fss0-fusee-package3.571543/post-10438165",
+          "download": "https://gbatemp.net/attachments/hekate-ams-package3-sigpatches-1-7-1-cfw-18-1-0v2-zip.444717/",
+          "publisher": "impeeza",
+          "sha256": "da562317119c58ab4ad1bb99bb4864858cf887e53785631873c01b7351f61132",
+          "bytes": 58994
+        }
+      ],
+      "notes": [],
+      "atmosphereTag": "1.7.1"
+    },
+    {
+      "id": "hos-19.0.0-ams-1.8.0",
+      "file": "archives/sigpatches-hos-19.0.0-ams-1.8.0.zip",
+      "labels": {
+        "hos": "19.0.0",
+        "atmosphere": "1.8.0"
+      },
+      "sha256": "e3b0f975e0821296d8619acac08dc69399637b25ba1dc6eb42bba7f9404f0e83",
+      "bytes": 55201,
+      "ips": 173,
+      "sources": [
+        {
+          "file": "Hekate+AMS-package3-sigpatches-1.8.0P2-cfw-19.0.0_V6.zip",
+          "page": "https://gbatemp.net/threads/sigpatches-for-atmosphere-hekate-fss0-fusee-package3.571543/post-10517797",
+          "download": "https://gbatemp.net/attachments/hekate-ams-package3-sigpatches-1-8-0p2-cfw-19-0-0_v6-zip.474197/",
+          "publisher": "impeeza",
+          "sha256": "fbe0421efe41f135d632450cd1539fbe414b5530e7a966b0add344c9b857e2e5",
+          "bytes": 62295
+        }
+      ],
+      "notes": [
+        "Official release asset build: c6014b533. patches.ini also contains a loader entry labeled 5717ea6c0."
+      ],
+      "atmosphereTag": "1.8.0-prerelease"
+    },
+    {
+      "id": "hos-21.2.0-ams-1.10.2",
+      "file": "archives/sigpatches-hos-21.2.0-ams-1.10.2.zip",
+      "labels": {
+        "hos": "21.2.0",
+        "atmosphere": "1.10.2"
+      },
+      "sha256": "ddc113a07566f06af70b28dfa234af5832466c9d7f83dd6e960eae2b92670084",
+      "bytes": 69444,
+      "ips": 220,
+      "sources": [
+        {
+          "file": "Hekate+AMS-package3-sigpatches-1.10.2P-cfw-21.2.0_V0.zip",
+          "page": "https://gbatemp.net/threads/sigpatches-for-atmosphere-hekate-fss0-fusee-package3.571543/",
+          "download": "https://gbatemp.net/attachments/hekate-ams-package3-sigpatches-1-10-2p-cfw-21-2-0_v0-zip.551052/",
+          "publisher": null,
+          "sha256": "9d9b1fafa9d85abb625a97e033cfb9c63ccc80cd5604c2914cefdac6c73fb517",
+          "bytes": 76444
+        }
+      ],
+      "notes": [
+        "Official release tag is 1.10.2; build eb34f9789 is also labeled in patches.ini. The table includes older loader entries for Atmosphere 1.9.0–1.9.5 and 1.10.0–1.10.1; this does not establish compatibility of complete core combinations."
+      ],
+      "atmosphereTag": "1.10.2"
+    },
+    {
+      "id": "hos-22.0.0-ams-1.11.0",
+      "file": "archives/sigpatches-hos-22.0.0-ams-1.11.0.zip",
+      "labels": {
+        "hos": "22.0.0",
+        "atmosphere": "1.11.0"
+      },
+      "sha256": "6bfc8724a3b2138e41b500802dc27b6a7b31aa5b72f9da6de54d831a8d1b6293",
+      "bytes": 71240,
+      "ips": 226,
+      "sources": [
+        {
+          "file": "Hekate+AMS-package3-sigpatches-1.10.2P-cfw-21.2.0_V0.zip",
+          "page": "https://gbatemp.net/threads/sigpatches-for-atmosphere-hekate-fss0-fusee-package3.571543/",
+          "download": "https://gbatemp.net/attachments/hekate-ams-package3-sigpatches-1-10-2p-cfw-21-2-0_v0-zip.551052/",
+          "publisher": null,
+          "sha256": "9d9b1fafa9d85abb625a97e033cfb9c63ccc80cd5604c2914cefdac6c73fb517",
+          "bytes": 76444
+        },
+        {
+          "file": "22.0.0-Patches.zip",
+          "page": "https://gbatemp.net/threads/sigpatches-for-atmosphere-hekate-fss0-fusee-package3.571543/post-10841172",
+          "download": "https://gbatemp.net/attachments/22-0-0-patches-zip.566245/",
+          "publisher": "Dmxjall81",
+          "sha256": "d5d50507f93a9362e615f2d8c2c5dee2b611d513a0e0051424fedd1b60d06cf2",
+          "bytes": 3754
+        }
+      ],
+      "notes": [
+        "Premerged 21.2.0 base and 22.0.0 supplement, including patches.ini sections. Loader build label is corroborated by the 22.1.0 upstream bundle."
+      ],
+      "atmosphereTag": "1.11.0"
+    },
+    {
+      "id": "hos-22.1.0-ams-1.11.1",
+      "file": "archives/sigpatches-hos-22.1.0-ams-1.11.1.zip",
+      "labels": {
+        "hos": "22.1.0",
+        "atmosphere": "1.11.1"
+      },
+      "sha256": "f1a928a4d021a5e6af2f7fba9e5ce44a40c81df81a580db57a42efdebf4ad2e4",
+      "bytes": 56912,
+      "ips": 191,
+      "sources": [
+        {
+          "file": "Hekate+AMS-package3-sigpatches-Atmosphere-1.11.1-master-d04c20a04-cfw-22.1.0.zip",
+          "page": "https://gbatemp.net/threads/sigpatches-for-atmosphere-hekate-fss0-fusee-package3.571543/post-10842872",
+          "download": "https://gbatemp.net/attachments/hekate-ams-package3-sigpatches-atmosphere-1-11-1-master-d04c20a04-cfw-22-1-0-zip.569933/",
+          "publisher": "bth",
+          "sha256": "9716bb4303c615db0f1fb185c7a3c19ff9e422b827ed8654c9b61a2337bf9e01",
+          "bytes": 58862
+        }
+      ],
+      "notes": [],
+      "atmosphereTag": "1.11.1"
+    },
+    {
+      "id": "hos-22.5.0-ams-1.11.2",
+      "file": "archives/sigpatches-hos-22.5.0-ams-1.11.2.zip",
+      "labels": {
+        "hos": "22.5.0",
+        "atmosphere": "1.11.2"
+      },
+      "sha256": "b7c6addf0e3ff6b5393e6d489186a02f6c0f5c302c594a168f79993f12cf3662",
+      "bytes": 65737,
+      "ips": 225,
+      "sources": [
+        {
+          "file": "Hekate+AMS-package3-sigpatches-Atmosphere-1.11.2-master-5388824be-cfw-22.5.0.zip",
+          "page": "https://gbatemp.net/threads/sigpatches-for-atmosphere-hekate-fss0-fusee-package3.571543/post-10872635",
+          "download": "https://gbatemp.net/attachments/hekate-ams-package3-sigpatches-atmosphere-1-11-2-master-5388824be-cfw-22-5-0-zip.578458/",
+          "publisher": "bth",
+          "sha256": "9c2e40e1b4a6bb685779b8d5349f6e443a54865a47948800ded66943c2e67519",
+          "bytes": 67828
+        }
+      ],
+      "notes": [],
+      "atmosphereTag": "1.11.2"
+    }
+  ]
+}

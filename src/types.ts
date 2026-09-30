@@ -18,5 +18,5 @@ export interface OSConfig {
 export interface ModuleConfig {
   repository: string
   tag: string
-  file: string
+  file: string | RegExp
 }
