@@ -19,6 +19,7 @@ const releases = {
   'masagrator/FPSLocker': ['FPSLocker.ovl', 'Debug.zip'],
   'masagrator/ReverseNX-RT': ['ReverseNX-RT-ovl.ovl'],
   'masagrator/SaltyNX': ['SaltyNX.zip', 'SaltyNX_Debug.zip'],
+  'averne/Fizeau': ['Fizeau-2.8.3-5bf3f0d.zip'],
 }
 
 vi.mocked(getRelease).mockImplementation(async repository => ({
@@ -29,6 +30,15 @@ vi.mocked(getRelease).mockImplementation(async repository => ({
 vi.mocked(getRepositoryFile).mockResolvedValue('1.11.2\n')
 
 describe('resolvePerformanceTuning', () => {
+  it('installs Fizeau independently without clock or FPS services', async () => {
+    const resources = await resolvePerformanceTuning(['fizeau'])
+
+    expect(resources).toMatchObject([{ module: 'fizeau', asset: { name: 'Fizeau-2.8.3-5bf3f0d.zip' } }])
+    expect(resources).toHaveLength(1)
+    expect(resources[0].target).toBeUndefined()
+    expect(resources[0].paths).toBeUndefined()
+  })
+
   it('installs the enhanced overlay after the clock service and adds SaltyNX only once', async () => {
     const resources = await resolvePerformanceTuning(['reverse-nx-rt', 'sys-clk-ultrahand-overlay', 'fps-locker', 'sys-clk'])
 

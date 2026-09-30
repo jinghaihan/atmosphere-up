@@ -170,6 +170,7 @@ describe('runBuildCommand', () => {
         { value: 'horizon-oc', label: 'Horizon OC', hint: 'https://github.com/Horizon-OC/Horizon-OC' },
         { value: 'fps-locker', label: 'FPS Locker', hint: 'https://github.com/masagrator/FPSLocker' },
         { value: 'reverse-nx-rt', label: 'ReverseNx RT', hint: 'https://github.com/masagrator/ReverseNX-RT' },
+        { value: 'fizeau', label: 'Fizeau', hint: 'https://github.com/averne/Fizeau' },
       ],
     }))
     expect(p.select).toHaveBeenLastCalledWith(expect.objectContaining({

@@ -57,12 +57,13 @@ Status Monitor selected by default.
 | Horizon OC | [Horizon-OC/Horizon-OC](https://github.com/Horizon-OC/Horizon-OC) | Advanced CPU, GPU, RAM, and voltage tuning; not selected by default |
 | FPS Locker | [masagrator/FPSLocker](https://github.com/masagrator/FPSLocker) | Per-game frame rate controls |
 | ReverseNx RT | [masagrator/ReverseNX-RT](https://github.com/masagrator/ReverseNX-RT) | Switch game rendering between handheld and docked modes |
+| Fizeau | [averne/Fizeau](https://github.com/averne/Fizeau) | Screen color temperature, saturation, gamma, and contrast controls; not selected by default |
 | Status Monitor | [ppkantorski/Status-Monitor-Overlay](https://github.com/ppkantorski/Status-Monitor-Overlay) | FPS, frequencies, load, temperatures, and power monitoring; default monitor selection |
 | Status Monitor Deux | [masagrator/Status-Monitor-Deux](https://github.com/masagrator/Status-Monitor-Deux) | Performance monitoring with customizable layouts |
 | Moonlight Switch | [XITRIX/Moonlight-Switch](https://github.com/XITRIX/Moonlight-Switch) | Stream PC games to Switch; selected by default when streaming is enabled |
 | SysDVR | [exelix11/SysDVR](https://github.com/exelix11/SysDVR) | Stream Switch gameplay to a PC over USB or network, with a settings app; selected by default when streaming is enabled |
 
-All performance tuning tools except Horizon OC are selected by default. Selecting the
+All performance tuning tools except Horizon OC and Fizeau are selected by default. Selecting the
 Ultrahand clock overlay also includes a clock service. FPS Locker, ReverseNx RT,
 and performance monitors include their shared [SaltyNX](https://github.com/masagrator/SaltyNX) dependency.
 Selecting Sys Clk Ultrahand Overlay excludes the original Sys Clk overlay while

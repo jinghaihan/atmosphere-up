@@ -8,7 +8,7 @@ import { getRelease, getRepositoryFile } from '../download'
 import { configureHorizonOcBootEntries, getRepositoryUrl, selectAsset } from '../utils'
 import { resolveSaltyNx } from './dependencies'
 
-export type PerformanceTool = 'sys-clk' | 'sys-clk-ultrahand-overlay' | 'horizon-oc' | 'fps-locker' | 'reverse-nx-rt'
+export type PerformanceTool = 'sys-clk' | 'sys-clk-ultrahand-overlay' | 'horizon-oc' | 'fps-locker' | 'reverse-nx-rt' | 'fizeau'
 
 export async function promptPerformanceTuning(controller: AbortController): Promise<PerformanceTool[]> {
   const enabled = await p.confirm({
@@ -34,6 +34,7 @@ export async function promptPerformanceTuning(controller: AbortController): Prom
       { value: 'horizon-oc', label: 'Horizon OC', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['horizon-oc']) },
       { value: 'fps-locker', label: 'FPS Locker', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['fps-locker']) },
       { value: 'reverse-nx-rt', label: 'ReverseNx RT', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['reverse-nx-rt']) },
+      { value: 'fizeau', label: 'Fizeau', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.fizeau) },
     ],
   })
 
@@ -62,7 +63,7 @@ export async function resolvePerformanceTuning(modules: PerformanceTool[], { sig
     selected.add('salty-nx')
 
   // Install the selected clock service before replacing its overlay frontend.
-  const order = ['sys-clk', 'horizon-oc', 'sys-clk-ultrahand-overlay', 'salty-nx', 'fps-locker', 'reverse-nx-rt'] as const
+  const order = ['sys-clk', 'horizon-oc', 'sys-clk-ultrahand-overlay', 'salty-nx', 'fps-locker', 'reverse-nx-rt', 'fizeau'] as const
   const resources: Resource[] = []
 
   for (const module of order) {
@@ -117,6 +118,9 @@ export async function resolvePerformanceTuning(modules: PerformanceTool[], { sig
         break
       case 'reverse-nx-rt':
         resources.push(resource(/^ReverseNX-RT-ovl\.ovl$/, { target: 'switch/.overlays/ReverseNX-RT-ovl.ovl' }))
+        break
+      case 'fizeau':
+        resources.push(resource(/^Fizeau-.*\.zip$/))
         break
     }
   }
