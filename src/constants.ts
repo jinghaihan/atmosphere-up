@@ -21,3 +21,5 @@ export const MODULE_REPO_CONFIG = {
 } as const
 
 export const HEKATE_BOOT_CONFIG = new URL('./hekate_ipl.ini', import.meta.url)
+
+export const PACK_DEFAULTS = new URL('./defaults/', import.meta.url)

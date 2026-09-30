@@ -1,9 +1,9 @@
 import type { TaskOptions } from '../types'
 import type { Bundle } from './catalog'
 import type { Resource } from './plan'
-import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { copyFile, cp, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'pathe'
-import { HEKATE_BOOT_CONFIG, ULTRAHAND_KEY_COMBO } from '../constants'
+import { HEKATE_BOOT_CONFIG, PACK_DEFAULTS, ULTRAHAND_KEY_COMBO } from '../constants'
 import { downloadAsset } from '../download'
 import { formatDownloadProgress, sha256 } from '../utils'
 import { extractArchive } from './archive'
@@ -42,6 +42,9 @@ export async function buildPack(bundle: Bundle, resources: Resource[], directory
     signal?.throwIfAborted()
     onProgress?.(`integrating sigpatches for Atmosphere ${bundle.labels.atmosphere}`)
     await extractArchive(sigpatches, staging)
+    signal?.throwIfAborted()
+    onProgress?.('applying Atmosphere settings and Nintendo hosts')
+    await cp(PACK_DEFAULTS, staging, { recursive: true })
     signal?.throwIfAborted()
     onProgress?.('writing Hekate boot entries and Ultrahand wake keys')
     // Return to Hekate after a reboot so package3 boot keeps using patches.ini.

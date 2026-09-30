@@ -57,6 +57,16 @@ Ultrahand opens with **L + D-pad Down** (`L+DDOWN`). The pack writes this defaul
 to both `config/ultrahand/config.ini` and the Tesla-compatible
 `config/tesla/config.ini`.
 
+### Pack defaults
+
+- Cheats start disabled. `dmnt_always_save_cheat_toggles` is `0`: toggle state is
+  saved only when a toggle file already exists, rather than always being saved.
+- USB 3.0 is enabled for homebrew.
+- PRODINFO is blanked in emuMMC, while sysMMC keeps its original information.
+- Nintendo hosts are blocked in Atmosphere on both sysMMC and emuMMC.
+  Connectivity tests remain available, and Atmosphere's built-in telemetry redirects stay enabled.
+  These hosts do not apply to the stock boot entry.
+
 Pack assembly has been verified locally; boot compatibility has not been tested
 on Switch hardware.
 
