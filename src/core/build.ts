@@ -3,7 +3,7 @@ import type { Bundle } from './catalog'
 import type { Resource } from './plan'
 import { copyFile, cp, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'pathe'
-import { PACK_DEFAULTS, ULTRAHAND_KEY_COMBO } from '../constants'
+import { PACK_DEFAULTS } from '../constants'
 import { downloadAsset } from '../download'
 import { formatDownloadProgress, sha256 } from '../utils'
 import { extractArchive } from './archive'
@@ -43,17 +43,12 @@ export async function buildPack(bundle: Bundle, resources: Resource[], directory
     onProgress?.(`integrating sigpatches for Atmosphere ${bundle.labels.atmosphere}`)
     await extractArchive(sigpatches, staging)
     signal?.throwIfAborted()
-    onProgress?.('applying Atmosphere, Hekate, and Nintendo hosts settings')
+    onProgress?.('applying Atmosphere, Hekate, and overlay settings')
     await cp(PACK_DEFAULTS, staging, { recursive: true })
     signal?.throwIfAborted()
-    onProgress?.('setting reboot payload and Ultrahand wake keys')
+    onProgress?.('setting Hekate reboot payload')
     // Return to Hekate after a reboot so package3 boot keeps using patches.ini.
     await copyFile(join(staging, 'payload.bin'), join(staging, 'atmosphere/reboot_payload.bin'))
-    for (const name of ['ultrahand', 'tesla']) {
-      const directory = join(staging, 'config', name)
-      await mkdir(directory, { recursive: true })
-      await writeFile(join(directory, 'config.ini'), `[${name}]\nkey_combo=${ULTRAHAND_KEY_COMBO}\n`)
-    }
     onProgress?.('writing pack manifest')
     await writeFile(join(staging, 'pack-manifest.json'), `${JSON.stringify({
       hos: bundle.labels.hos,

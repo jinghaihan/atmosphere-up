@@ -9,8 +9,6 @@ export const DEFAULT_OPTIONS: Partial<Options> = {
   pack: false,
 }
 
-export const ULTRAHAND_KEY_COMBO = 'L+DDOWN'
-
 /// keep-sorted
 export const MODULE_REPO_CONFIG = {
   'atmosphere': 'Atmosphere-NX/Atmosphere',
