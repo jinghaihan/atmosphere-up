@@ -40,7 +40,7 @@ without extension prompts, or `--ext` to enable them.
 
 Choose optional extensions after assembling the core components. Save management,
 file management, and Amiibo emulation use single selections; cheat, performance
-tuning, and streaming tools allow multiple selections. Performance monitoring is
+tuning, streaming, and controller tools allow multiple selections. Performance monitoring is
 a separate single selection, with Status Monitor selected by default.
 
 | Component | Source | Includes |
@@ -63,6 +63,8 @@ a separate single selection, with Status Monitor selected by default.
 | Moonlight Switch | [XITRIX/Moonlight-Switch](https://github.com/XITRIX/Moonlight-Switch) | Stream PC games to Switch; selected by default when streaming is enabled |
 | SysDVR | [exelix11/SysDVR](https://github.com/exelix11/SysDVR) | Stream Switch gameplay to a PC over USB or network, with a settings app; selected by default when streaming is enabled |
 | Emuiibo | [XorTroll/emuiibo](https://github.com/XorTroll/emuiibo) | Virtual Amiibo emulation with a background service and in-game overlay |
+| Mission Control | [ndeadly/MissionControl](https://github.com/ndeadly/MissionControl) | Third-party Bluetooth controller support; selected by default when controller support is enabled |
+| Sys Con | [o0Zz/sys-con](https://github.com/o0Zz/sys-con) | Third-party USB controller support; selected by default when controller support is enabled |
 
 All performance tuning tools except Horizon OC and Fizeau are selected by default. Selecting the
 Ultrahand clock overlay also includes a clock service. FPS Locker, ReverseNx RT,
@@ -74,6 +76,8 @@ Horizon OC requires its matching Atmosphere version and configures the CFW boot
 entries automatically. When selected with Sys Clk, Horizon OC supplies the clock
 service; the original Sys Clk manager and overlay cannot connect to it. Use
 Horizon OC or Sys Clk Overlay Ultrahand for clock controls in that configuration.
+
+Mission Control matches the selected HOS version. Sys Con uses its latest release.
 
 Selected extensions are included in both directory and ZIP output.
 

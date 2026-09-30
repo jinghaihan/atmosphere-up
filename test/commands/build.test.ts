@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { runBuildCommand } from '../../src/commands'
 import { resolveConfig } from '../../src/config'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../../src/core'
-import { resolveAmiibo, resolveCheats, resolveFileManagement, resolvePerformanceMonitoring, resolvePerformanceTuning, resolveSaveManagement, resolveStreaming } from '../../src/extensions'
+import { resolveAmiibo, resolveCheats, resolveControllerSupport, resolveFileManagement, resolvePerformanceMonitoring, resolvePerformanceTuning, resolveSaveManagement, resolveStreaming } from '../../src/extensions'
 import { resolveSaltyNx } from '../../src/extensions/dependencies'
 
 vi.mock('@clack/prompts', () => ({
@@ -25,6 +25,10 @@ vi.mock('../../src/config', () => ({ resolveConfig: vi.fn() }))
 vi.mock('../../src/extensions/amiibo', async original => ({
   ...await original<typeof import('../../src/extensions/amiibo')>(),
   resolveAmiibo: vi.fn(),
+}))
+vi.mock('../../src/extensions/controller-support', async original => ({
+  ...await original<typeof import('../../src/extensions/controller-support')>(),
+  resolveControllerSupport: vi.fn(),
 }))
 vi.mock('../../src/extensions/save-management', async original => ({
   ...await original<typeof import('../../src/extensions/save-management')>(),
@@ -77,6 +81,7 @@ beforeEach(() => {
   vi.mocked(resolveCheats).mockResolvedValue([])
   vi.mocked(resolvePerformanceTuning).mockResolvedValue([])
   vi.mocked(resolveStreaming).mockResolvedValue([])
+  vi.mocked(resolveControllerSupport).mockResolvedValue([])
   vi.mocked(resolveSaltyNx).mockResolvedValue({ module: 'salty-nx' } as Awaited<ReturnType<typeof resolveSaltyNx>>)
   vi.mocked(resolvePerformanceMonitoring).mockResolvedValue({ module: 'status-monitor' } as Awaited<ReturnType<typeof resolvePerformanceMonitoring>>)
   vi.mocked(resolveFileManagement).mockResolvedValue({ module: 'nx-shell' } as Awaited<ReturnType<typeof resolveFileManagement>>)
@@ -106,6 +111,7 @@ describe('runBuildCommand', () => {
     expect(resolveSaltyNx).not.toHaveBeenCalled()
     expect(resolveStreaming).not.toHaveBeenCalled()
     expect(resolveAmiibo).not.toHaveBeenCalled()
+    expect(resolveControllerSupport).not.toHaveBeenCalled()
     expect(p.outro).toHaveBeenCalled()
   })
 
@@ -153,6 +159,16 @@ describe('runBuildCommand', () => {
       expect(resolveSaltyNx).not.toHaveBeenCalled()
       expect(resolveStreaming).not.toHaveBeenCalled()
       return ['moonlight-switch', 'sys-dvr']
+    }).mockImplementationOnce(async () => {
+      expect(resolveSaveManagement).not.toHaveBeenCalled()
+      expect(resolveCheats).not.toHaveBeenCalled()
+      expect(resolveFileManagement).not.toHaveBeenCalled()
+      expect(resolvePerformanceTuning).not.toHaveBeenCalled()
+      expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
+      expect(resolveStreaming).not.toHaveBeenCalled()
+      expect(resolveAmiibo).not.toHaveBeenCalled()
+      expect(resolveControllerSupport).not.toHaveBeenCalled()
+      return ['mission-control', 'sys-con']
     })
     vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
       expect(p.confirm).not.toHaveBeenCalled()
@@ -161,7 +177,7 @@ describe('runBuildCommand', () => {
 
     await runBuildCommand({})
 
-    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?', 'include file management?', 'include performance tuning?', 'include performance monitoring?', 'include streaming?', 'include amiibo emulation?'])
+    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?', 'include file management?', 'include performance tuning?', 'include performance monitoring?', 'include streaming?', 'include amiibo emulation?', 'include controller support?'])
     expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       initialValues: ['edizon-overlay'],
       options: [
@@ -202,7 +218,7 @@ describe('runBuildCommand', () => {
     expect(vi.mocked(resolveFileManagement).mock.invocationCallOrder[0]).toBeGreaterThan(vi.mocked(resolveCheats).mock.invocationCallOrder[0])
     expect(resolveSaveManagement).toHaveBeenCalledWith('jksv', expect.any(Object))
     expect(resolveCheats).toHaveBeenCalledWith(['edizon-overlay', 'breezehand'], expect.any(Object))
-    expect(p.multiselect).toHaveBeenLastCalledWith(expect.objectContaining({
+    expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       message: 'select streaming tools',
       initialValues: ['moonlight-switch', 'sys-dvr'],
       options: [
@@ -217,6 +233,15 @@ describe('runBuildCommand', () => {
       options: [{ value: 'emuiibo', label: 'Emuiibo', hint: 'https://github.com/XorTroll/emuiibo' }],
     }))
     expect(resolveAmiibo).toHaveBeenCalledWith('emuiibo', expect.any(Object))
+    expect(p.multiselect).toHaveBeenLastCalledWith(expect.objectContaining({
+      message: 'select controller tools',
+      initialValues: ['mission-control', 'sys-con'],
+      options: [
+        { value: 'mission-control', label: 'Mission Control', hint: 'https://github.com/ndeadly/MissionControl' },
+        { value: 'sys-con', label: 'Sys Con', hint: 'https://github.com/o0Zz/sys-con' },
+      ],
+    }))
+    expect(resolveControllerSupport).toHaveBeenCalledWith(['mission-control', 'sys-con'], expect.any(Object), '21.2.0')
   })
 
   it.each(['confirm', 'multiselect'] as const)('cancels from the cheats %s prompt before resolving any selected extension', async (prompt) => {

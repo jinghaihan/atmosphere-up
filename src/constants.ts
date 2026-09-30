@@ -33,6 +33,7 @@ export const EXTENSION_REPO_CONFIG = {
   'fps-locker': 'masagrator/FPSLocker',
   'horizon-oc': 'Horizon-OC/Horizon-OC',
   'jksv': 'J-D-K/JKSV',
+  'mission-control': 'ndeadly/MissionControl',
   'moonlight-switch': 'XITRIX/Moonlight-Switch',
   'nx-shell': 'DefenderOfHyrule/NX-Shell',
   'reverse-nx-rt': 'masagrator/ReverseNX-RT',
@@ -41,6 +42,7 @@ export const EXTENSION_REPO_CONFIG = {
   'status-monitor': 'ppkantorski/Status-Monitor-Overlay',
   'sys-clk-overlay-ultrahand': 'ppkantorski/sys-clk',
   'sys-clk': 'retronx-team/sys-clk',
+  'sys-con': 'o0Zz/sys-con',
   'sys-dvr': 'exelix11/SysDVR',
 } as const
 
