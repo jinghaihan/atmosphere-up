@@ -21,7 +21,14 @@ vi.mock('@clack/prompts', () => ({
   spinner: vi.fn(() => ({ start: vi.fn(), message: vi.fn(), stop: vi.fn(), error: vi.fn() })),
 }))
 vi.mock('../../src/config', () => ({ resolveConfig: vi.fn() }))
-vi.mock('../../src/extensions', () => ({ resolveCheats: vi.fn(), resolveSaveManagement: vi.fn() }))
+vi.mock('../../src/extensions/save-management', async original => ({
+  ...await original<typeof import('../../src/extensions/save-management')>(),
+  resolveSaveManagement: vi.fn(),
+}))
+vi.mock('../../src/extensions/cheats', async original => ({
+  ...await original<typeof import('../../src/extensions/cheats')>(),
+  resolveCheats: vi.fn(),
+}))
 vi.mock('../../src/core', async original => ({
   ...await original<typeof import('../../src/core')>(),
   inspectOutput: vi.fn(),
