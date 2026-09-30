@@ -24,12 +24,15 @@ afterEach(async () => {
 })
 
 describe('buildPack', () => {
-  it('sets matching Ultrahand and Tesla wake keys and returns to Hekate on reboot', async () => {
+  it('sets overlay wake keys and an 8 MiB allocation and returns to Hekate on reboot', async () => {
     vi.mocked(downloadAsset).mockResolvedValue(await readFile(join(cwd, 'test/fixtures/core.zip')))
     const onProgress = vi.fn()
     await buildPack(bundle, [resource], directory, false, false, { onProgress })
     expect(await readFile(join(directory, 'config/ultrahand/config.ini'), 'utf8')).toBe('[ultrahand]\nkey_combo=L+DDOWN\n')
     expect(await readFile(join(directory, 'config/tesla/config.ini'), 'utf8')).toBe('[tesla]\nkey_combo=L+DDOWN\n')
+    const heapSize = await readFile(join(directory, 'config/nx-ovlloader/heap_size.bin'))
+    expect(heapSize.length).toBe(8)
+    expect(heapSize.readBigUInt64LE()).toBe(0x800000n)
     expect(await readFile(join(directory, 'atmosphere/reboot_payload.bin'))).toEqual(await readFile(join(directory, 'payload.bin')))
     expect(await readFile(join(directory, 'bootloader/hekate_ipl.ini'))).toEqual(await readFile(join(cwd, 'src/defaults/bootloader/hekate_ipl.ini')))
     const settings = await readFile(join(directory, 'atmosphere/config/system_settings.ini'), 'utf8')

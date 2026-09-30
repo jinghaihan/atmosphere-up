@@ -54,6 +54,7 @@ Ultrahand opens with **L + D-pad Down**.
 
 ### Pack defaults
 
+- Overlays use an 8 MiB memory allocation.
 - Cheats start disabled. Toggle state is saved only when a toggle file already
   exists.
 - USB 3.0 is enabled for homebrew.
