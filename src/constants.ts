@@ -36,4 +36,4 @@ export const EXTENSION_REPO_CONFIG = {
   'sys-clk': 'retronx-team/sys-clk',
 } as const
 
-export const PACK_DEFAULTS = new URL('./defaults/', import.meta.url)
+export const PACK_DEFAULTS = new URL('../assets/defaults/', import.meta.url)

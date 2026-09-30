@@ -33,7 +33,7 @@
     "atmosphere-up": "./bin/cli.mjs"
   },
   "files": [
-    "assets/sigpatches",
+    "assets",
     "bin",
     "dist"
   ],

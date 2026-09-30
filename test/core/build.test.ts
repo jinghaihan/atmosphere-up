@@ -93,7 +93,7 @@ describe('buildPack', () => {
     expect(heapSize.length).toBe(8)
     expect(heapSize.readBigUInt64LE()).toBe(0x800000n)
     expect(await readFile(join(directory, 'atmosphere/reboot_payload.bin'))).toEqual(await readFile(join(directory, 'payload.bin')))
-    expect(await readFile(join(directory, 'bootloader/hekate_ipl.ini'))).toEqual(await readFile(join(cwd, 'src/defaults/bootloader/hekate_ipl.ini')))
+    expect(await readFile(join(directory, 'bootloader/hekate_ipl.ini'))).toEqual(await readFile(join(cwd, 'assets/defaults/bootloader/hekate_ipl.ini')))
     const settings = await readFile(join(directory, 'atmosphere/config/system_settings.ini'), 'utf8')
     expect(settings).toContain('dmnt_cheats_enabled_by_default = u8!0x0')
     expect(settings).toContain('dmnt_always_save_cheat_toggles = u8!0x0')
