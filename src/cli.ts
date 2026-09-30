@@ -6,7 +6,7 @@ import c from 'ansis'
 import { cac } from 'cac'
 import { EnvHttpProxyAgent, setGlobalDispatcher } from 'undici'
 import { runBuildCommand } from './commands'
-import { NAME, VERSION } from './constants'
+import { NAME } from './constants'
 
 try {
   setGlobalDispatcher(new EnvHttpProxyAgent())
@@ -14,15 +14,15 @@ try {
 
   cli
     .command('[output]', 'build a core SD card pack for the selected HOS version')
-    .option('-o, --output <directory>', 'parent directory for generated packs')
     .option('--cwd <directory>', 'working directory for configuration and relative paths')
-    .option('--pack', 'output a ZIP instead of a directory (use --no-pack to override configuration)')
+    .option('--version <hos>', 'HOS version to build without prompting')
+    .option('--output <directory>', 'parent directory for generated packs')
+    .option('--pack', 'output a ZIP instead of a directory')
     .action((output: string | undefined, options: CommandOptions) => {
       runBuildCommand({ ...options, output: output ?? options.output }).catch(handleError)
     })
 
   cli.help()
-  cli.version(VERSION)
   cli.parse()
 }
 catch (error) {

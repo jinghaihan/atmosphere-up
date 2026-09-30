@@ -12,11 +12,15 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
   p.intro(`${c.yellow`${NAME} `}${c.dim`v${VERSION}`}`)
   const config = await resolveConfig(options)
   const bundles = getBundles()
-  const bundle = await p.select({
-    message: 'select HOS version',
-    options: bundles.map(bundle => ({ value: bundle, label: c.cyan(bundle.labels.hos), hint: `atmosphere ${bundle.labels.atmosphere}` })),
-    initialValue: bundles[0],
-  })
+  const bundle = config.version === undefined
+    ? await p.select({
+        message: 'select HOS version',
+        options: bundles.map(bundle => ({ value: bundle, label: c.cyan(bundle.labels.hos), hint: `atmosphere ${bundle.labels.atmosphere}` })),
+        initialValue: bundles[0],
+      })
+    : bundles.find(bundle => bundle.labels.hos === config.version)
+  if (!bundle)
+    throw new Error(`unsupported HOS version: ${config.version}`)
   if (p.isCancel(bundle)) {
     p.cancel('aborting')
     return
@@ -37,8 +41,14 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
   }
 
   const controller = new AbortController()
-  const spinner = p.spinner({ onCancel: () => controller.abort(), cancelMessage: 'cancelling build' })
-  const task = { signal: controller.signal, onProgress: (message: string) => spinner.message(c.cyan(message)) }
+  const spinner = p.spinner({
+    onCancel: () => controller.abort(),
+    cancelMessage: 'cancelling build',
+  })
+  const task = {
+    signal: controller.signal,
+    onProgress: (message: string) => spinner.message(c.cyan(message)),
+  }
   spinner.start(c.cyan('resolving core releases'))
   // Let Ctrl+C emit SIGINT instead of Clack's keypress blocker exiting immediately.
   if (process.stdin.isTTY)

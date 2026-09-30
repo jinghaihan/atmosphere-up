@@ -2,6 +2,7 @@ import type { RestEndpointMethodTypes } from '@octokit/rest'
 
 export interface CommandOptions {
   cwd?: string
+  version?: string
   output?: string
   pack?: boolean
 }

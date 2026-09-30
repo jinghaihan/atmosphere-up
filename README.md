@@ -13,7 +13,12 @@ Requires Node.js 20.18.1 or newer. Select a supported HOS version from the promp
 pnpm start
 pnpm start ./output
 pnpm start ./output --pack
+pnpm start --version 21.2.0 --output ./output --pack
 ```
+
+Use `--version <hos>` to skip the HOS selection prompt. Versions absent from the
+bundled catalog fail before any GitHub queries or downloads. The CLI's own version
+is shown in the opening banner.
 
 `output` is a parent directory. For HOS 21.2.0, these commands create
 `output/atmosphere-1.10.2-hos-21.2.0/` or

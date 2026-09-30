@@ -39,6 +39,23 @@ beforeEach(() => {
 })
 
 describe('runBuildCommand', () => {
+  it('uses the requested HOS version without prompting', async () => {
+    vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', pack: false, version: '21.2.0' })
+    await runBuildCommand({ version: '21.2.0' })
+    expect(p.select).not.toHaveBeenCalled()
+    expect(resolveResources).toHaveBeenCalledWith(bundle, expect.any(Object))
+    expect(vi.mocked(buildPack).mock.calls[0][0]).toBe(bundle)
+  })
+
+  it('rejects an unsupported HOS version before checking output or querying GitHub', async () => {
+    vi.mocked(resolveConfig).mockResolvedValue({ version: '99.0.0' })
+    await expect(runBuildCommand({ version: '99.0.0' })).rejects.toThrow('unsupported HOS version: 99.0.0')
+    expect(p.select).not.toHaveBeenCalled()
+    expect(inspectOutput).not.toHaveBeenCalled()
+    expect(resolveResources).not.toHaveBeenCalled()
+    expect(buildPack).not.toHaveBeenCalled()
+  })
+
   it('stops before querying GitHub when replacing the output is declined', async () => {
     vi.mocked(inspectOutput).mockReturnValue(true)
     vi.mocked(p.confirm).mockResolvedValue(false)
