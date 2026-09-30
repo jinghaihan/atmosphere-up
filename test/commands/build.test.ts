@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { runBuildCommand } from '../../src/commands'
 import { resolveConfig } from '../../src/config'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../../src/core'
-import { resolveCheats, resolveFileManagement, resolvePerformanceMonitoring, resolvePerformanceTuning, resolveSaveManagement } from '../../src/extensions'
+import { resolveCheats, resolveFileManagement, resolvePerformanceMonitoring, resolvePerformanceTuning, resolveSaveManagement, resolveStreaming } from '../../src/extensions'
 import { resolveSaltyNx } from '../../src/extensions/dependencies'
 
 vi.mock('@clack/prompts', () => ({
@@ -42,6 +42,10 @@ vi.mock('../../src/extensions/performance-monitoring', async original => ({
   ...await original<typeof import('../../src/extensions/performance-monitoring')>(),
   resolvePerformanceMonitoring: vi.fn(),
 }))
+vi.mock('../../src/extensions/streaming', async original => ({
+  ...await original<typeof import('../../src/extensions/streaming')>(),
+  resolveStreaming: vi.fn(),
+}))
 vi.mock('../../src/extensions/dependencies', () => ({ resolveSaltyNx: vi.fn() }))
 vi.mock('../../src/core', async original => ({
   ...await original<typeof import('../../src/core')>(),
@@ -68,6 +72,7 @@ beforeEach(() => {
   vi.mocked(resolveSaveManagement).mockResolvedValue({ module: 'jksv' } as Awaited<ReturnType<typeof resolveSaveManagement>>)
   vi.mocked(resolveCheats).mockResolvedValue([])
   vi.mocked(resolvePerformanceTuning).mockResolvedValue([])
+  vi.mocked(resolveStreaming).mockResolvedValue([])
   vi.mocked(resolveSaltyNx).mockResolvedValue({ module: 'salty-nx' } as Awaited<ReturnType<typeof resolveSaltyNx>>)
   vi.mocked(resolvePerformanceMonitoring).mockResolvedValue({ module: 'status-monitor' } as Awaited<ReturnType<typeof resolvePerformanceMonitoring>>)
   vi.mocked(resolveFileManagement).mockResolvedValue({ module: 'nx-shell' } as Awaited<ReturnType<typeof resolveFileManagement>>)
@@ -94,6 +99,7 @@ describe('runBuildCommand', () => {
     expect(resolvePerformanceTuning).not.toHaveBeenCalled()
     expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
     expect(resolveSaltyNx).not.toHaveBeenCalled()
+    expect(resolveStreaming).not.toHaveBeenCalled()
     expect(p.outro).toHaveBeenCalled()
   })
 
@@ -123,6 +129,15 @@ describe('runBuildCommand', () => {
       expect(resolveFileManagement).not.toHaveBeenCalled()
       expect(resolvePerformanceTuning).not.toHaveBeenCalled()
       return ['sys-clk', 'sys-clk-ultrahand-overlay', 'fps-locker', 'reverse-nx-rt']
+    }).mockImplementationOnce(async () => {
+      expect(resolveSaveManagement).not.toHaveBeenCalled()
+      expect(resolveCheats).not.toHaveBeenCalled()
+      expect(resolveFileManagement).not.toHaveBeenCalled()
+      expect(resolvePerformanceTuning).not.toHaveBeenCalled()
+      expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
+      expect(resolveSaltyNx).not.toHaveBeenCalled()
+      expect(resolveStreaming).not.toHaveBeenCalled()
+      return ['moonlight-switch', 'sys-dvr']
     })
     vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
       expect(p.confirm).not.toHaveBeenCalled()
@@ -131,7 +146,7 @@ describe('runBuildCommand', () => {
 
     await runBuildCommand({})
 
-    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?', 'include file management?', 'include performance tuning?', 'include performance monitoring?'])
+    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual(['include save management?', 'include cheats?', 'include file management?', 'include performance tuning?', 'include performance monitoring?', 'include streaming?'])
     expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       initialValues: ['edizon-overlay'],
       options: [
@@ -146,7 +161,7 @@ describe('runBuildCommand', () => {
       initialValue: 'nx-shell',
       options: [{ value: 'nx-shell', label: 'NX Shell', hint: 'https://github.com/DefenderOfHyrule/NX-Shell' }],
     }))
-    expect(p.multiselect).toHaveBeenLastCalledWith(expect.objectContaining({
+    expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       message: 'select performance tools',
       initialValues: ['sys-clk', 'sys-clk-ultrahand-overlay', 'fps-locker', 'reverse-nx-rt'],
       options: [
@@ -171,6 +186,15 @@ describe('runBuildCommand', () => {
     expect(vi.mocked(resolveFileManagement).mock.invocationCallOrder[0]).toBeGreaterThan(vi.mocked(resolveCheats).mock.invocationCallOrder[0])
     expect(resolveSaveManagement).toHaveBeenCalledWith('jksv', expect.any(Object))
     expect(resolveCheats).toHaveBeenCalledWith(['edizon-overlay', 'breezehand'], expect.any(Object))
+    expect(p.multiselect).toHaveBeenLastCalledWith(expect.objectContaining({
+      message: 'select streaming tools',
+      initialValues: ['moonlight-switch', 'sys-dvr'],
+      options: [
+        { value: 'moonlight-switch', label: 'Moonlight Switch', hint: 'https://github.com/XITRIX/Moonlight-Switch' },
+        { value: 'sys-dvr', label: 'SysDVR', hint: 'https://github.com/exelix11/SysDVR' },
+      ],
+    }))
+    expect(resolveStreaming).toHaveBeenCalledWith(['moonlight-switch', 'sys-dvr'], expect.any(Object))
   })
 
   it.each(['confirm', 'multiselect'] as const)('cancels from the cheats %s prompt before resolving any selected extension', async (prompt) => {
@@ -320,6 +344,26 @@ describe('runBuildCommand', () => {
     expect(resolvePerformanceTuning).not.toHaveBeenCalled()
     expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
     expect(resolveSaltyNx).not.toHaveBeenCalled()
+    expect(p.outro).not.toHaveBeenCalled()
+    expect(process.exitCode).toBe(130)
+    process.exitCode = 0
+  })
+
+  it.each(['confirm', 'multiselect'] as const)('cancels from the streaming %s prompt before resolving extensions', async (prompt) => {
+    vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValueOnce(prompt === 'confirm' ? Symbol('cancel') : true)
+    vi.mocked(p.select).mockResolvedValueOnce(bundle).mockResolvedValueOnce('jksv')
+    vi.mocked(p.multiselect).mockResolvedValueOnce(Symbol('cancel'))
+    vi.mocked(buildPack).mockImplementationOnce(async (_bundle, _resources, _directory, _replace, _pack, task) => {
+      await task!.onCoreReady!()
+    })
+
+    await runBuildCommand({})
+
+    expect(resolveSaveManagement).not.toHaveBeenCalled()
+    expect(resolveCheats).not.toHaveBeenCalled()
+    expect(resolvePerformanceTuning).not.toHaveBeenCalled()
+    expect(resolvePerformanceMonitoring).not.toHaveBeenCalled()
+    expect(resolveStreaming).not.toHaveBeenCalled()
     expect(p.outro).not.toHaveBeenCalled()
     expect(process.exitCode).toBe(130)
     process.exitCode = 0

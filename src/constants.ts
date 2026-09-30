@@ -31,6 +31,7 @@ export const EXTENSION_REPO_CONFIG = {
   'fps-locker': 'masagrator/FPSLocker',
   'horizon-oc': 'Horizon-OC/Horizon-OC',
   'jksv': 'J-D-K/JKSV',
+  'moonlight-switch': 'XITRIX/Moonlight-Switch',
   'nx-shell': 'DefenderOfHyrule/NX-Shell',
   'reverse-nx-rt': 'masagrator/ReverseNX-RT',
   'salty-nx': 'masagrator/SaltyNX',
@@ -38,6 +39,7 @@ export const EXTENSION_REPO_CONFIG = {
   'status-monitor': 'ppkantorski/Status-Monitor-Overlay',
   'sys-clk-ultrahand-overlay': 'ppkantorski/sys-clk',
   'sys-clk': 'retronx-team/sys-clk',
+  'sys-dvr': 'exelix11/SysDVR',
 } as const
 
 export const PACK_DEFAULTS = new URL('../assets/defaults/', import.meta.url)

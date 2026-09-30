@@ -39,7 +39,7 @@ Extensions are enabled by default. Use `--no-ext` to build only the core pack
 without extension prompts, or `--ext` to enable them.
 
 Choose optional extensions after assembling the core components. Save management
-and file management use single selections; cheat and performance tuning tools allow
+and file management use single selections; cheat, performance tuning, and streaming tools allow
 multiple selections. Performance monitoring is a separate single selection, with
 Status Monitor selected by default.
 
@@ -59,6 +59,8 @@ Status Monitor selected by default.
 | ReverseNx RT | [masagrator/ReverseNX-RT](https://github.com/masagrator/ReverseNX-RT) | Switch game rendering between handheld and docked modes |
 | Status Monitor | [ppkantorski/Status-Monitor-Overlay](https://github.com/ppkantorski/Status-Monitor-Overlay) | FPS, frequencies, load, temperatures, and power monitoring; default monitor selection |
 | Status Monitor Deux | [masagrator/Status-Monitor-Deux](https://github.com/masagrator/Status-Monitor-Deux) | Performance monitoring with customizable layouts |
+| Moonlight Switch | [XITRIX/Moonlight-Switch](https://github.com/XITRIX/Moonlight-Switch) | Stream PC games to Switch; selected by default when streaming is enabled |
+| SysDVR | [exelix11/SysDVR](https://github.com/exelix11/SysDVR) | Stream Switch gameplay to a PC over USB or network, with a settings app; selected by default when streaming is enabled |
 
 All performance tuning tools except Horizon OC are selected by default. Selecting the
 Ultrahand clock overlay also includes a clock service. FPS Locker, ReverseNx RT,

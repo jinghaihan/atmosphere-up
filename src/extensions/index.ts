@@ -5,18 +5,21 @@ import type { FileManager } from './file-management'
 import type { PerformanceMonitor } from './performance-monitoring'
 import type { PerformanceTool } from './performance-tuning'
 import type { SaveManager } from './save-management'
+import type { StreamingTool } from './streaming'
 import { promptCheats, resolveCheats } from './cheats'
 import { resolveSaltyNx } from './dependencies'
 import { promptFileManagement, resolveFileManagement } from './file-management'
 import { promptPerformanceMonitoring, resolvePerformanceMonitoring } from './performance-monitoring'
 import { promptPerformanceTuning, resolvePerformanceTuning } from './performance-tuning'
 import { promptSaveManagement, resolveSaveManagement } from './save-management'
+import { promptStreaming, resolveStreaming } from './streaming'
 
 export * from './cheats'
 export * from './file-management'
 export * from './performance-monitoring'
 export * from './performance-tuning'
 export * from './save-management'
+export * from './streaming'
 
 export interface ExtensionSelection {
   saveManager?: SaveManager
@@ -24,6 +27,7 @@ export interface ExtensionSelection {
   fileManager?: FileManager
   performance: PerformanceTool[]
   performanceMonitor?: PerformanceMonitor
+  streaming: StreamingTool[]
 }
 
 export async function promptExtensions(controller: AbortController): Promise<ExtensionSelection> {
@@ -37,10 +41,12 @@ export async function promptExtensions(controller: AbortController): Promise<Ext
 
   const performanceMonitor = await promptPerformanceMonitoring(controller)
 
-  return { saveManager, cheats, fileManager, performance, performanceMonitor }
+  const streaming = await promptStreaming(controller)
+
+  return { saveManager, cheats, fileManager, performance, performanceMonitor, streaming }
 }
 
-export async function resolveExtensions({ saveManager, cheats, fileManager, performance, performanceMonitor }: ExtensionSelection, task: TaskOptions = {}, atmosphere?: string): Promise<Resource[]> {
+export async function resolveExtensions({ saveManager, cheats, fileManager, performance, performanceMonitor, streaming }: ExtensionSelection, task: TaskOptions = {}, atmosphere?: string): Promise<Resource[]> {
   const resources: Resource[] = []
 
   if (saveManager)
@@ -59,6 +65,8 @@ export async function resolveExtensions({ saveManager, cheats, fileManager, perf
 
     resources.push(await resolvePerformanceMonitoring(performanceMonitor, task))
   }
+
+  resources.push(...await resolveStreaming(streaming, task))
 
   return resources
 }
