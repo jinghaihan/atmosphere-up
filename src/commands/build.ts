@@ -23,7 +23,7 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
           value: bundle,
           label: bundle.labels.hos,
           hint: bundle.labels.hos === '23.0.0'
-            ? c.red('high risk')
+            ? `atmosphere ${bundle.labels.atmosphere} · ${c.red('high risk')}`
             : `atmosphere ${bundle.labels.atmosphere}`,
         })),
         initialValue: bundles[0],
