@@ -104,6 +104,7 @@ Firmware downloads remain available when optional modules are disabled with `--n
 - CPU performance counters are accessible to userland tools in both CFW environments.
 - CFW boot entries allow experimental components included in Atmosphere's package3.
 - NRO authorization checks are relaxed for compatible game mods.
+- Automatic cloud save downloads and uploads default to disabled.
 - Serial number information is hidden while running Atmosphere on sysMMC or emuMMC.
 - Nintendo services are blocked while running Atmosphere on sysMMC or emuMMC.
   Connectivity-test domains are excluded from blocking. Stock sysMMC is unaffected.
