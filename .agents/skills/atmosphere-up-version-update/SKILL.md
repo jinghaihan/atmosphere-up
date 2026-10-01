@@ -118,15 +118,15 @@ Sys Con currently uses latest and has no maintained version table.
 
 - In [THZoria/NX_Firmware](https://github.com/THZoria/NX_Firmware/releases), confirm
   the exact HOS tag and its `Firmware.<HOS>.zip` asset. The CLI offers this after
-  core and extensions, unless `--no-firmware` was supplied. Keep the exact-version
+  core and optional modules, unless `--no-firmware` was supplied. Keep the exact-version
   lookup and `firmware/<HOS>/` output; no latest fallback or firmware vendoring.
 - Check relevant Hekate, sys-patch, and loader release notes for the new target.
   They currently use latest; update selection code only if an actual upstream
   asset or compatibility change requires it.
 - Horizon OC compares its latest release's `ams_ver.txt` with the chosen
-  Atmosphere version. Report a mismatch as an optional-extension limitation;
+  Atmosphere version. Report a mismatch as an optional module limitation;
   preserve the check rather than weakening it to make a build succeed.
-- Other extensions use latest unless their resolver says otherwise. Distinguish
+- Other optional modules use latest unless their resolver says otherwise. Distinguish
   a published compatibility statement from an actual hardware test.
 
 A missing exact firmware release is a limitation of the optional firmware step.
@@ -145,11 +145,11 @@ in a temporary destination: the prepared archives, Mission Control JSON, and
 defaults must be included through the package's `assets` entry.
 
 An end-to-end download run is useful when downloads or installation changed;
-use the requested HOS and relevant extensions. Metadata and archive checks are
+use the requested HOS and relevant optional modules. Metadata and archive checks are
 sufficient for an ordinary version-data update unless hardware verification was
 requested. Never describe those checks as console testing.
 
 Summarize the HOS/Atmosphere pair, patch provenance, Mission Control tag, firmware
-availability, and any optional-extension limitations. Commit and push according
+availability, and any optional module limitations. Commit and push according
 to the user's current authorization; npm publishing is a separate action. Do not
 wait for CI after pushing.

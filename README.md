@@ -18,9 +18,9 @@ RCM, Ovl Sysmodules, sys-patch, and Ultrahand use their latest releases.
 <img src='./help.png' alt="help" />
 </p>
 
-### Core components
+### Core modules
 
-| Component | Source | Includes |
+| Module | Source | Includes |
 | --- | --- | --- |
 | Atmosphere | [Atmosphere-NX/Atmosphere](https://github.com/Atmosphere-NX/Atmosphere) | Atmosphere, fusee, Daybreak, hbmenu, hbloader, and other upstream tools |
 | Hekate | [CTCaer/hekate](https://github.com/CTCaer/hekate) | Bootloader with CFW emuMMC, CFW sysMMC, and stock sysMMC boot entries |
@@ -32,20 +32,20 @@ RCM, Ovl Sysmodules, sys-patch, and Ultrahand use their latest releases.
 | Sigpatches | [Supported versions](./assets/sigpatches/README.md) | Patches for the selected HOS and Atmosphere versions |
 
 Reboot to Payload returns to Hekate. Each pack includes a manifest listing its
-component versions.
+module versions.
 
 Ultrahand opens with **L + D-pad Down**.
 
-### Optional extensions
+### Optional modules
 
-Extensions are enabled by default. Use `--no-ext` to skip extension prompts,
-or `--ext` to enable them.
+Optional module selection is enabled by default. Use `--no-ext` to skip it,
+or `--ext` to enable it.
 
-After assembling the core components, choose extension categories. Save management,
+After assembling the core modules, choose optional module categories. Save management,
 file management, and cheats are selected by default. Only selected categories
 show their tool selection prompts; all categories can be deselected.
 
-| Component | Source | Includes |
+| Module | Source | Includes |
 | --- | --- | --- |
 | JKSV | [J-D-K/JKSV](https://github.com/J-D-K/JKSV) | Save backup and restore; default save manager selection |
 | Checkpoint | [BernardoGiordano/Checkpoint](https://github.com/BernardoGiordano/Checkpoint) | Save backup and restore |
@@ -81,18 +81,18 @@ Horizon OC or Sys Clk Overlay Ultrahand for clock controls in that configuration
 
 Mission Control matches the selected HOS version. Sys Con uses its latest release.
 
-Selected extensions are included in both directory and ZIP output.
+Selected optional modules are included in both directory and ZIP output.
 
 ### Firmware updates
 
-After installing the core components and selected extensions, the CLI offers to
+After installing the core modules and selected optional modules, the CLI offers to
 download firmware for the selected HOS version from
 [THZoria/NX_Firmware](https://github.com/THZoria/NX_Firmware).
 
 Firmware is extracted to `firmware/<HOS version>/` in the generated pack for
 installation with Daybreak. It is included in both directory and ZIP output.
 Use `--no-firmware` to skip the prompt and download, or `--firmware` to enable them.
-Firmware downloads remain available when extensions are disabled with `--no-ext`.
+Firmware downloads remain available when optional modules are disabled with `--no-ext`.
 
 ### Pack defaults
 

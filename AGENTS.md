@@ -7,7 +7,10 @@ version. Use pnpm and follow the installed dependencies and existing modules.
 
 - Use English for repository content, including prompts, comments, and commits.
 - Start custom prompt messages with lowercase letters. Keep Clack's built-in
-  labels unchanged and preserve component branding in option labels.
+  labels unchanged and preserve module branding in option labels.
+- User-facing copy uses `core modules` for required contents, `optional modules`
+  for selectable additions, `categories` for feature groups, and `pack` for the
+  assembled output.
 - README describes features, sources, and useful defaults. Put maintenance and
   implementation details in this file or the relevant skill.
 
@@ -18,7 +21,7 @@ version. Use pnpm and follow the installed dependencies and existing modules.
 | `src/cli.ts`, `src/config.ts`, `src/types.ts` | CAC options and unconfig configuration |
 | `src/commands/build.ts` | User interaction and build lifecycle |
 | `src/core/` | Bundle catalog, release resolution, installation, and output |
-| `src/extensions/index.ts` | Ordered extension categories, prompts, and resolvers |
+| `src/extensions/index.ts` | Ordered optional module categories, prompts, and resolvers |
 | `src/extensions/*.ts` | One feature category per module; prompts and resolvers return arrays |
 | `src/firmware.ts` | Optional firmware for the exact selected HOS version |
 | `src/download/` | GitHub authentication, releases, and downloads |
@@ -26,7 +29,7 @@ version. Use pnpm and follow the installed dependencies and existing modules.
 | `src/utils.ts` | Reusable or complex pure helpers |
 | `assets/sigpatches/` | Prepared patch ZIPs, HOS/Atmosphere manifest, and provenance |
 | `assets/mission-control/versions.json` | HOS to exact Mission Control release tag |
-| `assets/defaults/` | Files copied into every pack after extracting core components |
+| `assets/defaults/` | Files copied into every pack after extracting core modules |
 
 ## Build behavior to preserve
 
@@ -35,9 +38,9 @@ version. Use pnpm and follow the installed dependencies and existing modules.
   releases. Mission Control uses its HOS mapping. Horizon OC checks its release's
   `ams_ver.txt` against the selected Atmosphere version.
 - Check the destination and confirm replacement before downloads. Assemble core,
-  select and install extensions, optionally download firmware, then write the
+  select and install optional modules, optionally download firmware, then write the
   manifest and finalize directory or ZIP output.
-- Extension categories stay in this order: save management, file management,
+- Optional module categories stay in this order: save management, file management,
   cheats, performance tuning, performance monitoring, controller support,
   streaming, Amiibo. Default categories are save management, file management,
   and cheats. Ask for tools only in selected categories.
@@ -47,7 +50,7 @@ version. Use pnpm and follow the installed dependencies and existing modules.
   start at the SD card root. The repository config sets the parent to `./output`.
 - Use staging and the existing AbortSignal flow. Cancellation removes temporary
   files; preserve an existing output until the replacement has been assembled.
-- Keep shared extension dependencies deduplicated. An enhanced Sys Clk overlay
+- Keep shared optional module dependencies deduplicated. An enhanced Sys Clk overlay
   replaces the original overlay while preserving the required service/manager.
 - Keep overlay memory at 8 MiB and the hotkey at L + D-pad Down. Cheats default
   off without remembered toggles. Other shipped configuration lives in

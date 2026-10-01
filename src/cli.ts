@@ -18,7 +18,7 @@ try {
     .option('--cwd <directory>', 'working directory for configuration and relative paths')
     .option('--version <hos>', 'HOS version to build without prompting')
     .option('--output <directory>', 'parent directory for generated packs')
-    .option('--ext', 'choose optional extensions after building the core pack')
+    .option('--ext', 'choose optional modules after building the core pack')
     .option('--firmware', 'offer firmware download for the selected HOS version')
     .option('--pack', 'output a ZIP instead of a directory')
     .action((output: string | undefined, options: CommandOptions) => {

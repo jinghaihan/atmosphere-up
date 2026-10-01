@@ -226,7 +226,7 @@ describe('runBuildCommand', () => {
 
     expect(p.confirm).not.toHaveBeenCalled()
     expect(vi.mocked(p.multiselect).mock.calls[0][0]).toMatchObject({
-      message: 'select extension categories',
+      message: 'select optional module categories',
       required: false,
       initialValues: ['save-management', 'file-management', 'cheats'],
       options: [
@@ -246,7 +246,7 @@ describe('runBuildCommand', () => {
     }))).sort((a, b) => a.order - b.order).map(call => call.message)
     expect(messages).toEqual([
       'select HOS version',
-      'select extension categories',
+      'select optional module categories',
       'select save manager',
       'select file manager',
       'select cheat tools',

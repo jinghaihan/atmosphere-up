@@ -93,7 +93,7 @@ const extensions = [
 
 export async function promptExtensions(controller: AbortController): Promise<ExtensionSelection> {
   const categories = await p.multiselect({
-    message: 'select extension categories',
+    message: 'select optional module categories',
     options: extensions.map(({ value, label }) => ({ value, label })),
     initialValues: extensions.filter(extension => extension.initialSelected).map(extension => extension.value),
     required: false,
