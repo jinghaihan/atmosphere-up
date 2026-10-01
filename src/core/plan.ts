@@ -36,6 +36,9 @@ export async function resolveResources(bundle: Bundle, { signal, onProgress }: T
     })
 
     switch (module) {
+      case '90dns-tester':
+        resources.push(resource(/^Switch_90DNS_tester\.nro$/, 'switch/90DNS-Tester/Switch_90DNS_tester.nro'))
+        break
       case 'atmosphere':
         resources.push(
           resource(/^atmosphere-.*\.zip$/),

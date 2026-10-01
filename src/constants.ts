@@ -15,6 +15,7 @@ export const FIRMWARE_REPO = 'THZoria/NX_Firmware'
 
 /// keep-sorted
 export const CORE_REPO_CONFIG = {
+  '90dns-tester': 'meganukebmp/Switch_90DNS_tester',
   'atmosphere': 'Atmosphere-NX/Atmosphere',
   'dbi': 'rashevskyv/dbi',
   'hekate': 'CTCaer/hekate',

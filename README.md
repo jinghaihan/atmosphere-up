@@ -12,7 +12,7 @@ npx atmosphere-up
 ```
 
 Atmosphere and sigpatches match the selected HOS version. Hekate, DBI, Lockpick
-RCM, Ovl Sysmodules, sys-patch, and Ultrahand use their latest releases.
+RCM, 90DNS Tester, Ovl Sysmodules, sys-patch, and Ultrahand use their latest releases.
 
 <p align='center'>
 <img src='./help.png' alt="help" />
@@ -25,6 +25,7 @@ RCM, Ovl Sysmodules, sys-patch, and Ultrahand use their latest releases.
 | Atmosphere | [Atmosphere-NX/Atmosphere](https://github.com/Atmosphere-NX/Atmosphere) | Atmosphere, fusee, Daybreak, hbmenu, hbloader, and other upstream tools |
 | Hekate | [CTCaer/hekate](https://github.com/CTCaer/hekate) | Bootloader with CFW emuMMC, CFW sysMMC, and stock sysMMC boot entries |
 | DBI | [rashevskyv/dbi](https://github.com/rashevskyv/dbi) | Installation, file transfer, save management, and firmware export |
+| 90DNS Tester | [meganukebmp/Switch_90DNS_tester](https://github.com/meganukebmp/Switch_90DNS_tester) | Check whether Nintendo domains are blocked by DNS MITM or 90DNS |
 | Lockpick RCM | [impeeza/Lockpick_RCMDecScots](https://github.com/impeeza/Lockpick_RCMDecScots) | Console key export from Hekate's Payloads menu |
 | Sys Patch | [impeeza/sys-patch](https://github.com/impeeza/sys-patch) | System patching service and overlay |
 | Ultrahand | [ppkantorski/Ultrahand-Overlay](https://github.com/ppkantorski/Ultrahand-Overlay) | Overlay menu and nx-ovlloader |
