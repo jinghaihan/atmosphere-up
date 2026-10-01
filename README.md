@@ -102,6 +102,7 @@ Firmware downloads remain available when optional modules are disabled with `--n
   exists.
 - USB 3.0 is enabled for homebrew.
 - CPU performance counters are accessible to userland tools in both CFW environments.
+- CFW boot entries allow experimental components included in Atmosphere's package3.
 - NRO authorization checks are relaxed for compatible game mods.
 - Serial number information is hidden while running Atmosphere on sysMMC or emuMMC.
 - Nintendo services are blocked while running Atmosphere on sysMMC or emuMMC.
