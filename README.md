@@ -102,8 +102,7 @@ Firmware downloads remain available when optional modules are disabled with `--n
   exists.
 - USB 3.0 is enabled for homebrew.
 - NRO authorization checks are relaxed for compatible game mods.
-- Serial number information is hidden in emuMMC, while sysMMC keeps its original
-  information.
+- Serial number information is hidden while running Atmosphere on sysMMC or emuMMC.
 - Nintendo services are blocked while running Atmosphere on sysMMC or emuMMC.
   Connectivity-test domains are excluded from blocking. Stock sysMMC is unaffected.
 

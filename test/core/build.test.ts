@@ -127,7 +127,7 @@ describe('buildPack', () => {
     expect(settings).toContain('usb30_force_enabled = u8!0x1')
     expect(settings).toContain('enable_dns_mitm = u8!0x1')
     const exosphere = await readFile(join(directory, 'exosphere.ini'), 'utf8')
-    expect(exosphere).toContain('blank_prodinfo_sysmmc=0')
+    expect(exosphere).toContain('blank_prodinfo_sysmmc=1')
     expect(exosphere).toContain('blank_prodinfo_emummc=1')
     const hosts = await readFile(join(directory, 'atmosphere/hosts/emummc.txt'), 'utf8')
     expect(hosts).toContain('127.0.0.1 *nintendo.com')
