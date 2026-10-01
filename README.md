@@ -101,6 +101,7 @@ Firmware downloads remain available when optional modules are disabled with `--n
 - Cheats start disabled. Toggle state is saved only when a toggle file already
   exists.
 - USB 3.0 is enabled for homebrew.
+- Hekate's Nyx interface runs at 544 MHz.
 - CPU performance counters are accessible to userland tools in both CFW environments.
 - CFW boot entries allow experimental components included in Atmosphere's package3.
 - NRO authorization checks are relaxed for compatible game mods.
