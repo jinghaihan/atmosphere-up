@@ -1,8 +1,7 @@
 # HOS 23.0.0 patch resource
 
 Collected on 2026-10-01 for official Atmosphere `1.12.0`, build `28d6a2e11`.
-This resource is collected but not listed in `manifest.bundles`; it does not yet
-enable HOS 23.0.0 in the CLI.
+The CLI supports this pair through both the HOS prompt and `--version 23.0.0`.
 
 ## Provenance
 
@@ -32,12 +31,30 @@ including historical entries. No module selection or patch trimming is applied.
 CRC integrity, SHA-256, and equality with the downloaded source were checked.
 Console testing has not been performed.
 
-## Before enabling CLI support
+The CLI's core download and directory assembly completed for this pair with
+optional modules and firmware downloads disabled. All 253 source IPS files and
+the full patch table matched the generated pack byte-for-byte. The firmware
+resolver selected the exact 23.0.0 release and asset; its ZIP was not downloaded
+as part of this check.
 
-- Mission Control's latest release checked during collection is `v0.15.2`,
-  whose release notes cover HOS 22.5.0. A verified 23.0.0 mapping is pending.
+## Compatibility checks and limitations
+
+- [Hekate v6.5.4](https://github.com/CTCaer/hekate/releases/tag/v6.5.4) and
+  [Lockpick RCM v2.0.1](https://github.com/impeeza/Lockpick_RCMDecScots/releases/tag/v2.0.1)
+  explicitly support HOS 23.0.0. The existing latest-release resolvers select them.
+- The exact [firmware release](https://github.com/THZoria/NX_Firmware/releases/tag/23.0.0)
+  provides `Firmware.23.0.0.zip` (340,421,224 bytes).
+- Mission Control's latest release checked is `v0.15.2`, whose release notes
+  cover HOS 22.5.0. No verified 23.0.0 mapping is available, so selecting this
+  optional module retains the existing missing-mapping error. Reports in
+  [issue 1150](https://github.com/ndeadly/MissionControl/issues/1150) describe
+  23.0.0 connection and vibration compatibility problems.
 - Atmosphere 1.12.0 has a confirmed DNS.mitm interception gap on HOS 23.0.0.
   [The maintainer confirmed a fix for a subsequent minor release](https://github.com/Atmosphere-NX/Atmosphere/issues/2863#issuecomment-5895423675).
   These signature patches do not address it.
-- Firmware availability and the remaining core/optional module compatibility
-  checks are pending the full version-support update.
+- Horizon OC 2.5.1 declares Atmosphere `1.11.2` in `ams_ver.txt`; the existing
+  compatibility check rejects it for this Atmosphere 1.12.0 pack.
+- Sys Patch v1.6.2.3 and Ultrahand v2.5.3 retain their existing latest-release
+  resolution. The sigpatch publisher states that Sys Patch does not require
+  an update for HOS 23.0.0. Other optional modules retain their current resolvers;
+  this metadata does not establish their console-tested compatibility.

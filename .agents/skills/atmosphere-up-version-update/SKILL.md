@@ -81,9 +81,8 @@ source payload equality, and any merged patch table sections. Record the stored
 ZIP's digest separately from each upstream ZIP's digest.
 
 If the request is only resource collection, store the prepared archive and
-provenance without adding a selectable manifest entry. The collected
-`assets/sigpatches/hos-23.0.0.md` is an example. Complete the compatibility steps
-below before enabling the new HOS in the CLI.
+provenance without adding a selectable manifest entry. Complete the compatibility
+checks below when enabling the new HOS in the CLI.
 
 ## 3. Update the bundle manifest
 
@@ -115,8 +114,10 @@ Select an exact published tag whose stated HOS and Atmosphere requirements cover
 the new pair. Check its ZIP asset matches the current resolver's filename pattern.
 
 Add the HOS key to `assets/mission-control/versions.json`, preserving the actual
-`v` prefix or other upstream tag spelling. Match the supported HOS keys in the
-sigpatch manifest; a missing key fails when controller support is selected.
+`v` prefix or other upstream tag spelling. A missing key fails when Mission
+Control is selected, but does not prevent core pack generation. If the HOS is
+supported before a compatible Mission Control release exists, document the
+optional module limitation and preserve the missing-mapping error.
 Reuse an existing tag only when its stated compatibility covers the new HOS.
 Do not infer compatibility from a neighboring version or fall back to latest.
 Record the release-note basis in the delivery summary or commit description.
@@ -146,8 +147,9 @@ Report it explicitly; do not substitute another HOS version.
 ## 6. Verify and deliver
 
 Update the supported-version expectation in `test/core/catalog.test.ts`; its
-archive test checks each bundle's digest. Check every supported HOS has an
-existing mapped Mission Control release. When changing a resolver, cover the
+archive test checks each bundle's digest. Check each configured Mission Control
+tag is published and record supported HOS versions without a verified mapping
+as optional module limitations. When changing a resolver, cover the
 actual tag/asset behavior with a focused test.
 
 Run `pnpm lint`, `pnpm typecheck`, `pnpm exec vitest run`, and `pnpm build`.

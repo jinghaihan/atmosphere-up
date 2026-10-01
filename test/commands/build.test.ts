@@ -433,12 +433,13 @@ describe('runBuildCommand', () => {
     expect(resolvePerformanceMonitoring).toHaveBeenCalledWith(['status-monitor'], expect.objectContaining({ resources: [{ module: 'salty-nx' }] }))
   })
 
-  it('uses the requested HOS version without prompting', async () => {
-    vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', pack: false, version: '21.2.0' })
-    await runBuildCommand({ version: '21.2.0' })
+  it.each(['21.2.0', '23.0.0'])('uses the requested HOS %s without prompting', async (version) => {
+    const selected = getBundles().find(bundle => bundle.labels.hos === version)!
+    vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', pack: false, version })
+    await runBuildCommand({ version })
     expect(p.select).not.toHaveBeenCalled()
-    expect(resolveResources).toHaveBeenCalledWith(bundle, expect.any(Object))
-    expect(vi.mocked(buildPack).mock.calls[0][0].bundle).toBe(bundle)
+    expect(resolveResources).toHaveBeenCalledWith(selected, expect.any(Object))
+    expect(vi.mocked(buildPack).mock.calls[0][0].bundle).toBe(selected)
   })
 
   it('rejects an unsupported HOS version before checking output or querying GitHub', async () => {

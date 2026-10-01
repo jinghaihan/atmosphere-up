@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "preparedOn": "2026-09-30",
+  "preparedOn": "2026-10-01",
   "description": "Standalone normalized sigpatch bundles for extraction into a clean staging directory. Labels are resource versions, not a tested core compatibility matrix.",
   "bundles": [
     {
@@ -229,6 +229,31 @@
       ],
       "notes": [],
       "atmosphereTag": "1.11.2"
+    },
+    {
+      "id": "hos-23.0.0-ams-1.12.0",
+      "file": "archives/sigpatches-hos-23.0.0-ams-1.12.0.zip",
+      "labels": {
+        "hos": "23.0.0",
+        "atmosphere": "1.12.0"
+      },
+      "sha256": "8b437166490b4683bdb36a64458d6ce855247faba203c151290dfba8900d11e9",
+      "bytes": 76378,
+      "ips": 253,
+      "sources": [
+        {
+          "file": "Hekate+AMS-package3-sigpatches-Atmosphere-1.12.0-master-28d6a2e11-cfw-23.0.0.zip",
+          "page": "https://gbatemp.net/threads/sigpatches-for-atmosphere-hekate-fss0-fusee-package3.571543/post-10914627",
+          "download": "https://gbatemp.net/attachments/hekate-ams-package3-sigpatches-atmosphere-1-12-0-master-28d6a2e11-cfw-23-0-0-zip.592829/",
+          "publisher": "bth",
+          "sha256": "8b437166490b4683bdb36a64458d6ce855247faba203c151290dfba8900d11e9",
+          "bytes": 76378
+        }
+      ],
+      "notes": [
+        "Original publisher ZIP retained unchanged, including all historical patches and table sections. Official Atmosphere 1.12.0 build 28d6a2e11 has Loader KIP SHA-256 92f34a795aa6f8cfaa2c888e9357f05fbc50da6ede6a34de0a58411eb546e0bc, matching the source."
+      ],
+      "atmosphereTag": "1.12.0"
     }
   ]
 }

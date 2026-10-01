@@ -21,19 +21,20 @@ Files follow `sigpatches-hos-X.Y.Z-ams-X.Y.Z.zip`, with IDs of `hos-X.Y.Z-ams-X.
 | 22.0.0 | 1.11.0 | 1.11.0 | 226 |
 | 22.1.0 | 1.11.1 | 1.11.1 | 191 |
 | 22.5.0 | 1.11.2 | 1.11.2 | 225 |
+| 23.0.0 | 1.12.0 | 1.12.0 | 253 |
 
-The nine ZIPs total 518,207 bytes (about 506 KiB). Tags were checked against the [official Atmosphere releases](https://github.com/Atmosphere-NX/Atmosphere/releases). Historical tags may retain `prerelease` after a release becomes stable, so the tag alone does not establish its current GitHub release status. Patch compatibility still requires checking the specific build; relevant identifiers remain in source records, patch tables, and notes.
+The ten ZIPs total 594,585 bytes (about 581 KiB). Tags were checked against the [official Atmosphere releases](https://github.com/Atmosphere-NX/Atmosphere/releases). Historical tags may retain `prerelease` after a release becomes stable, so the tag alone does not establish its current GitHub release status. Patch compatibility still requires checking the specific build; relevant identifiers remain in source records, patch tables, and notes.
 
 Separate historical sources for HOS 20.x, 21.0.x, and 21.1.0 have not been collected. The 21.2.0 source includes older loader patches whose coverage needs further review. The [17.0.0 publisher post](https://gbatemp.net/threads/sigpatches-for-atmosphere-hekate-fss0-fusee-package3.571543/post-10275682) claims coverage from HOS 1.0.0 through 17.0.0; individual 16.0.x mappings are also pending.
 
 ## Preparation
 
-### Collected HOS 23.0.0 resource
+### HOS 23.0.0 resource
 
 [HOS 23.0.0 / Atmosphere 1.12.0](hos-23.0.0.md) uses the original publisher ZIP
 with 253 IPS files and 84 patch table sections (76,378 bytes). Its bytes are
 unchanged; only the filename is normalized. Provenance, build evidence, and
-pending support checks are recorded separately. It is not yet exposed by the CLI manifest.
+optional module limitations are recorded separately. The CLI supports this pair.
 
 ### Supported bundles
 

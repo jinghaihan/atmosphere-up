@@ -6,6 +6,7 @@ import { getOutputName, sha256 } from '../../src/utils'
 describe('getBundles', () => {
   it('sorts all supported HOS versions numerically, newest first', () => {
     expect(getBundles().map(bundle => bundle.labels.hos)).toEqual([
+      '23.0.0',
       '22.5.0',
       '22.1.0',
       '22.0.0',
@@ -25,8 +26,11 @@ describe('getBundles', () => {
 })
 
 describe('getOutputName', () => {
-  it('uses numeric Atmosphere and HOS versions', () => {
-    const bundle = getBundles().find(bundle => bundle.labels.hos === '21.2.0')!
-    expect(getOutputName(bundle)).toBe('atmosphere-1.10.2-hos-21.2.0')
+  it.each([
+    ['21.2.0', '1.10.2'],
+    ['23.0.0', '1.12.0'],
+  ])('uses numeric Atmosphere and HOS versions for %s', (hos, atmosphere) => {
+    const bundle = getBundles().find(bundle => bundle.labels.hos === hos)!
+    expect(getOutputName(bundle)).toBe(`atmosphere-${atmosphere}-hos-${hos}`)
   })
 })
