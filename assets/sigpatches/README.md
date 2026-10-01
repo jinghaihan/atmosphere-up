@@ -35,6 +35,8 @@ Separate historical sources for HOS 20.x, 21.0.x, and 21.1.0 have not been colle
 with 253 IPS files and 84 patch table sections (76,378 bytes). Its bytes are
 unchanged; only the filename is normalized. Provenance, build evidence, and
 optional module limitations are recorded separately. The CLI supports this pair.
+See its [known issues and follow-up](hos-23.0.0.md#known-issues-and-follow-up)
+for DNS interception, controller support, and Horizon OC boot reports.
 
 ### Supported bundles
 
