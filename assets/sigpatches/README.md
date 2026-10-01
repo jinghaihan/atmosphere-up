@@ -28,6 +28,15 @@ Separate historical sources for HOS 20.x, 21.0.x, and 21.1.0 have not been colle
 
 ## Preparation
 
+### Collected HOS 23.0.0 resource
+
+[HOS 23.0.0 / Atmosphere 1.12.0](hos-23.0.0.md) has a prepared target-only
+ZIP with eight IPS files and three patch table sections (2,912 bytes).
+Its provenance, retained identifiers, selection evidence, and pending support
+checks are recorded separately. It is not yet exposed by the CLI manifest.
+
+### Supported bundles
+
 - ZIPs contain only IPS files under `atmosphere/exefs_patches/` and `atmosphere/kip_patches/`, plus `bootloader/patches.ini`.
 - Upstream `hekate_ipl.ini` files and boot configuration templates were removed. The CLI applies its own boot configuration from `assets/defaults`.
 - The 22.0.0 bundle combines the 21.2.0 base with six IPS files from the 22.0.0 supplement. Its patch tables were merged after confirming that the added file paths and table sections did not conflict.
@@ -36,7 +45,7 @@ Separate historical sources for HOS 20.x, 21.0.x, and 21.1.0 have not been colle
 - IPS payloads retain their upstream bytes. Patch tables are also unchanged except for the premerged 22.0.0 table.
 - ZIPs use fixed timestamps, sorted paths, and consistent compression settings. Source URLs and original SHA-256 hashes provide provenance.
 
-Bundles currently retain the historical patches included in their sources. Once HOS and Atmosphere build mappings are established, bundles can be trimmed to the files required by each target while remaining independently extractable.
+The nine supported bundles still retain the historical patches included in their sources. The collected 23.0.0 resource is trimmed to its target. Older bundles can be trimmed once their HOS and Atmosphere build mappings are established.
 
 ## Assembly and verification
 

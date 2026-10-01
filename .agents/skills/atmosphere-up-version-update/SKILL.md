@@ -74,6 +74,24 @@ match the existing reproducible archives. Check archive integrity, retained
 source payload equality, and any changed patch table sections. Record the
 prepared ZIP's digest separately from each upstream ZIP's digest.
 
+New resources should contain only the selected HOS and Atmosphere builds, not
+the upstream archive's accumulated historical patches. Trim `patches.ini` to
+the matching FS variants and loader section too. Prefer explicit publisher
+version labels or independently verified module identifiers. A comparison with
+the preceding source can support selection when each updated module has exactly
+one new identifier and firmware changes confirm those modules were updated;
+record this inference rather than claiming independent firmware extraction.
+Unchanged modules can still require an older identifier, so do not select every
+target by archive differences alone. Do not use ZIP entry dates as version data.
+Exclude patches already supplied by the selected official Atmosphere build.
+Also exclude stock-module IPS files when Atmosphere replaces that module with
+its own implementation; confirm the replacement is shipped in the selected release.
+
+If the request is only resource collection, store the prepared archive and
+provenance without adding a selectable manifest entry. The collected
+`assets/sigpatches/hos-23.0.0.md` is an example. Complete the compatibility steps
+below before enabling the new HOS in the CLI.
+
 ## 3. Update the bundle manifest
 
 Keep the existing schema and fields. For HOS `<HOS>` and numeric Atmosphere `<AMS>`:
