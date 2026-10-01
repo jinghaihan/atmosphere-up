@@ -32,5 +32,5 @@
 127.0.0.1 *nintendoswitch.com
 127.0.0.1 *nintendoswitch.com.cn
 127.0.0.1 *nintendoswitch.cn
-207.246.121.77 *conntest.nintendowifi.net
-207.246.121.77 *ctest.cdn.nintendo.net
+95.216.149.205 *conntest.nintendowifi.net
+95.216.149.205 *ctest.cdn.nintendo.net
