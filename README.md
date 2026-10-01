@@ -101,6 +101,7 @@ Firmware downloads remain available when optional modules are disabled with `--n
 - Cheats start disabled. Toggle state is saved only when a toggle file already
   exists.
 - USB 3.0 is enabled for homebrew.
+- CPU performance counters are accessible to userland tools in both CFW environments.
 - NRO authorization checks are relaxed for compatible game mods.
 - Serial number information is hidden while running Atmosphere on sysMMC or emuMMC.
 - Nintendo services are blocked while running Atmosphere on sysMMC or emuMMC.

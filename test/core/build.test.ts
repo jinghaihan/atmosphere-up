@@ -3,6 +3,7 @@ import { Buffer } from 'node:buffer'
 import { readFile, rm } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import AdmZip from 'adm-zip'
+import { parse } from 'ini'
 import { join, resolve } from 'pathe'
 import { glob } from 'tinyglobby'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -121,6 +122,10 @@ describe('buildPack', () => {
     expect(heapSize.readBigUInt64LE()).toBe(0x800000n)
     expect(await readFile(join(directory, 'atmosphere/reboot_payload.bin'))).toEqual(await readFile(join(directory, 'payload.bin')))
     expect(await readFile(join(directory, 'bootloader/hekate_ipl.ini'))).toEqual(await readFile(join(cwd, 'assets/defaults/bootloader/hekate_ipl.ini')))
+    const boot = parse(await readFile(join(directory, 'bootloader/hekate_ipl.ini'), 'utf8'))
+    expect(boot['CFW emuMMC'].userpmu).toBe('1')
+    expect(boot['CFW sysMMC'].userpmu).toBe('1')
+    expect(boot['Stock sysMMC'].userpmu).toBeUndefined()
     const settings = await readFile(join(directory, 'atmosphere/config/system_settings.ini'), 'utf8')
     expect(settings).toContain('dmnt_cheats_enabled_by_default = u8!0x0')
     expect(settings).toContain('dmnt_always_save_cheat_toggles = u8!0x0')
