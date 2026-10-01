@@ -35,8 +35,9 @@ version. Use pnpm and follow the installed dependencies and existing modules.
 
 - Supported HOS versions come from the sigpatches manifest. Atmosphere uses the
   bundle's exact `atmosphereTag`; other core repositories currently use latest
-  releases. Mission Control uses its HOS mapping. Horizon OC checks its release's
-  `ams_ver.txt` against the selected Atmosphere version.
+  releases. Mission Control uses its HOS mapping. Other optional modules,
+  including Horizon OC, use latest releases. Assemble the selected resources
+  without adding HOS or Atmosphere compatibility gates.
 - Check the destination and confirm replacement before downloads. Assemble core,
   select and install optional modules, optionally download firmware, then write the
   manifest and finalize directory or ZIP output.

@@ -110,19 +110,16 @@ rewriting a ZIP. Resource metadata does not establish hardware-tested compatibil
 
 Review releases and compatibility notes from
 [ndeadly/MissionControl](https://github.com/ndeadly/MissionControl/releases).
-Select an exact published tag whose stated HOS and Atmosphere requirements cover
-the new pair. Check its ZIP asset matches the current resolver's filename pattern.
+Use the release intended for the HOS when one is available. Otherwise record
+an exact tag for the current latest published release. Preserve the upstream
+`v` prefix and verify its ZIP asset matches the resolver's filename pattern.
+Add the HOS key to `assets/mission-control/versions.json` so the selected module
+can be assembled. Record whether the mapping comes from explicit compatibility
+notes or simply the latest available release; do not claim tested compatibility
+for the latter. Keep existing historical mappings.
 
-Add the HOS key to `assets/mission-control/versions.json`, preserving the actual
-`v` prefix or other upstream tag spelling. A missing key fails when Mission
-Control is selected, but does not prevent core pack generation. If the HOS is
-supported before a compatible Mission Control release exists, document the
-optional module limitation and preserve the missing-mapping error.
-Reuse an existing tag only when its stated compatibility covers the new HOS.
-Do not infer compatibility from a neighboring version or fall back to latest.
-Record the release-note basis in the delivery summary or commit description.
-If no compatible release exists, report it before claiming complete new-version
-support; do not silently change the resolver's missing-mapping behavior.
+This CLI assembles resources. Do not block integration based on release-note
+compatibility claims, inferred incompatibility, or reports from other users.
 
 Sys Con currently uses latest and has no maintained version table.
 
@@ -135,9 +132,8 @@ Sys Con currently uses latest and has no maintained version table.
 - Check relevant Hekate, sys-patch, and loader release notes for the new target.
   They currently use latest; update selection code only if an actual upstream
   asset or compatibility change requires it.
-- Horizon OC compares its latest release's `ams_ver.txt` with the chosen
-  Atmosphere version. Report a mismatch as an optional module limitation;
-  preserve the check rather than weakening it to make a build succeed.
+- Horizon OC uses its latest release. Do not fetch `ams_ver.txt` or compare
+  it with the selected Atmosphere version as an installation gate.
 - Other optional modules use latest unless their resolver says otherwise. Distinguish
   a published compatibility statement from an actual hardware test.
 
@@ -147,9 +143,8 @@ Report it explicitly; do not substitute another HOS version.
 ## 6. Verify and deliver
 
 Update the supported-version expectation in `test/core/catalog.test.ts`; its
-archive test checks each bundle's digest. Check each configured Mission Control
-tag is published and record supported HOS versions without a verified mapping
-as optional module limitations. When changing a resolver, cover the
+archive test checks each bundle's digest. Check every supported HOS has a
+published Mission Control tag in its mapping. When changing a resolver, cover the
 actual tag/asset behavior with a focused test.
 
 Run `pnpm lint`, `pnpm typecheck`, `pnpm exec vitest run`, and `pnpm build`.

@@ -4,7 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import * as p from '@clack/prompts'
 import { join } from 'pathe'
 import { EXTENSION_REPO_CONFIG } from '../constants'
-import { getRelease, getRepositoryFile } from '../download'
+import { getRelease } from '../download'
 import { configureHorizonOcBootEntries, getRepositoryUrl, selectAsset } from '../utils'
 import { resolveSaltyNx } from './dependencies'
 
@@ -40,7 +40,7 @@ export async function promptPerformanceTuning(controller: AbortController): Prom
   return modules
 }
 
-export async function resolvePerformanceTuning(modules: PerformanceTool[], { signal, onProgress, atmosphere, resources: existing = [] }: ExtensionContext = {}): Promise<Resource[]> {
+export async function resolvePerformanceTuning(modules: PerformanceTool[], { signal, onProgress, resources: existing = [] }: ExtensionContext = {}): Promise<Resource[]> {
   const selected = new Set<PerformanceTool | 'salty-nx'>(modules)
 
   if (selected.has('sys-clk-overlay-ultrahand') && !selected.has('horizon-oc'))
@@ -87,13 +87,7 @@ export async function resolvePerformanceTuning(modules: PerformanceTool[], { sig
       case 'sys-clk-overlay-ultrahand':
         resources.push(resource(/^sys-clk-overlay\.ovl$/, { target: 'switch/.overlays/sys-clk-overlay.ovl' }))
         break
-      case 'horizon-oc': {
-        if (atmosphere) {
-          const supported = (await getRepositoryFile({ repository, path: 'ams_ver.txt', ref: release.tag_name, signal })).trim()
-          if (supported !== atmosphere)
-            throw new Error(`Horizon OC ${release.tag_name} requires Atmosphere ${supported}; the selected pack uses ${atmosphere}.`)
-        }
-
+      case 'horizon-oc':
         resources.push(resource(/^dist\.zip$/, {
           paths: ['atmosphere/', 'config/', 'switch/.overlays/horizon-oc-overlay.ovl'],
           configure: async (directory) => {
@@ -102,7 +96,6 @@ export async function resolvePerformanceTuning(modules: PerformanceTool[], { sig
           },
         }))
         break
-      }
       case 'fps-locker':
         resources.push(resource(/^FPSLocker\.ovl$/, { target: 'switch/.overlays/FPSLocker.ovl' }))
         break

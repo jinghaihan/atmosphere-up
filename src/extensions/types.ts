@@ -2,7 +2,6 @@ import type { Resource } from '../core/plan'
 import type { TaskOptions } from '../types'
 
 export interface ExtensionContext extends TaskOptions {
-  atmosphere?: string
   hos?: string
   resources?: Resource[]
 }

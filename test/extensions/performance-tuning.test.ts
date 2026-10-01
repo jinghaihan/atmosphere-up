@@ -7,10 +7,10 @@ import { parse } from 'ini'
 import { join } from 'pathe'
 import { describe, expect, it, vi } from 'vitest'
 import { installResources } from '../../src/core/install'
-import { downloadAsset, getRelease, getRepositoryFile } from '../../src/download'
+import { downloadAsset, getRelease } from '../../src/download'
 import { resolvePerformanceTuning } from '../../src/extensions'
 
-vi.mock('../../src/download', () => ({ getRelease: vi.fn(), getRepositoryFile: vi.fn(), downloadAsset: vi.fn() }))
+vi.mock('../../src/download', () => ({ getRelease: vi.fn(), downloadAsset: vi.fn() }))
 
 const releases = {
   'retronx-team/sys-clk': ['sys-clk-2.0.1-21fix.zip'],
@@ -27,7 +27,6 @@ vi.mocked(getRelease).mockImplementation(async repository => ({
   html_url: `https://github.com/${repository}/releases/v1`,
   assets: releases[repository as keyof typeof releases].map(name => ({ name })),
 }) as Release)
-vi.mocked(getRepositoryFile).mockResolvedValue('1.11.2\n')
 
 describe('resolvePerformanceTuning', () => {
   it('installs Fizeau independently without clock or FPS services', async () => {
@@ -61,7 +60,7 @@ describe('resolvePerformanceTuning', () => {
   })
 
   it('allows HOC and Sys Clk together and excludes bundled monitoring tools', async () => {
-    const resources = await resolvePerformanceTuning(['horizon-oc', 'sys-clk', 'sys-clk-overlay-ultrahand'], { atmosphere: '1.11.2' })
+    const resources = await resolvePerformanceTuning(['horizon-oc', 'sys-clk', 'sys-clk-overlay-ultrahand'])
 
     expect(resources.map(resource => resource.module)).toEqual(['sys-clk', 'horizon-oc', 'sys-clk-overlay-ultrahand'])
     expect(resources[1]).toMatchObject({
@@ -70,13 +69,8 @@ describe('resolvePerformanceTuning', () => {
     })
   })
 
-  it('rejects a HOC release built for a different Atmosphere version', async () => {
-    await expect(resolvePerformanceTuning(['horizon-oc'], { atmosphere: '1.10.2' })).rejects.toThrow('requires Atmosphere 1.11.2')
-    expect(getRepositoryFile).toHaveBeenLastCalledWith({ repository: 'Horizon-OC/Horizon-OC', path: 'ams_ver.txt', ref: 'v1', signal: undefined })
-  })
-
   it('uses HOC as the dependency for its compatible overlay without adding the original service', async () => {
-    const resources = await resolvePerformanceTuning(['sys-clk-overlay-ultrahand', 'horizon-oc'], { atmosphere: '1.11.2' })
+    const resources = await resolvePerformanceTuning(['sys-clk-overlay-ultrahand', 'horizon-oc'])
 
     expect(resources.map(resource => resource.module)).toEqual(['horizon-oc', 'sys-clk-overlay-ultrahand'])
   })
@@ -95,7 +89,7 @@ describe('resolvePerformanceTuning', () => {
       await mkdir(join(directory, 'bootloader'))
       await writeFile(join(directory, 'bootloader/hekate_ipl.ini'), '[config]\nautoboot=0\n\n[custom cfw]\npkg3=atmosphere/package3\n\n[custom stock]\npkg3=atmosphere/package3\nstock=1\n')
 
-      await installResources(await resolvePerformanceTuning(['horizon-oc'], { atmosphere: '1.11.2' }), directory)
+      await installResources(await resolvePerformanceTuning(['horizon-oc']), directory)
 
       const settings = parse(await readFile(join(directory, 'bootloader/hekate_ipl.ini'), 'utf8'))
       expect(settings['custom cfw']).toEqual({ pkg3: 'atmosphere/package3', kip1: 'atmosphere/kips/hoc.kip', secmon: 'atmosphere/exosphere.bin' })

@@ -75,8 +75,8 @@ and performance monitors include their shared [SaltyNX](https://github.com/masag
 Selecting Sys Clk Overlay Ultrahand excludes the original Sys Clk overlay while
 retaining its clock service and homebrew manager.
 
-Horizon OC requires its matching Atmosphere version and configures the CFW boot
-entries automatically. When selected with Sys Clk, Horizon OC supplies the clock
+Horizon OC uses its latest release and configures the CFW boot entries
+automatically. When selected with Sys Clk, Horizon OC supplies the clock
 service; the original Sys Clk manager and overlay cannot connect to it. Use
 Horizon OC or Sys Clk Overlay Ultrahand for clock controls in that configuration.
 

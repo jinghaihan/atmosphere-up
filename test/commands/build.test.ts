@@ -291,7 +291,7 @@ describe('runBuildCommand', () => {
       ],
     }))
     expect(resolvePerformanceMonitoring).toHaveBeenCalledWith(['status-monitor'], expect.any(Object))
-    expect(resolvePerformanceTuning).toHaveBeenCalledWith(['sys-clk', 'sys-clk-overlay-ultrahand', 'fps-locker', 'reverse-nx-rt'], expect.objectContaining({ atmosphere: '1.10.2' }))
+    expect(resolvePerformanceTuning).toHaveBeenCalledWith(['sys-clk', 'sys-clk-overlay-ultrahand', 'fps-locker', 'reverse-nx-rt'], expect.objectContaining({ hos: '21.2.0' }))
     expect(resolveFileManagement).toHaveBeenCalledWith(['nx-shell'], expect.any(Object))
     expect(vi.mocked(resolveFileManagement).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(resolveCheats).mock.invocationCallOrder[0])
     expect(resolveSaveManagement).toHaveBeenCalledWith(['jksv'], expect.any(Object))

@@ -19,7 +19,13 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
   const bundle = config.version === undefined
     ? await p.select({
         message: 'select HOS version',
-        options: bundles.map(bundle => ({ value: bundle, label: bundle.labels.hos, hint: `atmosphere ${bundle.labels.atmosphere}` })),
+        options: bundles.map(bundle => ({
+          value: bundle,
+          label: bundle.labels.hos,
+          hint: bundle.labels.hos === '23.0.0'
+            ? c.red('high risk')
+            : `atmosphere ${bundle.labels.atmosphere}`,
+        })),
         initialValue: bundles[0],
       })
     : bundles.find(bundle => bundle.labels.hos === config.version)
@@ -86,7 +92,6 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
 
           return resolveExtensions(selection, {
             ...task,
-            atmosphere: bundle.labels.atmosphere,
             hos: bundle.labels.hos,
           })
         }

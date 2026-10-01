@@ -44,16 +44,13 @@ as part of this check.
   explicitly support HOS 23.0.0. The existing latest-release resolvers select them.
 - The exact [firmware release](https://github.com/THZoria/NX_Firmware/releases/tag/23.0.0)
   provides `Firmware.23.0.0.zip` (340,421,224 bytes).
-- Mission Control's latest release checked is `v0.15.2`, whose release notes
-  cover HOS 22.5.0. No verified 23.0.0 mapping is available, so selecting this
-  optional module retains the existing missing-mapping error. Reports in
-  [issue 1150](https://github.com/ndeadly/MissionControl/issues/1150) describe
-  23.0.0 connection and vibration compatibility problems.
+- Mission Control maps HOS 23.0.0 to `v0.15.2`, the latest published release
+  checked during this update. This is a resource selection, not a claim of
+  verified HOS 23.0.0 compatibility.
 - Atmosphere 1.12.0 has a confirmed DNS.mitm interception gap on HOS 23.0.0.
   [The maintainer confirmed a fix for a subsequent minor release](https://github.com/Atmosphere-NX/Atmosphere/issues/2863#issuecomment-5895423675).
   These signature patches do not address it.
-- Horizon OC 2.5.1 declares Atmosphere `1.11.2` in `ams_ver.txt`; the existing
-  compatibility check rejects it for this Atmosphere 1.12.0 pack.
+- Horizon OC uses its latest release without an Atmosphere compatibility gate.
 - Sys Patch v1.6.2.3 and Ultrahand v2.5.3 retain their existing latest-release
   resolution. The sigpatch publisher states that Sys Patch does not require
   an update for HOS 23.0.0. Other optional modules retain their current resolvers;
