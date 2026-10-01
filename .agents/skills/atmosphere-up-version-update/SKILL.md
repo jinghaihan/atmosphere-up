@@ -69,23 +69,16 @@ superseding revisions, and resolve unexplained conflicts from source evidence.
 The result must extract into a clean directory with no earlier bundle required.
 Do not add runtime supplement merging to the CLI.
 
-Use sorted entry paths, fixed ZIP timestamps, and consistent compression to
-match the existing reproducible archives. Check archive integrity, retained
-source payload equality, and any changed patch table sections. Record the
-prepared ZIP's digest separately from each upstream ZIP's digest.
+Preserve the publisher's complete IPS set and patch table, including historical
+entries. Do not trim patches by version, archive differences, or assumptions
+about Atmosphere's embedded patches or replacement modules.
 
-New resources should contain only the selected HOS and Atmosphere builds, not
-the upstream archive's accumulated historical patches. Trim `patches.ini` to
-the matching FS variants and loader section too. Prefer explicit publisher
-version labels or independently verified module identifiers. A comparison with
-the preceding source can support selection when each updated module has exactly
-one new identifier and firmware changes confirm those modules were updated;
-record this inference rather than claiming independent firmware extraction.
-Unchanged modules can still require an older identifier, so do not select every
-target by archive differences alone. Do not use ZIP entry dates as version data.
-Exclude patches already supplied by the selected official Atmosphere build.
-Also exclude stock-module IPS files when Atmosphere replaces that module with
-its own implementation; confirm the replacement is shipped in the selected release.
+When the source already contains only patch resources, keep the original ZIP
+bytes and normalize only its filename. If removing unrelated pack content or
+merging a documented supplement requires repacking, use sorted entry paths,
+fixed ZIP timestamps, and consistent compression. Check archive integrity,
+source payload equality, and any merged patch table sections. Record the stored
+ZIP's digest separately from each upstream ZIP's digest.
 
 If the request is only resource collection, store the prepared archive and
 provenance without adding a selectable manifest entry. The collected

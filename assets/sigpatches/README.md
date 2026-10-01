@@ -30,10 +30,10 @@ Separate historical sources for HOS 20.x, 21.0.x, and 21.1.0 have not been colle
 
 ### Collected HOS 23.0.0 resource
 
-[HOS 23.0.0 / Atmosphere 1.12.0](hos-23.0.0.md) has a prepared target-only
-ZIP with eight IPS files and three patch table sections (2,912 bytes).
-Its provenance, retained identifiers, selection evidence, and pending support
-checks are recorded separately. It is not yet exposed by the CLI manifest.
+[HOS 23.0.0 / Atmosphere 1.12.0](hos-23.0.0.md) uses the original publisher ZIP
+with 253 IPS files and 84 patch table sections (76,378 bytes). Its bytes are
+unchanged; only the filename is normalized. Provenance, build evidence, and
+pending support checks are recorded separately. It is not yet exposed by the CLI manifest.
 
 ### Supported bundles
 
@@ -43,9 +43,9 @@ checks are recorded separately. It is not yet exposed by the CLI manifest.
 - The 22.0.0 loader ID `82ABC222A5859040` matches the Atmosphere 1.11.0 / `931e3c37f` entry in the upstream 22.1.0 bundle, providing the basis for its version label.
 - The 22.1.0 bundle uses bth's complete source. It does not mix in AmeliaFox's supplement, whose patch contents differ in some places.
 - IPS payloads retain their upstream bytes. Patch tables are also unchanged except for the premerged 22.0.0 table.
-- ZIPs use fixed timestamps, sorted paths, and consistent compression settings. Source URLs and original SHA-256 hashes provide provenance.
+- Repacked ZIPs use fixed timestamps, sorted paths, and consistent compression settings. Sources that already contain only patch resources can be stored unchanged. Source URLs and original SHA-256 hashes provide provenance.
 
-The nine supported bundles still retain the historical patches included in their sources. The collected 23.0.0 resource is trimmed to its target. Older bundles can be trimmed once their HOS and Atmosphere build mappings are established.
+Bundles retain the complete patch sets and historical entries supplied by their publishers. The collected 23.0.0 resource follows the same policy.
 
 ## Assembly and verification
 
