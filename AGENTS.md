@@ -13,6 +13,8 @@ version. Use pnpm and follow the installed dependencies and existing modules.
   assembled output.
 - README describes features, sources, and useful defaults. Put maintenance and
   implementation details in this file or the relevant skill.
+- Do not narrate prompt sequences, preselection behavior, or selection mechanics
+  in README. Describe what users can do and how to use the output.
 
 ## Project structure
 

@@ -53,9 +53,7 @@ firmware update, export them again from the updated system.
 
 ### Module upgrades
 
-Use `upgrade` to choose core or optional modules to update. Module names passed
-on the command line are preselected, and the selection can still be changed.
-No modules are selected by default.
+Use `upgrade` to update individual core or optional modules.
 
 Upgrade packs include the selected modules and their required dependencies in
 SD card layout. Copy the contents to the SD card root and merge them to update.
@@ -64,12 +62,7 @@ Use `--pack` for ZIP output.
 
 ### Optional modules
 
-Optional module selection is enabled by default. Use `--no-ext` to skip it,
-or `--ext` to enable it.
-
-After assembling the core modules, choose optional module categories. Save management,
-file management, and cheats are selected by default. Only selected categories
-show their tool selection prompts; all categories can be deselected.
+Choose optional modules by category, or use `--no-ext` for a core-only pack.
 
 | Module | Source | Includes |
 | --- | --- | --- |
@@ -111,14 +104,12 @@ Selected optional modules are included in both directory and ZIP output.
 
 ### Firmware updates
 
-After installing the core modules and selected optional modules, the CLI offers to
-download firmware for the selected HOS version from
+Download firmware for the selected HOS version from
 [THZoria/NX_Firmware](https://github.com/THZoria/NX_Firmware).
 
 Firmware is extracted to `firmware/<HOS version>/` in the generated pack for
 installation with Daybreak. It is included in both directory and ZIP output.
-Use `--no-firmware` to skip the prompt and download, or `--firmware` to enable them.
-Firmware downloads remain available when optional modules are disabled with `--no-ext`.
+Use `--no-firmware` to skip firmware downloads.
 
 ### Pack defaults
 
