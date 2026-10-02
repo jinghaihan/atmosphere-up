@@ -1,7 +1,7 @@
 import type { EXTENSION_REPO_CONFIG } from '../constants'
-import type { ReleaseAsset, TaskOptions } from '../types'
+import type { Release, ReleaseAsset, TaskOptions } from '../types'
 import type { Bundle } from './catalog'
-import { CORE_REPO_CONFIG } from '../constants'
+import { CORE_REPO_CONFIG, DBI_TRANSLATION_REPO } from '../constants'
 import { getRelease } from '../download'
 import { selectAsset } from '../utils'
 
@@ -27,11 +27,11 @@ export async function resolveResources(bundle: Bundle, { signal, onProgress }: T
     onProgress?.(`[${index + 1}/${entries.length}] resolving ${module} (${tag || 'latest'})`)
     const release = await getRelease(repo, tag, signal)
 
-    const resource = (pattern: RegExp, target?: string): Resource => ({
+    const resource = (pattern: RegExp, target?: string, source: Release = release): Resource => ({
       module: module as Resource['module'],
-      release: release.tag_name,
-      page: release.html_url,
-      asset: selectAsset(release, pattern),
+      release: source.tag_name,
+      page: source.html_url,
+      asset: selectAsset(source, pattern),
       target,
     })
 
@@ -45,12 +45,16 @@ export async function resolveResources(bundle: Bundle, { signal, onProgress }: T
           resource(/^fusee\.bin$/, 'bootloader/payloads/fusee.bin'),
         )
         break
-      case 'dbi':
+      case 'dbi': {
+        const translation = await getRelease(DBI_TRANSLATION_REPO, undefined, signal)
+
         resources.push(
-          resource(/^DBI\.nro$/, 'switch/DBI/DBI.nro'),
+          resource(/^DBI\.nro$/, 'switch/DBI/DBI.nro', translation),
+          resource(/^translation_en\.bin$/, 'switch/DBI/translation.bin', translation),
           resource(/^dbi\.config$/, 'switch/DBI/dbi.config'),
         )
         break
+      }
       case 'hekate':
         resources.push(
           resource(/^hekate_ctcaer_[\d.]+_Nyx_[\d.]+\.zip$/),

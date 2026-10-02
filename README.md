@@ -24,7 +24,7 @@ RCM, 90DNS Tester, Ovl Sysmodules, sys-patch, and Ultrahand use their latest rel
 | --- | --- | --- |
 | Atmosphere | [Atmosphere-NX/Atmosphere](https://github.com/Atmosphere-NX/Atmosphere) | Atmosphere, fusee, Daybreak, hbmenu, hbloader, and other upstream tools |
 | Hekate | [CTCaer/hekate](https://github.com/CTCaer/hekate) | Bootloader with CFW emuMMC, CFW sysMMC, and stock sysMMC boot entries |
-| DBI | [rashevskyv/dbi](https://github.com/rashevskyv/dbi) | Installation, file transfer, save management, and firmware export |
+| DBI | [rashevskyv/dbi](https://github.com/rashevskyv/dbi), [DBIPatcher](https://github.com/rashevskyv/DBIPatcher) | English interface, installation, file transfer, save management, and firmware export |
 | 90DNS Tester | [meganukebmp/Switch_90DNS_tester](https://github.com/meganukebmp/Switch_90DNS_tester) | Check whether Nintendo domains are blocked by DNS MITM or 90DNS |
 | Lockpick RCM | [impeeza/Lockpick_RCMDecScots](https://github.com/impeeza/Lockpick_RCMDecScots) | Console key export from Hekate's Payloads menu |
 | Sys Patch | [impeeza/sys-patch](https://github.com/impeeza/sys-patch) | System patching service and overlay |

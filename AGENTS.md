@@ -38,6 +38,9 @@ version. Use pnpm and follow the installed dependencies and existing modules.
   releases. Mission Control uses its HOS mapping. Other optional modules,
   including Horizon OC, use latest releases. Assemble the selected resources
   without adding HOS or Atmosphere compatibility gates.
+- DBI uses the latest DBIPatcher release for both `DBI.nro` and
+  `translation_en.bin`, installed as `switch/DBI/translation.bin`. Keep the
+  program and translation from the same release; use upstream DBI for `dbi.config`.
 - Check the destination and confirm replacement before downloads. Assemble core,
   select and install optional modules, optionally download firmware, then write the
   manifest and finalize directory or ZIP output.

@@ -13,6 +13,8 @@ export const DEFAULT_OPTIONS: Partial<Options> = {
 
 export const FIRMWARE_REPO = 'THZoria/NX_Firmware'
 
+export const DBI_TRANSLATION_REPO = 'rashevskyv/DBIPatcher'
+
 /// keep-sorted
 export const CORE_REPO_CONFIG = {
   '90dns-tester': 'meganukebmp/Switch_90DNS_tester',
