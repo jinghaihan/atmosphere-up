@@ -10,19 +10,21 @@ import { resolveSaltyNx } from './dependencies'
 
 export type PerformanceTool = 'sys-clk' | 'sys-clk-overlay-ultrahand' | 'horizon-oc' | 'fps-locker' | 'reverse-nx-rt' | 'fizeau'
 
+export const PERFORMANCE_TUNING_OPTIONS = [
+  { value: 'sys-clk', label: 'Sys Clk', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-clk']) },
+  { value: 'sys-clk-overlay-ultrahand', label: 'Sys Clk Overlay Ultrahand', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-clk-overlay-ultrahand']) },
+  { value: 'horizon-oc', label: 'Horizon OC', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['horizon-oc']) },
+  { value: 'fps-locker', label: 'FPS Locker', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['fps-locker']) },
+  { value: 'reverse-nx-rt', label: 'ReverseNx RT', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['reverse-nx-rt']) },
+  { value: 'fizeau', label: 'Fizeau', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.fizeau) },
+] satisfies { value: PerformanceTool, label: string, hint: string }[]
+
 export async function promptPerformanceTuning(controller: AbortController): Promise<PerformanceTool[]> {
   const modules = await p.multiselect<PerformanceTool>({
     message: 'select performance tools',
     initialValues: ['sys-clk', 'sys-clk-overlay-ultrahand', 'fps-locker', 'reverse-nx-rt'],
     signal: controller.signal,
-    options: [
-      { value: 'sys-clk', label: 'Sys Clk', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-clk']) },
-      { value: 'sys-clk-overlay-ultrahand', label: 'Sys Clk Overlay Ultrahand', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-clk-overlay-ultrahand']) },
-      { value: 'horizon-oc', label: 'Horizon OC', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['horizon-oc']) },
-      { value: 'fps-locker', label: 'FPS Locker', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['fps-locker']) },
-      { value: 'reverse-nx-rt', label: 'ReverseNx RT', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['reverse-nx-rt']) },
-      { value: 'fizeau', label: 'Fizeau', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.fizeau) },
-    ],
+    options: PERFORMANCE_TUNING_OPTIONS,
   })
 
   if (p.isCancel(modules)) {

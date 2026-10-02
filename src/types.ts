@@ -1,6 +1,13 @@
 import type { RestEndpointMethodTypes } from '@octokit/rest'
+import type { CORE_REPO_CONFIG, EXTENSION_REPO_CONFIG, MODE_CHOICES } from './constants'
+
+export type Mode = typeof MODE_CHOICES[number]
+
+export type Module = keyof typeof CORE_REPO_CONFIG | keyof typeof EXTENSION_REPO_CONFIG | 'sigpatches'
 
 export interface CommandOptions {
+  mode?: Mode
+  modules?: string[]
   cwd?: string
   version?: string
   output?: string

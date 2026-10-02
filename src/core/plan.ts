@@ -16,14 +16,21 @@ export interface Resource {
   configure?: (directory: string) => Promise<void>
 }
 
-export async function resolveResources(bundle: Bundle, { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
+export interface CoreResourceOptions extends TaskOptions {
+  modules?: (keyof typeof CORE_REPO_CONFIG)[]
+}
+
+export async function resolveResources(bundle: Bundle | undefined, { signal, onProgress, modules }: CoreResourceOptions = {}): Promise<Resource[]> {
   const resources: Resource[] = []
-  const entries = Object.entries(CORE_REPO_CONFIG)
+  const entries = Object.entries(CORE_REPO_CONFIG).filter(([module]) => !modules || modules.includes(module as keyof typeof CORE_REPO_CONFIG))
 
   for (const [index, [module, repo]] of entries.entries()) {
     signal?.throwIfAborted()
 
-    const tag = module === 'atmosphere' ? bundle.atmosphereTag : undefined
+    if (module === 'atmosphere' && !bundle)
+      throw new Error('HOS version is required for Atmosphere')
+
+    const tag = module === 'atmosphere' ? bundle!.atmosphereTag : undefined
     onProgress?.(`[${index + 1}/${entries.length}] resolving ${module} (${tag || 'latest'})`)
     const release = await getRelease(repo, tag, signal)
 

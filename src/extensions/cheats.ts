@@ -7,6 +7,13 @@ import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type CheatTool = 'edizon-overlay' | 'edizon-se' | 'breeze' | 'breezehand'
 
+export const CHEAT_OPTIONS = [
+  { value: 'edizon-overlay', label: 'EdiZon Overlay', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['edizon-overlay']) },
+  { value: 'edizon-se', label: 'EdiZon SE', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['edizon-se']) },
+  { value: 'breeze', label: 'Breeze', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.breeze) },
+  { value: 'breezehand', label: 'Breezehand Overlay', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.breezehand) },
+] satisfies { value: CheatTool, label: string, hint: string }[]
+
 export async function resolveCheats(modules: CheatTool[], { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
   const resources: Resource[] = []
 
@@ -47,12 +54,7 @@ export async function promptCheats(controller: AbortController): Promise<CheatTo
     message: 'select cheat tools',
     initialValues: ['edizon-overlay'],
     signal: controller.signal,
-    options: [
-      { value: 'edizon-overlay', label: 'EdiZon Overlay', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['edizon-overlay']) },
-      { value: 'edizon-se', label: 'EdiZon SE', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['edizon-se']) },
-      { value: 'breeze', label: 'Breeze', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.breeze) },
-      { value: 'breezehand', label: 'Breezehand Overlay', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.breezehand) },
-    ],
+    options: CHEAT_OPTIONS,
   })
 
   if (p.isCancel(modules)) {

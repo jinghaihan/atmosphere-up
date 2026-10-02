@@ -5,7 +5,7 @@ import { stripVTControlCharacters } from 'node:util'
 import * as p from '@clack/prompts'
 import { join } from 'pathe'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { runBuildCommand } from '../../src/commands'
+import { runCommand } from '../../src/commands'
 import { resolveConfig } from '../../src/config'
 import { buildPack, getBundles, inspectOutput, resolveResources } from '../../src/core'
 import { resolveAmiibo, resolveCheats, resolveControllerSupport, resolveFileManagement, resolvePerformanceMonitoring, resolvePerformanceTuning, resolveSaveManagement, resolveStreaming } from '../../src/extensions'
@@ -96,7 +96,7 @@ beforeEach(() => {
   vi.mocked(resolveFirmware).mockResolvedValue({ module: 'firmware' } as Awaited<ReturnType<typeof resolveFirmware>>)
 })
 
-describe('runBuildCommand', () => {
+describe('runCommand', () => {
   it.each([false, true])('offers the selected firmware after components are installed with ext=%s', async (ext) => {
     const selected = ext ? bundle : getBundles().find(bundle => bundle.labels.hos === '22.0.0')!
     let componentsInstalled = false
@@ -115,7 +115,7 @@ describe('runBuildCommand', () => {
       expect(await options.onExtensionsReady!()).toEqual([{ module: 'firmware' }])
     })
 
-    await runBuildCommand({})
+    await runCommand({})
 
     expect(resolveFirmware).toHaveBeenCalledWith(selected.labels.hos, expect.any(Object))
     expect(p.confirm).toHaveBeenLastCalledWith(expect.objectContaining({ message: `download firmware for HOS ${selected.labels.hos}?` }))
@@ -128,7 +128,7 @@ describe('runBuildCommand', () => {
       expect(options.onExtensionsReady).toBeUndefined()
     })
 
-    await runBuildCommand({ firmware: false })
+    await runCommand({ firmware: false })
 
     expect(p.confirm).not.toHaveBeenCalled()
     expect(resolveFirmware).not.toHaveBeenCalled()
@@ -140,7 +140,7 @@ describe('runBuildCommand', () => {
       expect(await options.onExtensionsReady!()).toEqual([])
     })
 
-    await runBuildCommand({})
+    await runCommand({})
 
     expect(resolveFirmware).not.toHaveBeenCalled()
     expect(p.outro).toHaveBeenCalled()
@@ -153,7 +153,7 @@ describe('runBuildCommand', () => {
       await options.onExtensionsReady!()
     })
 
-    await runBuildCommand({})
+    await runCommand({})
 
     expect(resolveFirmware).not.toHaveBeenCalled()
     expect(p.outro).not.toHaveBeenCalled()
@@ -167,7 +167,7 @@ describe('runBuildCommand', () => {
       expect(task!.onCoreReady).toBeUndefined()
     })
 
-    await runBuildCommand({ ext: false, pack })
+    await runCommand({ ext: false, pack })
 
     expect(resolveResources).toHaveBeenCalledWith(bundle, expect.any(Object))
     expect(buildPack).toHaveBeenCalledWith(expect.objectContaining({ bundle, resources: [], directory: `/workspace/output/atmosphere-1.10.2-hos-21.2.0${pack ? '.zip' : ''}`, replace: false, pack }))
@@ -222,7 +222,7 @@ describe('runBuildCommand', () => {
       await task!.onCoreReady!()
     })
 
-    await runBuildCommand({})
+    await runCommand({})
 
     expect(p.confirm).not.toHaveBeenCalled()
     expect(vi.mocked(p.multiselect).mock.calls[0][0]).toMatchObject({
@@ -329,7 +329,7 @@ describe('runBuildCommand', () => {
       await task.onCoreReady!()
     })
 
-    await runBuildCommand({})
+    await runCommand({})
 
     expect(resolveSaveManagement).not.toHaveBeenCalled()
     expect(resolveFileManagement).not.toHaveBeenCalled()
@@ -351,7 +351,7 @@ describe('runBuildCommand', () => {
       await task.onCoreReady!()
     })
 
-    await runBuildCommand({})
+    await runCommand({})
 
     expect(resolveSaveManagement).not.toHaveBeenCalled()
     expect(resolveFileManagement).not.toHaveBeenCalled()
@@ -367,7 +367,7 @@ describe('runBuildCommand', () => {
       expect(await task!.onCoreReady!()).toEqual([])
     })
 
-    await runBuildCommand({})
+    await runCommand({})
 
     expect(resolveSaveManagement).not.toHaveBeenCalled()
     expect(p.select).toHaveBeenCalledTimes(1)
@@ -391,7 +391,7 @@ describe('runBuildCommand', () => {
       await task!.onCoreReady!()
     })
 
-    await runBuildCommand({})
+    await runCommand({})
 
     expect(resolveSaveManagement).toHaveBeenCalledWith([module], expect.any(Object))
     expect(vi.mocked(p.select).mock.calls[1][0]).toMatchObject({
@@ -410,7 +410,7 @@ describe('runBuildCommand', () => {
       await task!.onCoreReady!()
     })
 
-    await runBuildCommand({})
+    await runCommand({})
 
     expect(resolvePerformanceTuning).not.toHaveBeenCalled()
     expect(resolvePerformanceMonitoring).toHaveBeenCalledWith([module], expect.any(Object))
@@ -427,7 +427,7 @@ describe('runBuildCommand', () => {
       expect(resources.filter(resource => resource.module === 'salty-nx')).toHaveLength(1)
     })
 
-    await runBuildCommand({})
+    await runCommand({})
 
     expect(resolveSaltyNx).not.toHaveBeenCalled()
     expect(resolvePerformanceMonitoring).toHaveBeenCalledWith(['status-monitor'], expect.objectContaining({ resources: [{ module: 'salty-nx' }] }))
@@ -436,7 +436,7 @@ describe('runBuildCommand', () => {
   it.each(['21.2.0', '23.0.0'])('uses the requested HOS %s without prompting', async (version) => {
     const selected = getBundles().find(bundle => bundle.labels.hos === version)!
     vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', pack: false, version })
-    await runBuildCommand({ version })
+    await runCommand({ version })
     expect(p.select).not.toHaveBeenCalled()
     expect(resolveResources).toHaveBeenCalledWith(selected, expect.any(Object))
     expect(vi.mocked(buildPack).mock.calls[0][0].bundle).toBe(selected)
@@ -444,7 +444,7 @@ describe('runBuildCommand', () => {
 
   it('rejects an unsupported HOS version before checking output or querying GitHub', async () => {
     vi.mocked(resolveConfig).mockResolvedValue({ version: '99.0.0' })
-    await expect(runBuildCommand({ version: '99.0.0' })).rejects.toThrow('unsupported HOS version: 99.0.0')
+    await expect(runCommand({ version: '99.0.0' })).rejects.toThrow('unsupported HOS version: 99.0.0')
     expect(p.select).not.toHaveBeenCalled()
     expect(inspectOutput).not.toHaveBeenCalled()
     expect(resolveResources).not.toHaveBeenCalled()
@@ -454,7 +454,7 @@ describe('runBuildCommand', () => {
   it('stops before querying GitHub when replacing the output is declined', async () => {
     vi.mocked(inspectOutput).mockReturnValue(true)
     vi.mocked(p.confirm).mockResolvedValue(false)
-    await runBuildCommand({})
+    await runCommand({})
     expect(resolveResources).not.toHaveBeenCalled()
     expect(buildPack).not.toHaveBeenCalled()
     const options = vi.mocked(p.confirm).mock.calls[0][0]
@@ -466,7 +466,7 @@ describe('runBuildCommand', () => {
 
   it('builds a named ZIP inside the configured parent and forwards progress', async () => {
     vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output: '/workspace/output', pack: true })
-    await runBuildCommand({})
+    await runCommand({})
     expect(buildPack).toHaveBeenCalledWith(expect.objectContaining({ bundle, resources: [], directory: '/workspace/output/atmosphere-1.10.2-hos-21.2.0.zip', replace: false, pack: true, signal: expect.any(AbortSignal) }))
     const task = vi.mocked(resolveResources).mock.calls[0][1]!
     task.onProgress!('extracting atmosphere')
@@ -479,7 +479,7 @@ describe('runBuildCommand', () => {
     vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', output, pack: false })
     vi.mocked(inspectOutput).mockReturnValue(true)
     vi.mocked(p.confirm).mockResolvedValueOnce(true).mockResolvedValueOnce(true).mockResolvedValue(false)
-    await runBuildCommand({})
+    await runCommand({})
     expect(vi.mocked(buildPack).mock.calls[0][0].directory).toBe(join(output, 'atmosphere-1.10.2-hos-21.2.0'))
     expect(stripVTControlCharacters(vi.mocked(p.confirm).mock.calls[0][0].message)).toBe(`output already exists: ${displayPath}. replace it?`)
     expect(stripVTControlCharacters(vi.mocked(p.outro).mock.calls[0][0]!)).toBe(`pack ready: ${displayPath}`)
@@ -493,7 +493,7 @@ describe('runBuildCommand', () => {
       cleaned = true
       task!.signal!.throwIfAborted()
     })
-    await runBuildCommand({})
+    await runCommand({})
     expect(cleaned).toBe(true)
     expect(p.cancel).toHaveBeenCalledWith('build cancelled; temporary files removed')
     expect(p.outro).not.toHaveBeenCalled()

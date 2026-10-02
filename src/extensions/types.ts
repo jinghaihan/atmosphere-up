@@ -10,6 +10,7 @@ export interface Extension<T extends string> {
   value: string
   label: string
   initialSelected?: boolean
+  options: { value: T, label: string, hint: string }[]
   prompt: (controller: AbortController) => Promise<T[]>
   resolve: (modules: T[], context?: ExtensionContext) => Promise<Resource[]>
 }

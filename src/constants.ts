@@ -5,7 +5,10 @@ export const NAME = pkg.name
 
 export const VERSION = pkg.version
 
+export const MODE_CHOICES = ['build', 'upgrade'] as const
+
 export const DEFAULT_OPTIONS: Partial<Options> = {
+  mode: 'build',
   ext: true,
   pack: false,
   firmware: true,
@@ -26,6 +29,17 @@ export const CORE_REPO_CONFIG = {
   'sys-patch': 'impeeza/sys-patch',
   'ultrahand': 'ppkantorski/Ultrahand-Overlay',
 } as const
+
+export const CORE_MODULE_LABELS = {
+  '90dns-tester': '90DNS Tester',
+  'atmosphere': 'Atmosphere',
+  'dbi': 'DBI',
+  'hekate': 'Hekate',
+  'lockpick-rcm': 'Lockpick RCM',
+  'ovl-sysmodules': 'Ovl Sysmodules',
+  'sys-patch': 'Sys Patch',
+  'ultrahand': 'Ultrahand',
+} satisfies Record<keyof typeof CORE_REPO_CONFIG, string>
 
 /// keep-sorted
 export const EXTENSION_REPO_CONFIG = {

@@ -19,10 +19,11 @@ version. Use pnpm and follow the installed dependencies and existing modules.
 | Location | Responsibility |
 | --- | --- |
 | `src/cli.ts`, `src/config.ts`, `src/types.ts` | CAC options and unconfig configuration |
-| `src/commands/build.ts` | User interaction and build lifecycle |
+| `src/commands/` | Mode dispatch, shared prompts, full builds, and module upgrades |
 | `src/core/` | Bundle catalog, release resolution, installation, and output |
 | `src/extensions/index.ts` | Ordered optional module categories, prompts, and resolvers |
 | `src/extensions/*.ts` | One feature category per module; prompts and resolvers return arrays |
+| `src/upgrade/` | Module catalog, selected resource resolution, and SD card update packs |
 | `src/firmware.ts` | Optional firmware for the exact selected HOS version |
 | `src/download/` | GitHub authentication, releases, and downloads |
 | `src/constants.ts` | Repository names and CLI defaults |
@@ -33,6 +34,18 @@ version. Use pnpm and follow the installed dependencies and existing modules.
 
 ## Build behavior to preserve
 
+- Follow pncat's mode dispatch style: CAC receives `[mode] [...modules]`, the
+  first argument selects `build` or `upgrade`, and configuration is resolved
+  before dispatch. Default to `build`; let CAC parse the variadic module array.
+- `upgrade` always shows a grouped multi-select containing all core and optional
+  modules. Default to no selection; module arguments only preselect items.
+  Resolve and install the final selection with required dependencies. Ask for
+  HOS only when needed for Atmosphere, sigpatches, or Mission Control, or when
+  `--version` is supplied. Output a single module under its name, or a combined
+  `upgrade` directory/ZIP, with files starting at the SD card root.
+- Share optional module options and resolvers with full builds. Apply only the
+  selected core module defaults in upgrade packs. Horizon OC also needs its
+  Hekate boot configuration; Hekate upgrades refresh both payload locations.
 - Supported HOS versions come from the sigpatches manifest. Atmosphere uses the
   bundle's exact `atmosphereTag`; other core repositories currently use latest
   releases. Mission Control uses its HOS mapping. Other optional modules,

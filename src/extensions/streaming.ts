@@ -7,6 +7,11 @@ import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type StreamingTool = 'moonlight-switch' | 'sys-dvr'
 
+export const STREAMING_OPTIONS = [
+  { value: 'moonlight-switch', label: 'Moonlight Switch', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['moonlight-switch']) },
+  { value: 'sys-dvr', label: 'SysDVR', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-dvr']) },
+] satisfies { value: StreamingTool, label: string, hint: string }[]
+
 export async function resolveStreaming(modules: StreamingTool[], { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
   const resources: Resource[] = []
 
@@ -33,10 +38,7 @@ export async function promptStreaming(controller: AbortController): Promise<Stre
     message: 'select streaming tools',
     initialValues: ['moonlight-switch', 'sys-dvr'],
     signal: controller.signal,
-    options: [
-      { value: 'moonlight-switch', label: 'Moonlight Switch', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['moonlight-switch']) },
-      { value: 'sys-dvr', label: 'SysDVR', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-dvr']) },
-    ],
+    options: STREAMING_OPTIONS,
   })
 
   if (p.isCancel(modules)) {

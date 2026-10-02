@@ -37,6 +37,17 @@ module versions.
 
 Ultrahand opens with **L + D-pad Down**.
 
+### Module upgrades
+
+Use `upgrade` to choose core or optional modules to update. Module names passed
+on the command line are preselected, and the selection can still be changed.
+No modules are selected by default.
+
+Upgrade packs include the selected modules and their required dependencies in
+SD card layout. Copy the contents to the SD card root and merge them to update.
+A single module uses its name for the output; multiple modules use `upgrade`.
+Use `--pack` for ZIP output.
+
 ### Optional modules
 
 Optional module selection is enabled by default. Use `--no-ext` to skip it,

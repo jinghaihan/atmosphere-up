@@ -7,6 +7,11 @@ import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type SaveManager = 'jksv' | 'checkpoint'
 
+export const SAVE_MANAGEMENT_OPTIONS = [
+  { value: 'jksv', label: 'JKSV', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.jksv) },
+  { value: 'checkpoint', label: 'Checkpoint', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.checkpoint) },
+] satisfies { value: SaveManager, label: string, hint: string }[]
+
 export async function resolveSaveManagement(modules: SaveManager[], { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
   const resources: Resource[] = []
 
@@ -34,10 +39,7 @@ export async function promptSaveManagement(controller: AbortController): Promise
     message: 'select save manager',
     initialValue: 'jksv',
     signal: controller.signal,
-    options: [
-      { value: 'jksv', label: 'JKSV', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.jksv) },
-      { value: 'checkpoint', label: 'Checkpoint', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.checkpoint) },
-    ],
+    options: SAVE_MANAGEMENT_OPTIONS,
   })
 
   if (p.isCancel(module)) {

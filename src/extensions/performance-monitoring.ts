@@ -8,15 +8,17 @@ import { resolveSaltyNx } from './dependencies'
 
 export type PerformanceMonitor = 'status-monitor' | 'status-monitor-deux'
 
+export const PERFORMANCE_MONITORING_OPTIONS = [
+  { value: 'status-monitor', label: 'Status Monitor', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['status-monitor']) },
+  { value: 'status-monitor-deux', label: 'Status Monitor Deux', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['status-monitor-deux']) },
+] satisfies { value: PerformanceMonitor, label: string, hint: string }[]
+
 export async function promptPerformanceMonitoring(controller: AbortController): Promise<PerformanceMonitor[]> {
   const module = await p.select<PerformanceMonitor>({
     message: 'select performance monitor',
     initialValue: 'status-monitor',
     signal: controller.signal,
-    options: [
-      { value: 'status-monitor', label: 'Status Monitor', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['status-monitor']) },
-      { value: 'status-monitor-deux', label: 'Status Monitor Deux', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['status-monitor-deux']) },
-    ],
+    options: PERFORMANCE_MONITORING_OPTIONS,
   })
 
   if (p.isCancel(module)) {

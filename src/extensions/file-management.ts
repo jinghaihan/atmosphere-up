@@ -7,6 +7,10 @@ import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type FileManager = 'nx-shell'
 
+export const FILE_MANAGEMENT_OPTIONS = [
+  { value: 'nx-shell', label: 'NX Shell', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['nx-shell']) },
+] satisfies { value: FileManager, label: string, hint: string }[]
+
 export async function resolveFileManagement(modules: FileManager[], { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
   const resources: Resource[] = []
 
@@ -34,9 +38,7 @@ export async function promptFileManagement(controller: AbortController): Promise
     message: 'select file manager',
     initialValue: 'nx-shell',
     signal: controller.signal,
-    options: [
-      { value: 'nx-shell', label: 'NX Shell', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['nx-shell']) },
-    ],
+    options: FILE_MANAGEMENT_OPTIONS,
   })
 
   if (p.isCancel(module)) {

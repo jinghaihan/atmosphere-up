@@ -9,6 +9,10 @@ import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type AmiiboTool = 'emuiibo'
 
+export const AMIIBO_OPTIONS = [
+  { value: 'emuiibo', label: 'Emuiibo', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.emuiibo) },
+] satisfies { value: AmiiboTool, label: string, hint: string }[]
+
 export async function resolveAmiibo(modules: AmiiboTool[], { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
   const resources: Resource[] = []
 
@@ -39,9 +43,7 @@ export async function promptAmiibo(controller: AbortController): Promise<AmiiboT
     message: 'select amiibo tool',
     initialValue: 'emuiibo',
     signal: controller.signal,
-    options: [
-      { value: 'emuiibo', label: 'Emuiibo', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.emuiibo) },
-    ],
+    options: AMIIBO_OPTIONS,
   })
 
   if (p.isCancel(module)) {

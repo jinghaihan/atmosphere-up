@@ -8,15 +8,17 @@ import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type ControllerTool = 'mission-control' | 'sys-con'
 
+export const CONTROLLER_SUPPORT_OPTIONS = [
+  { value: 'mission-control', label: 'Mission Control', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['mission-control']) },
+  { value: 'sys-con', label: 'Sys Con', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-con']) },
+] satisfies { value: ControllerTool, label: string, hint: string }[]
+
 export async function promptControllerSupport(controller: AbortController): Promise<ControllerTool[]> {
   const modules = await p.multiselect<ControllerTool>({
     message: 'select controller tools',
     initialValues: ['mission-control', 'sys-con'],
     signal: controller.signal,
-    options: [
-      { value: 'mission-control', label: 'Mission Control', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['mission-control']) },
-      { value: 'sys-con', label: 'Sys Con', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['sys-con']) },
-    ],
+    options: CONTROLLER_SUPPORT_OPTIONS,
   })
 
   if (p.isCancel(modules)) {

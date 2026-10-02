@@ -1,37 +1,16 @@
-import type { CommandOptions } from '../types'
+import type { Options } from '../types'
 import process from 'node:process'
 import * as p from '@clack/prompts'
 import c from 'ansis'
 import tildify from 'tildify'
-import { resolveConfig } from '../config'
-import { NAME, VERSION } from '../constants'
-import { buildPack, getBundles, inspectOutput, resolveResources } from '../core'
+import { buildPack, resolveResources } from '../core'
 import { promptExtensions, resolveExtensions } from '../extensions'
 import { promptFirmware, resolveFirmware } from '../firmware'
 import { getOutputPath } from '../utils'
+import { confirmOutput, promptBundle } from './shared'
 
-export async function runBuildCommand(options: CommandOptions): Promise<void> {
-  p.intro(`${c.yellow`${NAME} `}${c.dim`v${VERSION}`}`)
-
-  const config = await resolveConfig(options)
-
-  const bundles = getBundles()
-  const bundle = config.version === undefined
-    ? await p.select({
-        message: 'select HOS version',
-        options: bundles.map(bundle => ({
-          value: bundle,
-          label: bundle.labels.hos,
-          hint: bundle.labels.hos === '23.0.0'
-            ? `atmosphere ${bundle.labels.atmosphere} · ${c.red('high risk')}`
-            : `atmosphere ${bundle.labels.atmosphere}`,
-        })),
-        initialValue: bundles[0],
-      })
-    : bundles.find(bundle => bundle.labels.hos === config.version)
-
-  if (!bundle)
-    throw new Error(`unsupported HOS version: ${config.version}`)
+export async function runBuildCommand(config: Options): Promise<void> {
+  const bundle = await promptBundle(config.version)
 
   if (p.isCancel(bundle)) {
     p.cancel('aborting')
@@ -40,19 +19,10 @@ export async function runBuildCommand(options: CommandOptions): Promise<void> {
 
   const cwd = config.cwd || process.cwd()
   const destination = getOutputPath(bundle, config.output || cwd, config.pack)
-  const replace = inspectOutput(destination, cwd)
+  const replace = await confirmOutput(destination, cwd)
 
-  if (replace) {
-    const confirmed = await p.confirm({
-      message: `output already exists: ${c.cyan(tildify(destination))}. replace it?`,
-      initialValue: false,
-    })
-
-    if (p.isCancel(confirmed) || !confirmed) {
-      p.cancel('aborting')
-      return
-    }
-  }
+  if (replace === undefined)
+    return
 
   const controller = new AbortController()
   const spinner = p.spinner({

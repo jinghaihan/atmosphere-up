@@ -6,6 +6,16 @@ import { resolveConfig } from '../src/config'
 const cwd = resolve(fileURLToPath(new URL('..', import.meta.url)))
 
 describe('resolveConfig', () => {
+  it('defaults to build mode and accepts upgrade mode', async () => {
+    const directory = resolve(cwd, 'test/fixtures/empty')
+    expect((await resolveConfig({ cwd: directory })).mode).toBe('build')
+    expect((await resolveConfig({ cwd: directory, mode: 'upgrade' })).mode).toBe('upgrade')
+  })
+
+  it('rejects an unknown mode', async () => {
+    await expect(resolveConfig({ cwd, mode: 'unknown' as 'build' })).rejects.toThrow('invalid mode: unknown')
+  })
+
   it('enables firmware prompts by default and allows the CLI to disable them', async () => {
     const directory = resolve(cwd, 'test/fixtures/empty')
     expect((await resolveConfig({ cwd: directory, firmware: undefined })).firmware).toBe(true)
