@@ -37,6 +37,20 @@ module versions.
 
 Ultrahand opens with **L + D-pad Down**.
 
+### Console keys
+
+If DBI reports missing keys in `/switch/prod.keys`, export them on your Switch:
+
+1. Boot into Hekate and open **Payloads**.
+2. Launch **Lockpick_RCM.bin**.
+3. Choose **Dump from EmuNAND** for emuMMC, or **Dump from SysNAND** for sysMMC.
+   Use the system where you run DBI.
+4. Wait for the export to finish, return to Hekate, boot your CFW, and reopen DBI.
+
+Lockpick saves the exported keys to `/switch/prod.keys` on the SD card. Keep this
+file when replacing or updating the pack. If DBI reports missing keys after a
+firmware update, export them again from the updated system.
+
 ### Module upgrades
 
 Use `upgrade` to choose core or optional modules to update. Module names passed
