@@ -114,8 +114,8 @@ Use `--no-firmware` to skip firmware downloads.
 ### Pack defaults
 
 - Overlays use an 8 MiB memory allocation.
-- Cheats start disabled. Toggle state is saved only when a toggle file already
-  exists.
+- Cheats start disabled unless configured otherwise. Toggle state is saved only
+  when a toggle file already exists, or when remembering toggles is enabled.
 - USB 3.0 is enabled for homebrew.
 - Hekate's Nyx interface runs at 544 MHz.
 - CPU performance counters are accessible to userland tools in both CFW environments.

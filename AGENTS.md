@@ -72,7 +72,10 @@ version. Use pnpm and follow the installed dependencies and existing modules.
 - Keep shared optional module dependencies deduplicated. An enhanced Sys Clk overlay
   replaces the original overlay while preserving the required service/manager.
 - Keep overlay memory at 8 MiB and the hotkey at L + D-pad Down. Cheats default
-  off without remembered toggles. Other shipped configuration lives in
+  off without remembered toggles. When cheat tools are selected, offer two
+  independent confirmations for enabling cheats by default and remembering
+  toggles, both defaulting to false. Share these settings with upgrade mode.
+  Other shipped configuration lives in
   `assets/defaults`; change these defaults only when the task calls for it.
 - `assets` is included in the npm package and referenced by built modules. Do not
   move configuration into embedded strings or assume it lives under `dist`.

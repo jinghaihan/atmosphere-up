@@ -2,7 +2,7 @@ import type { Resource } from '../core/plan'
 import type { Extension, ExtensionContext } from './types'
 import * as p from '@clack/prompts'
 import { AMIIBO_OPTIONS, promptAmiibo, resolveAmiibo } from './amiibo'
-import { CHEAT_OPTIONS, promptCheats, resolveCheats } from './cheats'
+import { CHEAT_OPTIONS, promptCheats, promptCheatSettings, resolveCheats } from './cheats'
 import { CONTROLLER_SUPPORT_OPTIONS, promptControllerSupport, resolveControllerSupport } from './controller-support'
 import { FILE_MANAGEMENT_OPTIONS, promptFileManagement, resolveFileManagement } from './file-management'
 import { PERFORMANCE_MONITORING_OPTIONS, promptPerformanceMonitoring, resolvePerformanceMonitoring } from './performance-monitoring'
@@ -26,9 +26,10 @@ export interface SelectedExtension {
 
 export type ExtensionSelection = SelectedExtension[]
 
-function defineExtension<T extends string>({ prompt, resolve, ...option }: Extension<T>) {
+function defineExtension<T extends string>({ prompt, promptSettings, resolve, ...option }: Extension<T>) {
   return {
     ...option,
+    promptSettings,
     selectModules: (modules: string[]): SelectedExtension => {
       const selected = modules.filter((module): module is T => option.options.some(item => item.value === module))
 
@@ -36,8 +37,9 @@ function defineExtension<T extends string>({ prompt, resolve, ...option }: Exten
     },
     select: async (controller: AbortController): Promise<SelectedExtension> => {
       const modules = await prompt(controller)
+      const settings = modules.length ? await promptSettings?.(controller) : undefined
 
-      return { modules, resolve: context => resolve(modules, context) }
+      return { modules, resolve: context => resolve(modules, { ...context, ...settings }) }
     },
   }
 }
@@ -65,6 +67,7 @@ const extensions = [
     label: 'Cheats',
     initialSelected: true,
     prompt: promptCheats,
+    promptSettings: async controller => ({ cheats: await promptCheatSettings(controller) }),
     resolve: resolveCheats,
   }),
   defineExtension({
@@ -141,6 +144,17 @@ export async function resolveExtensions(selection: ExtensionSelection, context: 
 
 export function getExtensionGroups() {
   return Object.fromEntries(extensions.map(({ label, options }) => [label, options]))
+}
+
+export async function promptExtensionSettings(modules: string[], controller: AbortController): Promise<Partial<ExtensionContext>> {
+  const settings: Partial<ExtensionContext> = {}
+
+  for (const extension of extensions) {
+    if (extension.promptSettings && extension.options.some(option => modules.includes(option.value)))
+      Object.assign(settings, await extension.promptSettings(controller))
+  }
+
+  return settings
 }
 
 export async function resolveSelectedExtensions(modules: string[], context: ExtensionContext = {}): Promise<Resource[]> {

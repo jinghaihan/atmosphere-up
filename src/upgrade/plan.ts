@@ -1,11 +1,12 @@
 import type { Bundle } from '../core'
-import type { Module, TaskOptions } from '../types'
+import type { ExtensionContext } from '../extensions/types'
+import type { Module } from '../types'
 import { CORE_REPO_CONFIG } from '../constants'
 import { resolveResources } from '../core'
 import { resolveSelectedExtensions } from '../extensions'
 import { resolveSaltyNx } from '../extensions/dependencies'
 
-export interface UpgradeResourceOptions extends TaskOptions {
+export interface UpgradeResourceOptions extends ExtensionContext {
   bundle?: Bundle
 }
 

@@ -88,6 +88,39 @@ describe('runUpgradeCommand', () => {
     }))
   })
 
+  it('collects cheat settings once for multiple cheat tools before resolving releases', async () => {
+    vi.mocked(p.groupMultiselect).mockResolvedValue(['edizon-overlay', 'breeze'])
+    vi.mocked(p.confirm).mockImplementationOnce(async () => {
+      expect(resolveUpgradeResources).not.toHaveBeenCalled()
+      return false
+    }).mockImplementationOnce(async () => {
+      expect(resolveUpgradeResources).not.toHaveBeenCalled()
+      return true
+    })
+
+    await runUpgradeCommand(config)
+
+    expect(vi.mocked(p.confirm).mock.calls.map(([options]) => options.message)).toEqual([
+      'enable cheats by default?',
+      'remember cheat toggles?',
+    ])
+    expect(resolveUpgradeResources).toHaveBeenCalledWith(['edizon-overlay', 'breeze'], expect.objectContaining({
+      cheats: { enabledByDefault: false, rememberToggles: true },
+    }))
+  })
+
+  it('cancels a cheat settings prompt before resolving or downloading modules', async () => {
+    vi.mocked(p.groupMultiselect).mockResolvedValue(['edizon-overlay'])
+    vi.mocked(p.confirm).mockResolvedValueOnce(p.CANCEL_SYMBOL)
+
+    await runUpgradeCommand(config)
+
+    expect(resolveUpgradeResources).not.toHaveBeenCalled()
+    expect(buildUpgradePack).not.toHaveBeenCalled()
+    expect(p.outro).not.toHaveBeenCalled()
+    expect(process.exitCode).toBe(130)
+  })
+
   it.each(['atmosphere', 'sigpatches', 'mission-control'])('selects HOS for %s before resolving any releases', async (module) => {
     vi.mocked(p.groupMultiselect).mockResolvedValue([module])
     vi.mocked(p.select).mockImplementationOnce(async () => {

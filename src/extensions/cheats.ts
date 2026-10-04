@@ -1,11 +1,20 @@
 import type { Resource } from '../core/plan'
-import type { TaskOptions } from '../types'
+import type { ExtensionContext } from './types'
+import { existsSync } from 'node:fs'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import * as p from '@clack/prompts'
-import { EXTENSION_REPO_CONFIG } from '../constants'
+import { parse, stringify } from 'ini'
+import { dirname, join } from 'pathe'
+import { EXTENSION_REPO_CONFIG, PACK_DEFAULTS } from '../constants'
 import { getRelease } from '../download'
 import { getRepositoryUrl, selectAsset } from '../utils'
 
 export type CheatTool = 'edizon-overlay' | 'edizon-se' | 'breeze' | 'breezehand'
+
+export interface CheatSettings {
+  enabledByDefault: boolean
+  rememberToggles: boolean
+}
 
 export const CHEAT_OPTIONS = [
   { value: 'edizon-overlay', label: 'EdiZon Overlay', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG['edizon-overlay']) },
@@ -14,7 +23,7 @@ export const CHEAT_OPTIONS = [
   { value: 'breezehand', label: 'Breezehand Overlay', hint: getRepositoryUrl(EXTENSION_REPO_CONFIG.breezehand) },
 ] satisfies { value: CheatTool, label: string, hint: string }[]
 
-export async function resolveCheats(modules: CheatTool[], { signal, onProgress }: TaskOptions = {}): Promise<Resource[]> {
+export async function resolveCheats(modules: CheatTool[], { signal, onProgress, cheats }: ExtensionContext = {}): Promise<Resource[]> {
   const resources: Resource[] = []
 
   for (const module of modules) {
@@ -46,7 +55,49 @@ export async function resolveCheats(modules: CheatTool[], { signal, onProgress }
     }
   }
 
+  if (cheats && resources.length)
+    resources[resources.length - 1].configure = directory => applyCheatSettings(directory, cheats)
+
   return resources
+}
+
+export async function promptCheatSettings(controller: AbortController): Promise<CheatSettings> {
+  const enabledByDefault = await p.confirm({
+    message: 'enable cheats by default?',
+    initialValue: false,
+    signal: controller.signal,
+  })
+
+  if (p.isCancel(enabledByDefault)) {
+    controller.abort()
+    throw controller.signal.reason
+  }
+
+  const rememberToggles = await p.confirm({
+    message: 'remember cheat toggles?',
+    initialValue: false,
+    signal: controller.signal,
+  })
+
+  if (p.isCancel(rememberToggles)) {
+    controller.abort()
+    throw controller.signal.reason
+  }
+
+  return { enabledByDefault, rememberToggles }
+}
+
+async function applyCheatSettings(directory: string, { enabledByDefault, rememberToggles }: CheatSettings): Promise<void> {
+  const path = join(directory, 'atmosphere/config/system_settings.ini')
+  const source = existsSync(path) ? path : new URL('atmosphere/config/system_settings.ini', PACK_DEFAULTS)
+  const settings = parse(await readFile(source, 'utf8'))
+
+  settings.atmosphere ??= {}
+  settings.atmosphere.dmnt_cheats_enabled_by_default = enabledByDefault ? 'u8!0x1' : 'u8!0x0'
+  settings.atmosphere.dmnt_always_save_cheat_toggles = rememberToggles ? 'u8!0x1' : 'u8!0x0'
+
+  await mkdir(dirname(path), { recursive: true })
+  await writeFile(path, stringify(settings, { whitespace: true }))
 }
 
 export async function promptCheats(controller: AbortController): Promise<CheatTool[]> {

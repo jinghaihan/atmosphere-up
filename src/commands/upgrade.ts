@@ -5,6 +5,7 @@ import * as p from '@clack/prompts'
 import c from 'ansis'
 import { resolve } from 'pathe'
 import tildify from 'tildify'
+import { promptExtensionSettings } from '../extensions'
 import { buildUpgradePack, MODULE_GROUPS, MODULE_OPTIONS, resolveUpgradeResources } from '../upgrade'
 import { confirmOutput, promptBundle } from './shared'
 
@@ -68,12 +69,14 @@ export async function runUpgradeCommand(config: Options): Promise<void> {
     onProgress: (message: string) => spinner.message(c.cyan(message)),
   }
 
-  spinner.start(c.cyan('resolving selected modules'))
-  if (process.stdin.isTTY)
-    process.stdin.setRawMode(false)
-
   try {
-    const resources = await resolveUpgradeResources(modules, { ...task, bundle })
+    const settings = await promptExtensionSettings(modules, controller)
+
+    spinner.start(c.cyan('resolving selected modules'))
+    if (process.stdin.isTTY)
+      process.stdin.setRawMode(false)
+
+    const resources = await resolveUpgradeResources(modules, { ...task, ...settings, bundle })
 
     await buildUpgradePack({ ...task, modules, resources, bundle, directory: destination, replace, pack: config.pack })
 

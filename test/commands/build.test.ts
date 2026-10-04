@@ -224,7 +224,7 @@ describe('runCommand', () => {
 
     await runCommand({})
 
-    expect(p.confirm).not.toHaveBeenCalled()
+    expect(p.confirm).toHaveBeenCalledTimes(2)
     expect(vi.mocked(p.multiselect).mock.calls[0][0]).toMatchObject({
       message: 'select optional module categories',
       required: false,
@@ -240,7 +240,7 @@ describe('runCommand', () => {
         { value: 'amiibo', label: 'Amiibo' },
       ],
     })
-    const messages = [p.select, p.multiselect].flatMap(prompt => vi.mocked(prompt).mock.calls.map(([options], index) => ({
+    const messages = [p.select, p.multiselect, p.confirm].flatMap(prompt => vi.mocked(prompt).mock.calls.map(([options], index) => ({
       message: options.message,
       order: vi.mocked(prompt).mock.invocationCallOrder[index],
     }))).sort((a, b) => a.order - b.order).map(call => call.message)
@@ -250,6 +250,8 @@ describe('runCommand', () => {
       'select save manager',
       'select file manager',
       'select cheat tools',
+      'enable cheats by default?',
+      'remember cheat toggles?',
       'select performance tools',
       'select performance monitor',
       'select controller tools',
@@ -295,7 +297,9 @@ describe('runCommand', () => {
     expect(resolveFileManagement).toHaveBeenCalledWith(['nx-shell'], expect.any(Object))
     expect(vi.mocked(resolveFileManagement).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(resolveCheats).mock.invocationCallOrder[0])
     expect(resolveSaveManagement).toHaveBeenCalledWith(['jksv'], expect.any(Object))
-    expect(resolveCheats).toHaveBeenCalledWith(['edizon-overlay', 'breezehand'], expect.any(Object))
+    expect(resolveCheats).toHaveBeenCalledWith(['edizon-overlay', 'breezehand'], expect.objectContaining({
+      cheats: { enabledByDefault: false, rememberToggles: false },
+    }))
     expect(p.multiselect).toHaveBeenCalledWith(expect.objectContaining({
       message: 'select streaming tools',
       initialValues: ['moonlight-switch', 'sys-dvr'],
