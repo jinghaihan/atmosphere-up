@@ -73,6 +73,7 @@ describe('buildPack', () => {
 
     const archive = new AdmZip(`${directory}.zip`)
     expect(archive.readFile(extension.target!)).toEqual(Buffer.from(data))
+    expect(JSON.parse(archive.readAsText('config/JKSV/JKSV.json'))).toEqual({ ExportToZip: 0 })
     expect(archive.readFile(fileManager.target!)).toEqual(Buffer.from(fileManagerData))
     expect(archive.readAsText(`firmware/${bundle.labels.hos}/system.cnmt.nca`)).toBe('firmware')
     expect(archive.getEntry('system.cnmt.nca')).toBeNull()

@@ -56,6 +56,9 @@ export async function buildUpgradePack({ modules, resources, bundle, directory, 
         defaults.add('config/nx-ovlloader')
       }
 
+      if (modules.includes('jksv'))
+        defaults.add('config/JKSV')
+
       for (const path of defaults) {
         task.signal?.throwIfAborted()
         task.onProgress?.(`applying defaults for ${path}`)
