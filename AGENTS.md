@@ -75,9 +75,10 @@ version. Use pnpm and follow the installed dependencies and existing modules.
   off without remembered toggles. When cheat tools are selected, offer two
   independent confirmations for enabling cheats by default and remembering
   toggles, both defaulting to false. Share these settings with upgrade mode.
-  JKSV defaults to unpacked backups with `ExportToZip: 0`; include its settings
-  in JKSV upgrade packs. Other shipped configuration lives in
-  `assets/defaults`; change these defaults only when the task calls for it.
+  JKSV defaults to unpacked backups with `ExportToZip: 0` and disables hold
+  requirements with `HoldForDeletion`, `HoldForRestoration`, and `HoldForOverWrite`
+  set to 0. Include its settings in JKSV upgrade packs. Other shipped configuration
+  lives in `assets/defaults`; change these defaults only when the task calls for it.
 - `assets` is included in the npm package and referenced by built modules. Do not
   move configuration into embedded strings or assume it lives under `dist`.
 

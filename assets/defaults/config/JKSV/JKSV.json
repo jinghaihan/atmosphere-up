@@ -1,3 +1,6 @@
 {
-  "ExportToZip": 0
+  "ExportToZip": 0,
+  "HoldForDeletion": 0,
+  "HoldForRestoration": 0,
+  "HoldForOverWrite": 0
 }

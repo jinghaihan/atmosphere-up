@@ -78,7 +78,7 @@ describe('buildUpgradePack', () => {
     expect(await readFile(join(directory, 'bootloader/hekate_ipl.ini'))).toEqual(await readFile(join(cwd, 'assets/defaults/bootloader/hekate_ipl.ini')))
   })
 
-  it.each([false, true])('includes unpacked backup defaults with a JKSV-only upgrade and pack=%s', async (pack) => {
+  it.each([false, true])('includes JKSV backup and confirmation defaults with a JKSV-only upgrade and pack=%s', async (pack) => {
     await buildUpgradePack({
       modules: ['jksv'],
       resources: [resource('jksv', 'JKSV.nro', 'switch/JKSV/JKSV.nro')],
@@ -88,12 +88,22 @@ describe('buildUpgradePack', () => {
 
     if (pack) {
       const archive = new AdmZip(`${directory}.zip`)
-      expect(JSON.parse(archive.readAsText('config/JKSV/JKSV.json'))).toEqual({ ExportToZip: 0 })
+      expect(JSON.parse(archive.readAsText('config/JKSV/JKSV.json'))).toEqual({
+        ExportToZip: 0,
+        HoldForDeletion: 0,
+        HoldForRestoration: 0,
+        HoldForOverWrite: 0,
+      })
       expect(archive.readAsText('switch/JKSV/JKSV.nro')).toBe('JKSV.nro')
       expect(archive.getEntries().some(entry => entry.entryName.startsWith('atmosphere/'))).toBe(false)
     }
     else {
-      expect(JSON.parse(await readFile(join(directory, 'config/JKSV/JKSV.json'), 'utf8'))).toEqual({ ExportToZip: 0 })
+      expect(JSON.parse(await readFile(join(directory, 'config/JKSV/JKSV.json'), 'utf8'))).toEqual({
+        ExportToZip: 0,
+        HoldForDeletion: 0,
+        HoldForRestoration: 0,
+        HoldForOverWrite: 0,
+      })
       expect(await readFile(join(directory, 'switch/JKSV/JKSV.nro'), 'utf8')).toBe('JKSV.nro')
       expect(await glob('atmosphere/**', { cwd: directory })).toEqual([])
     }
