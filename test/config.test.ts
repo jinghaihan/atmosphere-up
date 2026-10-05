@@ -1,6 +1,7 @@
+import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
-import { resolve } from 'pathe'
-import { describe, expect, it } from 'vitest'
+import { join, resolve } from 'pathe'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { resolveConfig } from '../src/config'
 
 const cwd = resolve(fileURLToPath(new URL('..', import.meta.url)))
@@ -33,6 +34,7 @@ describe('resolveConfig', () => {
   it('leaves output unset without a configuration', async () => {
     const directory = resolve(cwd, 'test/fixtures/empty')
     expect((await resolveConfig({ cwd: directory })).output).toBeUndefined()
+    expect((await resolveConfig({ cwd: directory })).extra).toBeUndefined()
   })
 
   it('enables extensions by default and allows the CLI to disable them', async () => {
@@ -55,5 +57,40 @@ describe('resolveConfig', () => {
     const directory = resolve(cwd, 'test/fixtures/packed')
     expect((await resolveConfig({ cwd: directory, pack: undefined })).pack).toBe(true)
     expect((await resolveConfig({ cwd: directory, pack: false })).pack).toBe(false)
+  })
+})
+
+describe('extra configuration', () => {
+  const directory = join(cwd, 'test/fixtures/.generated/config')
+  const config = join(directory, 'atmosphere-up.config.json')
+
+  beforeEach(async () => {
+    await mkdir(join(directory, 'personal'), { recursive: true })
+    await writeFile(config, JSON.stringify({ extra: './personal' }))
+  })
+
+  afterEach(() => rm(directory, { recursive: true, force: true }))
+
+  it('resolves extra from the configured working directory', async () => {
+    expect((await resolveConfig({ cwd: directory })).extra).toBe(join(directory, 'personal'))
+  })
+
+  it('rejects a missing source before a build can start', async () => {
+    await rm(join(directory, 'personal'), { recursive: true })
+
+    await expect(resolveConfig({ cwd: directory })).rejects.toThrow('extra must be an existing directory')
+  })
+
+  it('rejects a file used as the source directory', async () => {
+    await writeFile(config, JSON.stringify({ extra: './file' }))
+    await writeFile(join(directory, 'file'), 'not a directory')
+
+    await expect(resolveConfig({ cwd: directory })).rejects.toThrow('extra must be an existing directory')
+  })
+
+  it('rejects an empty extra path', async () => {
+    await writeFile(config, JSON.stringify({ extra: '' }))
+
+    await expect(resolveConfig({ cwd: directory })).rejects.toThrow('extra must be a non-empty directory path')
   })
 })

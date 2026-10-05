@@ -16,7 +16,9 @@ export interface CommandOptions {
   pack?: boolean
 }
 
-export interface ConfigOptions extends CommandOptions {}
+export interface ConfigOptions extends CommandOptions {
+  extra?: string
+}
 
 export interface Options extends CommandOptions, ConfigOptions {}
 

@@ -1,6 +1,8 @@
 import type { CommandOptions, ConfigOptions, Options } from './types'
+import { existsSync, statSync } from 'node:fs'
 import process from 'node:process'
 import { dirname, resolve } from 'pathe'
+import tildify from 'tildify'
 import { createConfigLoader } from 'unconfig'
 import { DEFAULT_OPTIONS, MODE_CHOICES } from './constants'
 
@@ -36,16 +38,25 @@ export async function resolveConfig(options: Partial<CommandOptions>): Promise<O
   if (merged.output !== undefined && (typeof merged.output !== 'string' || !merged.output.trim()))
     throw new Error('Output must be a non-empty directory path.')
 
+  if (merged.extra !== undefined && (typeof merged.extra !== 'string' || !merged.extra.trim()))
+    throw new Error('extra must be a non-empty directory path.')
+
+  const extra = merged.extra === undefined ? undefined : resolve(cwd, merged.extra)
+
+  if (extra && (!existsSync(extra) || !statSync(extra).isDirectory()))
+    throw new Error(`extra must be an existing directory: ${tildify(extra)}`)
+
   return {
     ...merged,
     cwd,
     output: merged.output === undefined ? undefined : resolve(cwd, merged.output),
+    extra,
   }
 }
 
-function normalizeConfig(options: Partial<CommandOptions>) {
+function normalizeConfig(options: Partial<ConfigOptions>) {
   if ('default' in options)
-    options = options.default as Partial<CommandOptions>
+    options = options.default as Partial<ConfigOptions>
 
   return Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined))
 }

@@ -50,6 +50,7 @@ export async function runBuildCommand(config: Options): Promise<void> {
       directory: destination,
       replace,
       pack: config.pack,
+      extra: config.extra,
       onCoreReady: config.ext
         ? async () => {
           spinner.stop(c.green('core modules assembled'))

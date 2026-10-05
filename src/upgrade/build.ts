@@ -14,14 +14,16 @@ export interface UpgradePackOptions extends TaskOptions {
   directory: string
   replace?: boolean
   pack?: boolean
+  extra?: string
 }
 
-export async function buildUpgradePack({ modules, resources, bundle, directory, replace, pack, ...task }: UpgradePackOptions): Promise<void> {
+export async function buildUpgradePack({ modules, resources, bundle, directory, replace, pack, extra, ...task }: UpgradePackOptions): Promise<void> {
   await writeOutput({
     ...task,
     directory,
     replace,
     pack,
+    extra,
     populate: async (staging) => {
       const core = resources.filter(resource => resource.module in CORE_REPO_CONFIG)
       const optional = resources.filter(resource => !(resource.module in CORE_REPO_CONFIG))

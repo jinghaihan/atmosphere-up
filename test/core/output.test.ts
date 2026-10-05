@@ -58,4 +58,76 @@ describe('writeOutput', () => {
     expect(await readFile(join(directory, 'original'), 'utf8')).toBe('keep')
     expect(await glob('.atmosphere-up-*', { cwd: fixture, onlyDirectories: true, dot: true })).toEqual([])
   })
+
+  it.each([false, true])('merges extra files last while preserving directories and the source with pack=%s', async (pack) => {
+    const extra = join(fixture, 'personal')
+    await mkdir(join(extra, 'config/JKSV'), { recursive: true })
+    await mkdir(join(extra, 'switch/.overlays'), { recursive: true })
+    await mkdir(join(extra, 'atmosphere/contents/game/cheats'), { recursive: true })
+    const settings = JSON.stringify({ ExportToZip: 1 })
+    await writeFile(join(extra, 'config/JKSV/JKSV.json'), settings)
+    await writeFile(join(extra, 'switch/.overlays/personal.ovl'), 'personal overlay')
+    await writeFile(join(extra, 'atmosphere/contents/game/cheats/build.txt'), 'personal cheat')
+    await writeFile(join(extra, 'atmosphere/contents/game/cheats/toggles.txt'), 'personal toggles')
+    const sourceFiles = await glob('**/*', { cwd: extra, dot: true, onlyFiles: true })
+
+    await writeOutput({ directory: `${directory}${pack ? '.zip' : ''}`, pack, extra, populate: async (staging) => {
+      await mkdir(join(staging, 'config/JKSV'), { recursive: true })
+      await mkdir(join(staging, 'switch/.overlays'), { recursive: true })
+      await writeFile(join(staging, 'config/JKSV/JKSV.json'), JSON.stringify({ ExportToZip: 0, HoldForDeletion: 0 }))
+      await writeFile(join(staging, 'config/JKSV/keep.txt'), 'keep')
+      await writeFile(join(staging, 'switch/.overlays/ovlmenu.ovl'), 'core overlay')
+    } })
+
+    const expected = {
+      'config/JKSV/JKSV.json': settings,
+      'config/JKSV/keep.txt': 'keep',
+      'switch/.overlays/ovlmenu.ovl': 'core overlay',
+      'switch/.overlays/personal.ovl': 'personal overlay',
+      'atmosphere/contents/game/cheats/build.txt': 'personal cheat',
+      'atmosphere/contents/game/cheats/toggles.txt': 'personal toggles',
+    }
+
+    if (pack) {
+      const archive = new AdmZip(`${directory}.zip`)
+      for (const [path, content] of Object.entries(expected))
+        expect(archive.readAsText(path)).toBe(content)
+
+      expect(archive.getEntry('personal/')).toBeNull()
+    }
+    else {
+      for (const [path, content] of Object.entries(expected))
+        expect(await readFile(join(directory, path), 'utf8')).toBe(content)
+    }
+
+    expect(await readFile(join(extra, 'config/JKSV/JKSV.json'), 'utf8')).toBe(settings)
+    expect((await glob('**/*', { cwd: extra, dot: true, onlyFiles: true })).sort()).toEqual(sourceFiles.sort())
+  })
+
+  it('preserves an existing output and cleans staging when extra copying is cancelled', async () => {
+    const controller = new AbortController()
+    const extra = join(fixture, 'personal')
+    await mkdir(extra, { recursive: true })
+    await writeFile(join(extra, 'extra.txt'), 'personal file')
+    await mkdir(directory)
+    await writeFile(join(directory, 'original'), 'keep')
+
+    await expect(writeOutput({
+      directory,
+      replace: true,
+      extra,
+      signal: controller.signal,
+      onProgress: (message) => {
+        if (message.startsWith('merging extra files'))
+          controller.abort()
+      },
+      populate: async (staging) => {
+        await writeFile(join(staging, 'new'), 'new pack')
+      },
+    })).rejects.toThrow('aborted')
+
+    expect(await readFile(join(directory, 'original'), 'utf8')).toBe('keep')
+    expect(await readFile(join(extra, 'extra.txt'), 'utf8')).toBe('personal file')
+    expect(await glob('.atmosphere-up-*', { cwd: fixture, onlyDirectories: true, dot: true })).toEqual([])
+  })
 })

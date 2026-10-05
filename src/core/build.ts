@@ -16,11 +16,12 @@ export interface BuildOptions extends TaskOptions {
   directory: string
   replace?: boolean
   pack?: boolean
+  extra?: string
   onCoreReady?: () => Promise<Resource[]>
   onExtensionsReady?: () => Promise<Resource[]>
 }
 
-export async function buildPack({ bundle, resources, directory, replace = false, pack = false, ...task }: BuildOptions): Promise<void> {
+export async function buildPack({ bundle, resources, directory, replace = false, pack = false, extra, ...task }: BuildOptions): Promise<void> {
   const { signal, onProgress } = task
 
   await writeOutput({
@@ -28,6 +29,7 @@ export async function buildPack({ bundle, resources, directory, replace = false,
     directory,
     replace,
     pack,
+    extra,
     populate: async (staging) => {
       onProgress?.(`checking bundled sigpatches for HOS ${bundle.labels.hos}`)
       const sigpatches = await readFile(getBundlePath(bundle))

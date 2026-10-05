@@ -69,6 +69,11 @@ version. Use pnpm and follow the installed dependencies and existing modules.
   start at the SD card root. The repository config sets the parent to `./output`.
 - Use staging and the existing AbortSignal flow. Cancellation removes temporary
   files; preserve an existing output until the replacement has been assembled.
+- `extra` is an optional configuration directory in SD card layout, resolved from
+  the working directory and checked before downloads. Merge it into full and
+  upgrade packs after all downloaded modules and defaults, before directory or
+  ZIP output. Extra files replace matching paths; copy without modifying the
+  source or merging configuration fields. Do not filter cheat toggle files.
 - Keep shared optional module dependencies deduplicated. An enhanced Sys Clk overlay
   replaces the original overlay while preserving the required service/manager.
 - Keep overlay memory at 8 MiB and the hotkey at L + D-pad Down. Cheats default

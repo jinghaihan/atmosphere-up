@@ -154,6 +154,24 @@ login. Without either, downloads and release queries run anonymously.
 GitHub queries and downloads support `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`,
 including their lowercase forms.
 
+### Personal files
+
+Set `extra` to a directory containing your mods, cheat codes, homebrew, or personal
+configuration in SD card layout:
+
+```ts
+export default defineConfig({
+  output: './output',
+  extra: './personal',
+})
+```
+
+For example, `personal/config/JKSV/JKSV.json` becomes `config/JKSV/JKSV.json` in
+the generated pack. Directories are merged, and extra files replace files at the
+same path. Configuration files are replaced in full. The source directory stays
+unchanged. Both build and upgrade packs include extra files, with directory or
+ZIP output. Relative `extra` paths resolve from the working directory.
+
 ## License
 
 [MIT](./LICENSE) License © [jinghaihan](https://github.com/jinghaihan)

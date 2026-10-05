@@ -1,6 +1,6 @@
 import type { Resource } from '../../src/core'
 import { Buffer } from 'node:buffer'
-import { readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import AdmZip from 'adm-zip'
 import { join, resolve } from 'pathe'
@@ -36,6 +36,24 @@ afterEach(async () => {
 })
 
 describe('buildUpgradePack', () => {
+  it('overrides installed modules and their defaults with extra files', async () => {
+    const extra = join(resolve(directory, '..'), 'personal')
+    await mkdir(join(extra, 'config/JKSV'), { recursive: true })
+    await mkdir(join(extra, 'switch/JKSV'), { recursive: true })
+    await writeFile(join(extra, 'config/JKSV/JKSV.json'), '{"ExportToZip":1}')
+    await writeFile(join(extra, 'switch/JKSV/JKSV.nro'), 'personal JKSV')
+
+    await buildUpgradePack({
+      modules: ['jksv'],
+      resources: [resource('jksv', 'JKSV.nro', 'switch/JKSV/JKSV.nro')],
+      directory,
+      extra,
+    })
+
+    expect(await readFile(join(directory, 'switch/JKSV/JKSV.nro'), 'utf8')).toBe('personal JKSV')
+    expect(JSON.parse(await readFile(join(directory, 'config/JKSV/JKSV.json'), 'utf8'))).toEqual({ ExportToZip: 1 })
+  })
+
   it.each([false, true])('outputs only DBI at the SD root with pack=%s', async (pack) => {
     const resources = [
       resource('dbi', 'DBI.nro', 'switch/DBI/DBI.nro'),

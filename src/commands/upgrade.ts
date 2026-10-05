@@ -78,7 +78,7 @@ export async function runUpgradeCommand(config: Options): Promise<void> {
 
     const resources = await resolveUpgradeResources(modules, { ...task, ...settings, bundle })
 
-    await buildUpgradePack({ ...task, modules, resources, bundle, directory: destination, replace, pack: config.pack })
+    await buildUpgradePack({ ...task, modules, resources, bundle, directory: destination, replace, pack: config.pack, extra: config.extra })
 
     spinner.stop(c.green('upgrade pack assembled'))
   }

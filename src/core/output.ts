@@ -1,6 +1,6 @@
 import type { TaskOptions } from '../types'
 import { existsSync } from 'node:fs'
-import { mkdir, mkdtemp, rename, rm } from 'node:fs/promises'
+import { cp, mkdir, mkdtemp, rename, rm } from 'node:fs/promises'
 import { dirname, join, resolve } from 'pathe'
 import tildify from 'tildify'
 import { isParentDirectory } from '../utils'
@@ -18,9 +18,10 @@ export interface OutputOptions extends TaskOptions {
   replace?: boolean
   populate: (staging: string) => Promise<void>
   pack?: boolean
+  extra?: string
 }
 
-export async function writeOutput({ directory, replace = false, populate, pack = false, signal, onProgress }: OutputOptions): Promise<void> {
+export async function writeOutput({ directory, replace = false, populate, pack = false, extra, signal, onProgress }: OutputOptions): Promise<void> {
   signal?.throwIfAborted()
 
   await mkdir(dirname(directory), { recursive: true })
@@ -30,6 +31,18 @@ export async function writeOutput({ directory, replace = false, populate, pack =
   try {
     await mkdir(staging)
     await populate(staging)
+
+    signal?.throwIfAborted()
+    if (extra) {
+      onProgress?.(`merging extra files from ${tildify(extra)}`)
+      await cp(extra, staging, {
+        recursive: true,
+        filter: () => {
+          signal?.throwIfAborted()
+          return true
+        },
+      })
+    }
 
     signal?.throwIfAborted()
     const result = pack ? join(temporary, 'pack.zip') : staging

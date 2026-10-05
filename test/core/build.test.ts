@@ -1,6 +1,6 @@
 import type { Resource } from '../../src/core'
 import { Buffer } from 'node:buffer'
-import { readFile, rm } from 'node:fs/promises'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import AdmZip from 'adm-zip'
 import { parse } from 'ini'
@@ -29,6 +29,28 @@ afterEach(async () => {
 })
 
 describe('buildPack', () => {
+  it.each([false, true])('overrides downloaded files and defaults with extra files and pack=%s', async (pack) => {
+    const extra = join(directory, 'personal')
+    await mkdir(join(extra, 'config/JKSV'), { recursive: true })
+    await writeFile(join(extra, 'hbmenu.nro'), 'personal hbmenu')
+    await writeFile(join(extra, 'config/JKSV/JKSV.json'), '{"ExportToZip":1}')
+    vi.mocked(downloadAsset).mockResolvedValueOnce(await readFile(join(cwd, 'test/fixtures/core.zip')))
+    const destination = join(directory, `result${pack ? '.zip' : ''}`)
+
+    await buildPack({ bundle, resources: [resource], directory: destination, extra, pack })
+
+    if (pack) {
+      const archive = new AdmZip(destination)
+      expect(archive.readAsText('hbmenu.nro')).toBe('personal hbmenu')
+      expect(JSON.parse(archive.readAsText('config/JKSV/JKSV.json'))).toEqual({ ExportToZip: 1 })
+      expect(archive.getEntry('pack-manifest.json')).not.toBeNull()
+    }
+    else {
+      expect(await readFile(join(destination, 'hbmenu.nro'), 'utf8')).toBe('personal hbmenu')
+      expect(JSON.parse(await readFile(join(destination, 'config/JKSV/JKSV.json'), 'utf8'))).toEqual({ ExportToZip: 1 })
+    }
+  })
+
   it('selects firmware after installing extensions and compresses only after installing firmware', async () => {
     const extension = {
       ...resource,
