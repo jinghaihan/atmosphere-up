@@ -14,9 +14,14 @@ export default defineConfig({
       ],
     },
     {
-      name: 'feth-overlays',
-      repository: '3096/feth-overlays',
-      assets: [{ name: 'feth-overlays.zip' }],
+      name: 'feth-overlay',
+      repository: 'jinghaihan/feth-overlay',
+      assets: [
+        {
+          name: 'feth-overlay.ovl',
+          target: 'switch/.overlays/feth-overlay.ovl',
+        },
+      ],
     },
   ],
 })
