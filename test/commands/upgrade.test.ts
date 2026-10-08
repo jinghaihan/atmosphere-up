@@ -39,6 +39,29 @@ beforeEach(() => {
 })
 
 describe('runUpgradeCommand', () => {
+  it('lists and preselects configured modules without requiring HOS', async () => {
+    const extensions = [
+      { name: 'mhgu-overlay', repository: 'jinghaihan/mhgu-overlay', assets: [{ name: 'mhgu-overlay.ovl', target: 'switch/.overlays/mhgu-overlay.ovl' }] },
+      { name: 'feth-overlays', repository: '3096/feth-overlays', assets: [{ name: 'feth-overlays.zip' }] },
+    ]
+    vi.mocked(p.groupMultiselect).mockResolvedValue(['feth-overlays'])
+
+    await runUpgradeCommand({ ...config, extensions, modules: ['mhgu-overlay'] })
+
+    expect(p.groupMultiselect).toHaveBeenCalledWith(expect.objectContaining({
+      initialValues: ['mhgu-overlay'],
+      options: expect.objectContaining({
+        'Configured Modules': [
+          { value: 'mhgu-overlay', label: 'mhgu-overlay', hint: 'https://github.com/jinghaihan/mhgu-overlay' },
+          { value: 'feth-overlays', label: 'feth-overlays', hint: 'https://github.com/3096/feth-overlays' },
+        ],
+      }),
+    }))
+    expect(resolveUpgradeResources).toHaveBeenCalledWith(['feth-overlays'], expect.objectContaining({ extensions }))
+    expect(buildUpgradePack).toHaveBeenCalledWith(expect.objectContaining({ modules: ['feth-overlays'], directory: '/workspace/output/feth-overlays' }))
+    expect(p.select).not.toHaveBeenCalled()
+  })
+
   it('lists all modules with nothing preselected when no module arguments are supplied', async () => {
     await runUpgradeCommand(config)
 

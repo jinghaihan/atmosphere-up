@@ -1,9 +1,10 @@
-import type { TaskOptions } from '../types'
+import type { ConfiguredExtension, TaskOptions } from '../types'
 import type { Bundle } from './catalog'
 import type { Resource } from './plan'
 import { copyFile, cp, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'pathe'
 import { PACK_DEFAULTS } from '../constants'
+import { resolveConfiguredExtensions } from '../extensions/configured'
 import { sha256 } from '../utils'
 import { extractArchive } from './archive'
 import { getBundlePath } from './catalog'
@@ -17,11 +18,12 @@ export interface BuildOptions extends TaskOptions {
   replace?: boolean
   pack?: boolean
   extra?: string
+  extensions?: ConfiguredExtension[]
   onCoreReady?: () => Promise<Resource[]>
   onExtensionsReady?: () => Promise<Resource[]>
 }
 
-export async function buildPack({ bundle, resources, directory, replace = false, pack = false, extra, ...task }: BuildOptions): Promise<void> {
+export async function buildPack({ bundle, resources, directory, replace = false, pack = false, extra, extensions = [], ...task }: BuildOptions): Promise<void> {
   const { signal, onProgress } = task
 
   await writeOutput({
@@ -52,10 +54,13 @@ export async function buildPack({ bundle, resources, directory, replace = false,
       await copyFile(join(staging, 'payload.bin'), join(staging, 'atmosphere/reboot_payload.bin'))
 
       signal?.throwIfAborted()
-      const extensions = await task.onCoreReady?.() ?? []
+      const optional = await task.onCoreReady?.() ?? []
 
       signal?.throwIfAborted()
-      downloads.push(...await installResources(extensions, staging, task))
+      downloads.push(...await installResources(optional, staging, task))
+
+      const configured = await resolveConfiguredExtensions(extensions, task)
+      downloads.push(...await installResources(configured, staging, task))
 
       signal?.throwIfAborted()
       const firmware = await task.onExtensionsReady?.() ?? []

@@ -1,19 +1,21 @@
 import type { Bundle } from '../core'
-import type { Module, Options } from '../types'
+import type { Options } from '../types'
 import process from 'node:process'
 import * as p from '@clack/prompts'
 import c from 'ansis'
 import { resolve } from 'pathe'
 import tildify from 'tildify'
 import { promptExtensionSettings } from '../extensions'
-import { buildUpgradePack, MODULE_GROUPS, MODULE_OPTIONS, resolveUpgradeResources } from '../upgrade'
+import { buildUpgradePack, getModuleGroups, resolveUpgradeResources } from '../upgrade'
 import { confirmOutput, promptBundle } from './shared'
 
 export async function runUpgradeCommand(config: Options): Promise<void> {
-  const initialValues: Module[] = []
+  const groups = getModuleGroups(config.extensions)
+  const options = Object.values(groups).flat()
+  const initialValues: string[] = []
 
   for (const module of config.modules ?? []) {
-    const option = MODULE_OPTIONS.find(option => option.value === module)
+    const option = options.find(option => option.value === module)
     if (!option)
       throw new Error(`unknown module: ${module}`)
 
@@ -21,9 +23,9 @@ export async function runUpgradeCommand(config: Options): Promise<void> {
   }
 
   const controller = new AbortController()
-  const modules = await p.groupMultiselect<Module>({
+  const modules = await p.groupMultiselect<string>({
     message: 'select modules to upgrade',
-    options: MODULE_GROUPS,
+    options: groups,
     initialValues,
     required: false,
     selectableGroups: false,
@@ -76,7 +78,7 @@ export async function runUpgradeCommand(config: Options): Promise<void> {
     if (process.stdin.isTTY)
       process.stdin.setRawMode(false)
 
-    const resources = await resolveUpgradeResources(modules, { ...task, ...settings, bundle })
+    const resources = await resolveUpgradeResources(modules, { ...task, ...settings, bundle, extensions: config.extensions })
 
     await buildUpgradePack({ ...task, modules, resources, bundle, directory: destination, replace, pack: config.pack, extra: config.extra })
 

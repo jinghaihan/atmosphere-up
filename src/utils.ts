@@ -26,8 +26,8 @@ export function getRepositoryUrl(repository: string): string {
   return `https://github.com/${repository}`
 }
 
-export function selectAsset(release: Release, pattern: RegExp): ReleaseAsset {
-  const matches = release.assets.filter(asset => pattern.test(asset.name))
+export function selectAsset(release: Release, pattern: string | RegExp): ReleaseAsset {
+  const matches = release.assets.filter(asset => typeof pattern === 'string' ? asset.name === pattern : pattern.test(asset.name))
 
   if (matches.length !== 1)
     throw new Error(`Expected one asset matching ${pattern} in ${release.html_url}; found ${matches.length}.`)

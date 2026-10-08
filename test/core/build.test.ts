@@ -8,9 +8,9 @@ import { join, resolve } from 'pathe'
 import { glob } from 'tinyglobby'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { buildPack, getBundles } from '../../src/core'
-import { downloadAsset } from '../../src/download'
+import { downloadAsset, getRelease } from '../../src/download'
 
-vi.mock('../../src/download', () => ({ downloadAsset: vi.fn() }))
+vi.mock('../../src/download', () => ({ downloadAsset: vi.fn(), getRelease: vi.fn() }))
 
 const cwd = resolve(fileURLToPath(new URL('../..', import.meta.url)))
 const directory = join(cwd, 'test/fixtures/.generated/build')
@@ -29,6 +29,53 @@ afterEach(async () => {
 })
 
 describe('buildPack', () => {
+  it.each([false, true])('installs configured files and ZIPs without optional prompts, before firmware and extra files, with pack=%s', async (pack) => {
+    const extra = join(directory, 'personal')
+    await mkdir(join(extra, 'switch/.overlays'), { recursive: true })
+    await writeFile(join(extra, 'switch/.overlays/mhgu-overlay.ovl'), 'personal overlay')
+
+    const archive = new AdmZip()
+    archive.addFile('switch/.overlays/feth-class-edit.ovl', Buffer.from('class editor'))
+    archive.addFile('switch/.overlays/feth-support-viewer.ovl', Buffer.from('support viewer'))
+    const core = await readFile(join(cwd, 'test/fixtures/core.zip'))
+
+    vi.mocked(getRelease).mockResolvedValueOnce({
+      tag_name: 'v0.6.0',
+      html_url: 'https://github.com/jinghaihan/mhgu-overlay/releases/v0.6.0',
+      assets: [{ name: 'mhgu-overlay.ovl' }],
+    } as Awaited<ReturnType<typeof getRelease>>).mockResolvedValueOnce({
+      tag_name: '0.1.0',
+      html_url: 'https://github.com/3096/feth-overlays/releases/0.1.0',
+      assets: [{ name: 'feth-overlays.zip' }],
+    } as Awaited<ReturnType<typeof getRelease>>)
+    vi.mocked(downloadAsset).mockResolvedValueOnce(core).mockResolvedValueOnce(Buffer.from('downloaded overlay')).mockResolvedValueOnce(archive.toBuffer())
+    const destination = join(directory, `result${pack ? '.zip' : ''}`)
+
+    await buildPack({
+      bundle,
+      resources: [resource],
+      directory: destination,
+      pack,
+      extra,
+      extensions: [
+        { name: 'mhgu-overlay', repository: 'jinghaihan/mhgu-overlay', assets: [{ name: 'mhgu-overlay.ovl', target: 'switch/.overlays/mhgu-overlay.ovl' }] },
+        { name: 'feth-overlays', repository: '3096/feth-overlays', assets: [{ name: 'feth-overlays.zip' }] },
+      ],
+      onExtensionsReady: async () => {
+        const [path] = await glob('.atmosphere-up-*/pack/switch/.overlays/mhgu-overlay.ovl', { cwd: directory, dot: true, absolute: true })
+        expect(await readFile(path, 'utf8')).toBe('downloaded overlay')
+        expect(downloadAsset).toHaveBeenCalledTimes(3)
+        return []
+      },
+    })
+
+    const read = async (path: string) => pack ? new AdmZip(destination).readAsText(path) : readFile(join(destination, path), 'utf8')
+    expect(await read('switch/.overlays/mhgu-overlay.ovl')).toBe('personal overlay')
+    expect(await read('switch/.overlays/feth-class-edit.ovl')).toBe('class editor')
+    expect(await read('switch/.overlays/feth-support-viewer.ovl')).toBe('support viewer')
+    expect(JSON.parse(await read('pack-manifest.json')).resources.map((item: Resource) => item.module)).toEqual(['ultrahand', 'mhgu-overlay', 'feth-overlays'])
+  })
+
   it.each([false, true])('overrides downloaded files and defaults with extra files and pack=%s', async (pack) => {
     const extra = join(directory, 'personal')
     await mkdir(join(extra, 'config/JKSV'), { recursive: true })

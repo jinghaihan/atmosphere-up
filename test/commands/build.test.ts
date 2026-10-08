@@ -97,6 +97,16 @@ beforeEach(() => {
 })
 
 describe('runCommand', () => {
+  it('passes configured extensions to the build even when built-in optional modules are disabled', async () => {
+    const extensions = [{ name: 'mhgu-overlay', repository: 'jinghaihan/mhgu-overlay', assets: [{ name: 'mhgu-overlay.ovl', target: 'switch/.overlays/mhgu-overlay.ovl' }] }]
+    vi.mocked(resolveConfig).mockResolvedValue({ cwd: '/workspace', ext: false, firmware: false, extensions })
+
+    await runCommand({ ext: false })
+
+    expect(buildPack).toHaveBeenCalledWith(expect.objectContaining({ extensions, onCoreReady: undefined }))
+    expect(p.multiselect).not.toHaveBeenCalled()
+  })
+
   it.each([false, true])('offers the selected firmware after components are installed with ext=%s', async (ext) => {
     const selected = ext ? bundle : getBundles().find(bundle => bundle.labels.hos === '22.0.0')!
     let componentsInstalled = false

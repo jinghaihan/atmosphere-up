@@ -1,5 +1,5 @@
 import type { Bundle, Resource } from '../core'
-import type { Module, TaskOptions } from '../types'
+import type { TaskOptions } from '../types'
 import { copyFile, cp, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'pathe'
 import { CORE_REPO_CONFIG, PACK_DEFAULTS } from '../constants'
@@ -8,7 +8,7 @@ import { installResources } from '../core/install'
 import { sha256 } from '../utils'
 
 export interface UpgradePackOptions extends TaskOptions {
-  modules: Module[]
+  modules: string[]
   resources: Resource[]
   bundle?: Bundle
   directory: string

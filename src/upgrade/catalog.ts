@@ -1,10 +1,10 @@
 import type { Option } from '@clack/prompts'
-import type { Module } from '../types'
+import type { ConfiguredExtension } from '../types'
 import { CORE_MODULE_LABELS, CORE_REPO_CONFIG, EXTENSION_REPO_CONFIG } from '../constants'
 import { getExtensionGroups } from '../extensions'
 import { getRepositoryUrl } from '../utils'
 
-export type ModuleOption = Option<Module> & {
+export type ModuleOption = Option<string> & {
   label: string
   hint: string
 }
@@ -25,3 +25,26 @@ export const MODULE_GROUPS: Record<string, ModuleOption[]> = {
 }
 
 export const MODULE_OPTIONS = Object.values(MODULE_GROUPS).flat()
+
+export function getModuleGroups(extensions: ConfiguredExtension[] = []): Record<string, ModuleOption[]> {
+  if (!extensions.length)
+    return MODULE_GROUPS
+
+  const names = new Set(MODULE_OPTIONS.map(option => option.value))
+
+  for (const extension of extensions) {
+    if (names.has(extension.name))
+      throw new Error(`duplicate module name: ${extension.name}`)
+
+    names.add(extension.name)
+  }
+
+  return {
+    ...MODULE_GROUPS,
+    'Configured Modules': extensions.map(extension => ({
+      value: extension.name,
+      label: extension.name,
+      hint: getRepositoryUrl(extension.repository),
+    })),
+  }
+}

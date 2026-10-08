@@ -51,6 +51,7 @@ export async function runBuildCommand(config: Options): Promise<void> {
       replace,
       pack: config.pack,
       extra: config.extra,
+      extensions: config.extensions,
       onCoreReady: config.ext
         ? async () => {
           spinner.stop(c.green('core modules assembled'))
@@ -69,7 +70,7 @@ export async function runBuildCommand(config: Options): Promise<void> {
         : undefined,
       onExtensionsReady: config.firmware
         ? async () => {
-          spinner.stop(c.green(config.ext ? 'optional modules assembled' : 'core modules assembled'))
+          spinner.stop(c.green(config.ext || config.extensions?.length ? 'optional modules assembled' : 'core modules assembled'))
 
           const enabled = await promptFirmware(controller, bundle.labels.hos)
 

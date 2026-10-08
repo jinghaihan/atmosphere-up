@@ -75,6 +75,22 @@ describe('extra configuration', () => {
     expect((await resolveConfig({ cwd: directory })).extra).toBe(join(directory, 'personal'))
   })
 
+  it('retains configured extensions when built-in optional modules are disabled', async () => {
+    const extensions = [{ name: 'mhgu-overlay', repository: 'jinghaihan/mhgu-overlay', assets: [{ name: 'mhgu-overlay.ovl', target: 'switch/.overlays/mhgu-overlay.ovl' }] }]
+    await writeFile(config, JSON.stringify({ extensions }))
+
+    expect(await resolveConfig({ cwd: directory, ext: false })).toMatchObject({ ext: false, extensions })
+  })
+
+  it.each(['dbi', 'mhgu-overlay'])('rejects conflicting module names before downloads: %s', async (name) => {
+    await writeFile(config, JSON.stringify({ extensions: [
+      { name: 'mhgu-overlay', repository: 'jinghaihan/mhgu-overlay', assets: [{ name: 'mhgu-overlay.ovl' }] },
+      { name, repository: '3096/feth-overlays', assets: [{ name: 'feth-overlays.zip' }] },
+    ] }))
+
+    await expect(resolveConfig({ cwd: directory })).rejects.toThrow(`duplicate module name: ${name}`)
+  })
+
   it('rejects a missing source before a build can start', async () => {
     await rm(join(directory, 'personal'), { recursive: true })
 

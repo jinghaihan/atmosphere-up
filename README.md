@@ -53,7 +53,7 @@ firmware update, export them again from the updated system.
 
 ### Module upgrades
 
-Use `upgrade` to update individual core or optional modules.
+Use `upgrade` to update individual core, optional, or configured modules.
 
 Upgrade packs include the selected modules and their required dependencies in
 SD card layout. Copy the contents to the SD card root and merge them to update.
@@ -62,7 +62,7 @@ Use `--pack` for ZIP output.
 
 ### Optional modules
 
-Choose optional modules by category, or use `--no-ext` for a core-only pack.
+Choose optional modules by category, or use `--no-ext` to skip built-in optional modules.
 
 | Module | Source | Includes |
 | --- | --- | --- |
@@ -153,6 +153,43 @@ login. Without either, downloads and release queries run anonymously.
 
 GitHub queries and downloads support `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`,
 including their lowercase forms.
+
+### Configured modules
+
+Add GitHub release assets to your pack with `extensions`:
+
+```ts
+export default defineConfig({
+  extensions: [
+    {
+      name: 'mhgu-overlay',
+      repository: 'jinghaihan/mhgu-overlay',
+      assets: [
+        {
+          name: 'mhgu-overlay.ovl',
+          target: 'switch/.overlays/mhgu-overlay.ovl',
+        },
+      ],
+    },
+    {
+      name: 'feth-overlays',
+      repository: '3096/feth-overlays',
+      assets: [{ name: 'feth-overlays.zip' }],
+    },
+  ],
+})
+```
+
+Each module's `assets` array lists the files to install. Each asset's `name`
+accepts an exact filename or a regular expression. `target` saves a file at the
+given SD card path. Without `target`, the asset is extracted as a ZIP, preserving
+its directory structure. Set `directory` to an extraction directory; it defaults
+to the SD card root. `releaseTag` pins a release; omit it to use the latest
+release. Module names must be unique across built-in and configured modules.
+
+Builds include configured modules even with `--no-ext`. Use
+`npx atmosphere-up upgrade mhgu-overlay` to update a configured module separately.
+Personal files from `extra` can override configured module files.
 
 ### Personal files
 

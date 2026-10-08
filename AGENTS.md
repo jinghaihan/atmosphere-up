@@ -25,6 +25,7 @@ version. Use pnpm and follow the installed dependencies and existing modules.
 | `src/core/` | Bundle catalog, release resolution, installation, and output |
 | `src/extensions/index.ts` | Ordered optional module categories, prompts, and resolvers |
 | `src/extensions/*.ts` | One feature category per module; prompts and resolvers return arrays |
+| `src/extensions/configured.ts` | Resolve user-configured GitHub release assets |
 | `src/upgrade/` | Module catalog, selected resource resolution, and SD card update packs |
 | `src/firmware.ts` | Optional firmware for the exact selected HOS version |
 | `src/download/` | GitHub authentication, releases, and downloads |
@@ -63,8 +64,17 @@ version. Use pnpm and follow the installed dependencies and existing modules.
   cheats, performance tuning, performance monitoring, controller support,
   streaming, Amiibo. Default categories are save management, file management,
   and cheats. Ask for tools only in selected categories.
+- `extensions` configures additional modules with `name`, `repository`, optional
+  `releaseTag`, and an `assets` array. Each asset has a `name` selector and either
+  a file `target` or ZIP extraction `directory`. Without `target`, extract the
+  ZIP to `directory` or the SD card root. Assets accept exact names or regular
+  expressions. Query each module's release once. Configured names are unique across
+  built-in and configured modules. Full builds install all configured modules
+  after built-in optional modules and before firmware and extra files. Upgrade
+  lists configured modules and installs only those selected.
 - `--ext` and `--firmware` default to true; their negative forms skip their
-  respective prompts. `--pack` defaults to false. `output` is a parent directory:
+  respective prompts. `--no-ext` leaves configured modules enabled.
+  `--pack` defaults to false. `output` is a parent directory:
   create `atmosphere-<AMS>-hos-<HOS>/` or the same name with `.zip`. ZIP contents
   start at the SD card root. The repository config sets the parent to `./output`.
 - Use staging and the existing AbortSignal flow. Cancellation removes temporary

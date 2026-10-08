@@ -12,6 +12,7 @@ import { promptStreaming, resolveStreaming, STREAMING_OPTIONS } from './streamin
 
 export * from './amiibo'
 export * from './cheats'
+export * from './configured'
 export * from './controller-support'
 export * from './file-management'
 export * from './performance-monitoring'

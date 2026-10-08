@@ -5,6 +5,7 @@ import { dirname, resolve } from 'pathe'
 import tildify from 'tildify'
 import { createConfigLoader } from 'unconfig'
 import { DEFAULT_OPTIONS, MODE_CHOICES } from './constants'
+import { getModuleGroups } from './upgrade/catalog'
 
 export async function readConfig(options: Partial<ConfigOptions>) {
   const loader = createConfigLoader<ConfigOptions>({
@@ -31,6 +32,8 @@ export async function resolveConfig(options: Partial<CommandOptions>): Promise<O
   const configOptions = await readConfig(options)
   const merged = { ...defaults, ...configOptions, ...options }
   const cwd = resolve(options.cwd || process.cwd())
+
+  getModuleGroups(merged.extensions)
 
   if (!MODE_CHOICES.includes(merged.mode!))
     throw new Error(`invalid mode: ${merged.mode}. please use one of the following: ${MODE_CHOICES.join(', ')}`)

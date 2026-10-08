@@ -1,4 +1,3 @@
-import type { EXTENSION_REPO_CONFIG } from '../constants'
 import type { Release, ReleaseAsset, TaskOptions } from '../types'
 import type { Bundle } from './catalog'
 import { CORE_REPO_CONFIG, DBI_TRANSLATION_REPO } from '../constants'
@@ -6,7 +5,7 @@ import { getRelease } from '../download'
 import { selectAsset } from '../utils'
 
 export interface Resource {
-  module: keyof typeof CORE_REPO_CONFIG | keyof typeof EXTENSION_REPO_CONFIG | 'firmware'
+  module: string
   release: string
   page: string
   asset: ReleaseAsset
